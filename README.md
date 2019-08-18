@@ -17,6 +17,7 @@ As of 0.0.3, the following is done:
 - Path partials/segment pathing
 - Switch to alternate paths
 - Following paths
+- Chat commands
 - Combat
 - Recon
 - Mining
