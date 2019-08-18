@@ -7,6 +7,9 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.Logger;
 
+import java.awt.*;
+import java.awt.event.KeyEvent;
+
 @Mod(modid = Main.MODID, name = Main.NAME, version = Main.VERSION)
 public class Main
 {
@@ -14,7 +17,7 @@ public class Main
     public static final String VERSION = "@VERSION@";
     public static final String MODID = "openmineai";
 
-    static Logger logger;
+    public static Logger logger;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
@@ -28,3 +31,4 @@ public class Main
         ClientCommandHandler.instance.registerCommand(new Commands());
     }
 }
+
