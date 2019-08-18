@@ -16,6 +16,8 @@ As of 0.0.3, the following is done:
 - Finish pathing selection
 - Path partials/segment pathing
 - Switch to alternate paths
+- Path merging (Such as when a low cost route meets a longer, but higher cost route and switches base)
+- Bidirectional search
 - Following paths
 - Chat commands
 - Combat
