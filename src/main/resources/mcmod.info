@@ -1,0 +1,16 @@
+[
+{
+  "modid": "openmineai",
+  "name": "Open Minecraft AI",
+  "description": "A mod for pathfinding and minecraft automation",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "ktechnet.me",
+  "updateUrl": "",
+  "authorList": ["NateKomodo"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
