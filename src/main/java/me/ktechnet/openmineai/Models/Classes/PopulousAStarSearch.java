@@ -46,6 +46,7 @@ public class PopulousAStarSearch implements IPathingProvider {
             case COMPLETE:
                 if (!hasFoundRoute) {
                     callback.completeRouteFound(route);
+                    hasFoundRoute = true;
                 }
                 else {
                     callback.alternateRouteFound(route);
