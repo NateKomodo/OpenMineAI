@@ -24,3 +24,6 @@ logs
 mods
 resourcepacks
 saves
+usercache.json
+usernamecache.json
+options.txt
