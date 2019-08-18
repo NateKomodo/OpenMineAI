@@ -46,7 +46,7 @@ public class Node implements INode {
         this.myPos = myPos;
         this.destination = destination;
         this.TTL = TTL;
-        //TODO add to manifest, check for collisions, and parital backprop
+        //TODO add to manifest, check for collisions, and partial backprop
         if (myPos == destination) {
             Backpropagate(BackpropagateCondition.COMPLETE, new ArrayList<>());
             return;

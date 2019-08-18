@@ -20,11 +20,13 @@ public class OptionProvider implements IOptionProvider {
 
     @Override
     public IOption EvaluatePosition(Pos position) {
+        //TODO determine node type and cost
         return null;
     }
 
     @Override
     public ArrayList<IOption> EvaluateOptions() {
+        //TODO get nearby locations and push to EvaluatePosition(Pos)
         return null;
     }
 }
