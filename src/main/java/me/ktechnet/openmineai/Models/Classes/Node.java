@@ -70,16 +70,16 @@ public class Node implements INode {
     }
 
     @Override
-    public void Backpropegate(BackpropagateCondition condition) {
+    public void Backpropagate(BackpropagateCondition condition, ArrayList<INode> path) {
         if (myType != NodeType.PLAYER) {
-            //TODO add to IPathingProvider's manifest
-            parent.Backpropegate(condition);
+            path.add(this);
+            parent.Backpropagate(condition, path);
         } else {
-            //TODO call route complete with condition
+            master.RouteFound(condition, path);
         }
     }
 
-    public Node(NodeType type, IPathingProvider master, INode parent, int currentCost, int myCost, Pos myPos, Pos destination) {
+    Node(NodeType type, IPathingProvider master, INode parent, int currentCost, int myCost, Pos myPos, Pos destination) {
         this.myType = type;
         this.master = master;
         this.parent = parent;
@@ -87,6 +87,10 @@ public class Node implements INode {
         this.myCost = myCost;
         this.myPos = myPos;
         this.destination = destination;
+        if (myPos == destination) {
+            Backpropagate(BackpropagateCondition.COMPLETE, new ArrayList<>());
+            return;
+        }
         //TODO option and population logic
     }
 }

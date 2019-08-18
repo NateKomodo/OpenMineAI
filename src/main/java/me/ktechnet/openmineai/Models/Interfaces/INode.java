@@ -22,5 +22,5 @@ public interface INode {
 
     double distanceToGoal();
 
-    void Backpropegate(BackpropagateCondition condition);
+    void Backpropagate(BackpropagateCondition condition, ArrayList<INode> path);
 }
