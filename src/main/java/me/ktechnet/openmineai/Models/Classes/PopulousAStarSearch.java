@@ -1,5 +1,6 @@
 package me.ktechnet.openmineai.Models.Classes;
 
+import me.ktechnet.openmineai.Helpers.DistanceHelper;
 import me.ktechnet.openmineai.Models.Enums.BackpropagateCondition;
 import me.ktechnet.openmineai.Models.Enums.NodeType;
 import me.ktechnet.openmineai.Models.Interfaces.INode;
@@ -32,7 +33,7 @@ public class PopulousAStarSearch implements IPathingProvider {
     @Override
     public void StartPathfinding(Pos destination, Pos start, IPathingCallback callbackClass) {
         this.callback = callbackClass;
-        initial = new Node(NodeType.PLAYER, this, null, 0,0, start, destination);
+        initial = new Node(NodeType.PLAYER, this, null, 0,0, start, destination, (int)DistanceHelper.CalcDistance(start, destination) * 2);
     }
 
     @Override

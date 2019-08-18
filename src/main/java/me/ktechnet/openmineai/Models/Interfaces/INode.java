@@ -22,5 +22,9 @@ public interface INode {
 
     double distanceToGoal();
 
+    int TTL();
+
     void Backpropagate(BackpropagateCondition condition, ArrayList<INode> path);
+
+    void SpawnChildren();
 }
