@@ -67,12 +67,12 @@ public class Commands extends CommandBase implements IClientCommand, IPathingCal
                 PlayerControl.Jump = false;
                 PlayerControl.Sprint = false;
             }
-            else if (args[0].equals("5"))
+            else if (args[0].equals("5") && args.length == 4)
             {
                 IPathingProvider pathingProvider = new PopulousAStarSearch();
                 EntityPlayerSP p = Minecraft.getMinecraft().player;
                 Pos pos = new Pos((int)p.posX, (int)p.posY, (int)p.posZ);
-                Pos dest = new Pos(pos.x + 500, pos.y, pos.z + 10);
+                Pos dest = new Pos(Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]));
                 pre = LocalDateTime.now();
                 pathingProvider.StartPathfinding(dest, pos, this);
             }

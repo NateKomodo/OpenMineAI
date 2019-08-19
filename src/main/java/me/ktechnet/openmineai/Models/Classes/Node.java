@@ -53,12 +53,10 @@ public class Node implements INode {
         master.nodeManifest().put(myPos, this);
         //TODO check for collisions, and partial backprop
         optionProvider = new OptionProvider(this);
-        boolean isDest = myPos.IsEqual(destination);
-        Main.logger.info(isDest);
         if (type == NodeType.PLAYER) {
             //ChatMessageHandler.SendMessage("PlayerNode");
             Minecraft.getMinecraft().world.setBlockState(myPos.ConvertToBlockPos(), Blocks.REDSTONE_BLOCK.getDefaultState());
-        } else if (isDest) {
+        } else if (myPos.IsEqual(destination)) {
             //ChatMessageHandler.SendMessage("Dest");
             Minecraft.getMinecraft().world.setBlockState(myPos.ConvertToBlockPos(), Blocks.EMERALD_BLOCK.getDefaultState());
         } else {

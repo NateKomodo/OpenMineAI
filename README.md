@@ -8,7 +8,7 @@ As of 0.0.3, the following is done:
 
 - Movement
 - Breaking and placing
-- Pathfinding models and the core logic (Although option selector is not ready, nor is path following or partial paths)
+- Basic pathfinding
 - Forge integration for 1.12.2
 
 ## Todo
