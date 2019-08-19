@@ -7,6 +7,7 @@ public enum NodeType {
     ASCEND,
     DESCEND,
     ASCEND_TOWER,
+    ASCEND_BREAK_AND_TOWER,
     DESCEND_MINE,
     BRIDGE,
     PARKOUR,

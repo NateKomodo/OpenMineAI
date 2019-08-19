@@ -1,15 +1,29 @@
 package me.ktechnet.openmineai;
 
+import me.ktechnet.openmineai.Helpers.ChatMessageHandler;
 import me.ktechnet.openmineai.Helpers.PlayerControl;
 import me.ktechnet.openmineai.Helpers.PlayerMovement;
+import me.ktechnet.openmineai.Models.Classes.PopulousAStarSearch;
+import me.ktechnet.openmineai.Models.Classes.Pos;
+import me.ktechnet.openmineai.Models.Interfaces.IPathingCallback;
+import me.ktechnet.openmineai.Models.Interfaces.IPathingProvider;
+import me.ktechnet.openmineai.Models.Interfaces.IRoute;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.client.IClientCommand;
 
-public class Commands extends CommandBase implements IClientCommand {
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+
+public class Commands extends CommandBase implements IClientCommand, IPathingCallback {
+
+    LocalDateTime pre;
+
     @Override
     public boolean allowUsageWithoutPrefix(ICommandSender sender, String message)
     {
@@ -53,6 +67,15 @@ public class Commands extends CommandBase implements IClientCommand {
                 PlayerControl.Jump = false;
                 PlayerControl.Sprint = false;
             }
+            else if (args[0].equals("5"))
+            {
+                IPathingProvider pathingProvider = new PopulousAStarSearch();
+                EntityPlayerSP p = Minecraft.getMinecraft().player;
+                Pos pos = new Pos((int)p.posX, (int)p.posY, (int)p.posZ);
+                Pos dest = new Pos(pos.x + 500, pos.y, pos.z + 10);
+                pre = LocalDateTime.now();
+                pathingProvider.StartPathfinding(dest, pos, this);
+            }
         }
     }
 
@@ -60,5 +83,22 @@ public class Commands extends CommandBase implements IClientCommand {
     public int getRequiredPermissionLevel()
     {
         return 0;
+    }
+
+    @Override
+    public void completeRouteFound(IRoute route) {
+        LocalDateTime now = LocalDateTime.now();
+        long diff = ChronoUnit.MILLIS.between(pre, now);
+        ChatMessageHandler.SendMessage("Found complete route, took " + diff + "ms");
+    }
+
+    @Override
+    public void partialRouteFound(IRoute route) {
+        ChatMessageHandler.SendMessage("Found partial route");
+    }
+
+    @Override
+    public void alternateRouteFound(IRoute route) {
+        ChatMessageHandler.SendMessage("Found alternate route");
     }
 }

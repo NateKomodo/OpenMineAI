@@ -16,6 +16,8 @@ public class PopulousAStarSearch implements IPathingProvider {
 
     private INode initial;
 
+    private Pos dest;
+
     private IPathingCallback callback;
 
     private boolean hasFoundRoute = false;
@@ -31,9 +33,16 @@ public class PopulousAStarSearch implements IPathingProvider {
     }
 
     @Override
+    public Pos destination() {
+        return dest;
+    }
+
+    @Override
     public void StartPathfinding(Pos destination, Pos start, IPathingCallback callbackClass) {
+        dest = destination;
         this.callback = callbackClass;
-        initial = new Node(NodeType.PLAYER, this, null, 0,0, start, destination, (int)DistanceHelper.CalcDistance(start, destination) * 2);
+        initial = new Node(NodeType.PLAYER, this, null, 0,0, start, destination, (int)DistanceHelper.CalcDistance(start, destination) * 3);
+        initial.SpawnChildren();
     }
 
     @Override

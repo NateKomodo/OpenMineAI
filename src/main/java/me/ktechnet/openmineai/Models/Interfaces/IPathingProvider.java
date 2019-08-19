@@ -12,6 +12,8 @@ public interface IPathingProvider {
 
     INode initial();
 
+    Pos destination();
+
     void StartPathfinding(Pos destination, Pos start, IPathingCallback callbackclass);
 
     void RouteFound(BackpropagateCondition condition, ArrayList<INode> path);

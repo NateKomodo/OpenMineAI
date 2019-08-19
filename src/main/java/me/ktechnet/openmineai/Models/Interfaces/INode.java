@@ -1,5 +1,6 @@
 package me.ktechnet.openmineai.Models.Interfaces;
 
+import me.ktechnet.openmineai.Models.Classes.Pos;
 import me.ktechnet.openmineai.Models.Enums.BackpropagateCondition;
 import me.ktechnet.openmineai.Models.Enums.NodeType;
 
@@ -15,6 +16,8 @@ public interface INode {
     ArrayList<INode> children();
 
     ArrayList<IOption> options();
+
+    Pos pos();
 
     int myCost();
 
