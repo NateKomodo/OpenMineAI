@@ -3,6 +3,7 @@ package me.ktechnet.openmineai.Models.Enums;
 public enum NodeType {
     MOVE,
     STEP_UP,
+    STEP_UP_AND_BREAK,
     STEP_DOWN,
     ASCEND,
     DESCEND,

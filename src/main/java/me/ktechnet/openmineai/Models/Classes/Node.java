@@ -41,7 +41,7 @@ public class Node implements INode {
     private Node me = this;
 
 
-    Node(NodeType type, IPathingProvider master, INode parent, int currentCost, int myCost, Pos myPos, Pos destination, int TTL) {
+    Node(NodeType type, IPathingProvider master, INode parent, int currentCost, int myCost, Pos myPos, Pos destination, int TTL) { //TODO am i a replicant or not
         this.myType = type;
         this.master = master;
         this.parent = parent;

@@ -28,7 +28,7 @@ public class OptionProvider implements IOptionProvider {
     }
 
     @Override
-    public IOption EvaluatePosition(Pos pos) { //TODO parkour handler
+    public IOption EvaluatePosition(Pos pos) { //TODO parkour handler, check chunk is loaded, diagonals
         Pos parent = this.parent.pos();
         Pos entry = new Pos(parent.x, parent.y, parent.z);
         if (this.parent.parent() != null) {
@@ -39,9 +39,10 @@ public class OptionProvider implements IOptionProvider {
             return null;
         }
         Block b = Minecraft.getMinecraft().world.getBlockState(pos.ConvertToBlockPos()).getBlock();
+        ArrayList<Block> pBlocks = new PassableBlocks().blocks;
         if (pos.y - parent.y == 1) {
             //Ascend
-            if (new PassableBlocks().blocks.contains(b)) {
+            if (pBlocks.contains(b)) {
                 return new Option(CostResolve.Resolve(NodeType.ASCEND_TOWER, pos, dest), NodeType.ASCEND_TOWER, pos);
             } else if (b != Blocks.LADDER && b != Blocks.BEDROCK && !AdjacentLavaHelper.Check(pos.ConvertToBlockPos())) {
                 return new Option(CostResolve.Resolve(NodeType.ASCEND_BREAK_AND_TOWER, pos, dest), NodeType.ASCEND_BREAK_AND_TOWER, pos);
@@ -50,33 +51,38 @@ public class OptionProvider implements IOptionProvider {
             }
         } else if (pos.y - parent.y == -1) {
             //Descend
-            if (new PassableBlocks().blocks.contains(b)) {
+            if (pBlocks.contains(b)) {
                 return new Option(CostResolve.Resolve(NodeType.DESCEND, pos, dest), NodeType.DESCEND, pos);
             } else if (b != Blocks.LADDER && b != Blocks.BEDROCK && !AdjacentLavaHelper.Check(pos.ConvertToBlockPos())) {
                 return new Option(CostResolve.Resolve(NodeType.DESCEND_MINE, pos, dest), NodeType.DESCEND_MINE, pos);
             } else if (b == Blocks.LADDER) {
                 return new Option(CostResolve.Resolve(NodeType.DESCEND, pos, dest), NodeType.DESCEND, pos);
             }
-        } else { //TODO lava, step up and break for head collisions
+        } else { //TODO lava
             //Side nodes
-            if (new PassableBlocks().blocks.contains(b) && !(new PassableBlocks().blocks.contains(AdjacentBlocksHelper.Below(pos)) && new PassableBlocks().blocks.contains(AdjacentBlocksHelper.Above(pos)))) {
+            if (pBlocks.contains(b) && !(pBlocks.contains(AdjacentBlocksHelper.Below(pos)) && pBlocks.contains(AdjacentBlocksHelper.Above(pos)))) {
                 //Walk floor
                 return new Option(CostResolve.Resolve(NodeType.MOVE, pos, dest), NodeType.MOVE, pos);
-            } else if (!(new PassableBlocks().blocks.contains(b)) && new PassableBlocks().blocks.contains(AdjacentBlocksHelper.Above(pos))) {
+            } else if (!(pBlocks.contains(b)) && pBlocks.contains(AdjacentBlocksHelper.Above(pos)) && pBlocks.contains(AdjacentBlocksHelper.Above(new Pos(pos.x, pos.y + 1, pos.z)))) {
                 //Step up
                 pos.y++;
                 return new Option(CostResolve.Resolve(NodeType.STEP_UP, pos, dest), NodeType.STEP_UP, pos);
-            } else if (new PassableBlocks().blocks.contains(b) && new PassableBlocks().blocks.contains(AdjacentBlocksHelper.Below(pos)) && !(new PassableBlocks().blocks.contains(AdjacentBlocksHelper.Below(new Pos(pos.x, pos.y - 1, pos.z))))) {
+            } else if (!(pBlocks.contains(b)) && pBlocks.contains(AdjacentBlocksHelper.Above(pos)) && !(pBlocks.contains(AdjacentBlocksHelper.Above(new Pos(pos.x, pos.y + 1, pos.z))))) {
+                //Step up and break
+                pos.y++;
+                return new Option(CostResolve.Resolve(NodeType.STEP_UP_AND_BREAK, pos, dest), NodeType.STEP_UP_AND_BREAK, pos);
+            }
+            else if (pBlocks.contains(b) && pBlocks.contains(AdjacentBlocksHelper.Below(pos)) && !(pBlocks.contains(AdjacentBlocksHelper.Below(new Pos(pos.x, pos.y - 1, pos.z))))) {
                 //Step down
                 pos.y--;
                 return new Option(CostResolve.Resolve(NodeType.STEP_DOWN, pos, dest), NodeType.STEP_DOWN, pos);
-            } else if (!(new PassableBlocks().blocks.contains(b)) && !(new PassableBlocks().blocks.contains(AdjacentBlocksHelper.Above(pos))) && !AdjacentLavaHelper.Check(pos.ConvertToBlockPos())) {
+            } else if (!(pBlocks.contains(b)) && !(pBlocks.contains(AdjacentBlocksHelper.Above(pos))) && !AdjacentLavaHelper.Check(pos.ConvertToBlockPos())) {
                 //Break and move into
                 return new Option(CostResolve.Resolve(NodeType.BREAK_AND_MOVE, pos, dest), NodeType.BREAK_AND_MOVE, pos);
-            } else if (new PassableBlocks().blocks.contains(b) && !(new PassableBlocks().blocks.contains(AdjacentBlocksHelper.Above(pos))) && !AdjacentLavaHelper.Check(pos.ConvertToBlockPos())) {
+            } else if (pBlocks.contains(b) && !(pBlocks.contains(AdjacentBlocksHelper.Above(pos))) && !AdjacentLavaHelper.Check(pos.ConvertToBlockPos())) {
                 //Break and move into
                 return new Option(CostResolve.Resolve(NodeType.BREAK_AND_MOVE, pos, dest), NodeType.BREAK_AND_MOVE, pos);
-            } else if (new PassableBlocks().blocks.contains(b) && new PassableBlocks().blocks.contains(AdjacentBlocksHelper.Below(pos)) && new PassableBlocks().blocks.contains(AdjacentBlocksHelper.Below(new Pos(pos.x, pos.y - 1, pos.z)))) {
+            } else if (pBlocks.contains(b) && pBlocks.contains(AdjacentBlocksHelper.Below(pos)) && pBlocks.contains(AdjacentBlocksHelper.Below(new Pos(pos.x, pos.y - 1, pos.z)))) {
                 //TODO choose decent node or bridge
             }
         }
