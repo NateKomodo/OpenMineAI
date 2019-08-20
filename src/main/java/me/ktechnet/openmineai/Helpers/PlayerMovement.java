@@ -20,13 +20,7 @@ public class PlayerMovement extends MovementInput {
         if (PlayerControl.StrafeRight || Minecraft.getMinecraft().gameSettings.keyBindRight.isKeyDown()) {
             this.moveStrafe--;
         }
-        if (PlayerControl.Jump || Minecraft.getMinecraft().gameSettings.keyBindJump.isKeyDown()) {
-            this.jump = true;
-        }
-        else
-        {
-            this.jump = false;
-        }
+        this.jump = PlayerControl.Jump || Minecraft.getMinecraft().gameSettings.keyBindJump.isKeyDown();
         if (PlayerControl.Sneak || Minecraft.getMinecraft().gameSettings.keyBindSneak.isKeyDown()) {
             this.sneak = true;
             this.moveStrafe *= 0.3D;
