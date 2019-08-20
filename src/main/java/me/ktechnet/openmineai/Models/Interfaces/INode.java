@@ -19,9 +19,9 @@ public interface INode {
 
     Pos pos();
 
-    int myCost();
+    double myCost();
 
-    int costToMe();
+    double costToMe();
 
     double distanceToGoal();
 

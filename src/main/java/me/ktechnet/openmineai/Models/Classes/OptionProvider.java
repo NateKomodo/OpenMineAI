@@ -1,20 +1,13 @@
 package me.ktechnet.openmineai.Models.Classes;
 
-import me.ktechnet.openmineai.Helpers.AdjacentBlocksHelper;
-import me.ktechnet.openmineai.Helpers.AdjacentLavaHelper;
 import me.ktechnet.openmineai.Helpers.BrokenBlocksHelper;
 import me.ktechnet.openmineai.Helpers.NodeTypeRules;
-import me.ktechnet.openmineai.Models.ConfigData.AvoidBlocks;
 import me.ktechnet.openmineai.Models.ConfigData.CostResolve;
-import me.ktechnet.openmineai.Models.ConfigData.PassableBlocks;
 import me.ktechnet.openmineai.Models.Enums.NodeType;
 import me.ktechnet.openmineai.Models.Interfaces.INode;
 import me.ktechnet.openmineai.Models.Interfaces.IOption;
 import me.ktechnet.openmineai.Models.Interfaces.IOptionProvider;
 import me.ktechnet.openmineai.Models.Interfaces.IRuleEvaluator;
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.init.Blocks;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,7 +25,7 @@ public class OptionProvider implements IOptionProvider {
     }
 
     @Override
-    public IOption EvaluatePosition(Pos pos) { //TODO parkour handler, check chunk is loaded, diagonals
+    public IOption EvaluatePosition(Pos pos) { //TODO parkour handler, check chunk is loaded, diagonals, gravity blocks, water, fire
         //Get data from 3 previous nodes as these are the most likely to effect us
         Pos parent = this.parent.pos();
         Pos grandparent = this.parent.pos();
@@ -54,7 +47,7 @@ public class OptionProvider implements IOptionProvider {
         }
 
         NodeTypeRules r = new NodeTypeRules();
-        IRuleEvaluator rev = new RuleEvaluator(Broken);
+        IRuleEvaluator rev = new RuleEvaluator(Broken, parent);
 
         if (pos.y - parent.y == 1) {
             //Ascend
@@ -92,11 +85,14 @@ public class OptionProvider implements IOptionProvider {
                 }
                 return new Option(CostResolve.Resolve(NodeType.STEP_UP, pos, dest), NodeType.STEP_UP, pos);
 
-            //} else if (rev.Evaluate(pos, r.GetStepUpAndBreak())) {
-            //    //Step up and break
-            //    pos.y++;
-            //    return new Option(CostResolve.Resolve(NodeType.STEP_UP_AND_BREAK, pos, dest), NodeType.STEP_UP_AND_BREAK, pos);
-            //
+            } else if (rev.Evaluate(pos, r.GetStepUpAndBreak())) {
+                //Step up and break
+                pos.y++;
+                if (pos.IsEqual(entry) || pos.IsEqual(this.parent.pos()) || pos.IsEqual(grandparent)) { //Check that we didnt just step up into an old pos. Also checks grandparent to prevent loop
+                    return null;
+                }
+                return new Option(CostResolve.Resolve(NodeType.STEP_UP_AND_BREAK, pos, dest), NodeType.STEP_UP_AND_BREAK, pos);
+
             } else if (rev.Evaluate(pos, r.GetStepDown())) {
                 //Step down
                 pos.y--;
@@ -105,11 +101,14 @@ public class OptionProvider implements IOptionProvider {
                 }
                 return new Option(CostResolve.Resolve(NodeType.STEP_DOWN, pos, dest), NodeType.STEP_DOWN, pos);
 
-            //} else if (rev.Evaluate(pos, r.GetStepDownAndBreak())) {
-            //    //Step down and break
-            //    pos.y--;
-            //    return new Option(CostResolve.Resolve(NodeType.STEP_DOWN_AND_BREAK, pos, dest), NodeType.STEP_DOWN_AND_BREAK, pos);
-            //
+            } else if (rev.Evaluate(pos, r.GetStepDownAndBreak())) {
+                //Step down and break
+                pos.y--;
+                if (pos.IsEqual(entry) || pos.IsEqual(this.parent.pos()) || pos.IsEqual(grandparent)) { //Check that we didnt just step up into an old pos. Also checks grandparent to prevent loop
+                    return null;
+                }
+                return new Option(CostResolve.Resolve(NodeType.STEP_DOWN_AND_BREAK, pos, dest), NodeType.STEP_DOWN_AND_BREAK, pos);
+
             } else if (rev.Evaluate(pos, r.GetBreakAndMove())) {
                 //Break and move into
                 return new Option(CostResolve.Resolve(NodeType.BREAK_AND_MOVE, pos, dest), NodeType.BREAK_AND_MOVE, pos);

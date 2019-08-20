@@ -5,6 +5,7 @@ import me.ktechnet.openmineai.Main;
 import me.ktechnet.openmineai.Models.ConfigData.AvoidBlocks;
 import me.ktechnet.openmineai.Models.ConfigData.PassableBlocks;
 import me.ktechnet.openmineai.Models.Enums.Rules;
+import me.ktechnet.openmineai.Models.Interfaces.INode;
 import me.ktechnet.openmineai.Models.Interfaces.IRule;
 import me.ktechnet.openmineai.Models.Interfaces.IRuleEvaluator;
 import net.minecraft.block.Block;
@@ -16,14 +17,19 @@ import java.util.Map;
 
 public class RuleEvaluator implements IRuleEvaluator {
     private ArrayList<Pos> brokenBlocks;
+    private Pos parent;
 
-    public RuleEvaluator(ArrayList<Pos> brokenBlocks) {
+    public RuleEvaluator(ArrayList<Pos> brokenBlocks, Pos parent) {
         this.brokenBlocks = brokenBlocks;
+        this.parent = parent;
     }
     @Override
     public boolean Evaluate(Pos pos, IRule rule) {
         ArrayList<Block> pBlocks = new PassableBlocks().blocks;
         ArrayList<Block> aBlocks = new AvoidBlocks().blocks;
+        if (rule.ruleMeta().RequireHeadSpace) {
+            if (!pBlocks.contains(FetchBlock(new Pos(parent.x, parent.y + 2, parent.z)))) return false;
+        }
         for (Map.Entry entry : rule.ruleStack().entrySet()) {
             Pos inStack = new Pos(pos.x, pos.y + (int)entry.getKey(), pos.z);
             Block b = FetchBlock(inStack);

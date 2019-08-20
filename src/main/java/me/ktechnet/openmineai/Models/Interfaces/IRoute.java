@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public interface IRoute {
     ArrayList<INode> path();
 
-    int cost();
+    double cost();
 
     BackpropagateCondition type();
 }

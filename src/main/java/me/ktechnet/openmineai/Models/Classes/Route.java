@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 public class Route implements IRoute {
     private ArrayList<INode> path;
 
-    private int cost;
+    private double cost;
 
     private BackpropagateCondition type;
 
@@ -22,7 +22,7 @@ public class Route implements IRoute {
     }
 
     @Override
-    public int cost() {
+    public double cost() {
         return cost;
     }
 
@@ -35,6 +35,6 @@ public class Route implements IRoute {
         Collections.reverse(path);
         this.path = path;
         this.type = condition;
-        this.cost = path.stream().mapToInt(INode::myCost).sum();
+        this.cost = path.stream().mapToDouble(INode::myCost).sum();
     }
 }

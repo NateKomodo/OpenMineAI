@@ -41,7 +41,7 @@ public class PopulousAStarSearch implements IPathingProvider {
     public void StartPathfinding(Pos destination, Pos start, IPathingCallback callbackClass) { //TODO fix jankyness of it going all of the place
         dest = destination;
         this.callback = callbackClass;
-        initial = new Node(NodeType.PLAYER, this, null, 0,0, start, destination, ((int)DistanceHelper.CalcDistance(start, destination) + 10) * 3);
+        initial = new Node(NodeType.PLAYER, this, null, 0,0, start, destination, ((int)DistanceHelper.CalcDistance(start, destination) + 10) * 4);
         initial.SpawnChildren();
     }
 

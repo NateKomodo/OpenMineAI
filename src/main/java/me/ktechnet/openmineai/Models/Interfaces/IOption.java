@@ -4,7 +4,7 @@ import me.ktechnet.openmineai.Models.Classes.Pos;
 import me.ktechnet.openmineai.Models.Enums.NodeType;
 
 public interface IOption {
-    int cost();
+    double cost();
 
     NodeType typeCandidate();
 

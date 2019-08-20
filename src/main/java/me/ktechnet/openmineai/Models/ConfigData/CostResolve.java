@@ -5,8 +5,8 @@ import me.ktechnet.openmineai.Models.Classes.Pos;
 import me.ktechnet.openmineai.Models.Enums.NodeType;
 
 public class CostResolve {
-    public static int Resolve(NodeType type, Pos pos, Pos dest) {
-        int dist = (int)DistanceHelper.CalcDistance(pos, dest);
+    public static double Resolve(NodeType type, Pos pos, Pos dest) {
+        double dist = DistanceHelper.CalcDistance(pos, dest);
         switch (type) {
             case MOVE:
             case PLAYER:
@@ -21,13 +21,14 @@ public class CostResolve {
             case BRIDGE_AND_PARKOUR:
             case ASCEND_TOWER:
                 return 2 + dist; //Advanced movement and quick actions
-            case BREAK:
             case DESCEND_MINE:
-            case BREAK_AND_MOVE:
             case ASCEND_BREAK_AND_TOWER:
+            case BREAK:
+                return 3 + dist; //Low profile 1 block breaking
             case STEP_UP_AND_BREAK:
             case STEP_DOWN_AND_BREAK:
-                return 3 + dist; //Lengthy process of breaking stuffs
+            case BREAK_AND_MOVE:
+                return 4 + dist; //Lengthy process of breaking 2 or more blocks
             default:
                 return 99;
         }

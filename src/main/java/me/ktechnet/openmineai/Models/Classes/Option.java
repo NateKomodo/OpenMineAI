@@ -4,14 +4,14 @@ import me.ktechnet.openmineai.Models.Enums.NodeType;
 import me.ktechnet.openmineai.Models.Interfaces.IOption;
 
 public class Option implements IOption {
-    private int cost;
+    private double cost;
 
     private NodeType typeCandidate;
 
     private Pos position;
 
     @Override
-    public int cost() {
+    public double cost() {
         return cost;
     }
 
@@ -25,7 +25,7 @@ public class Option implements IOption {
         return position;
     }
 
-    public Option(int cost, NodeType candidate, Pos position) {
+    public Option(double cost, NodeType candidate, Pos position) {
         this.cost = cost;
         this.typeCandidate = candidate;
         this.position = position;

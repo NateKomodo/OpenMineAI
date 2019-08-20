@@ -26,9 +26,9 @@ public class Node implements INode {
 
     private ArrayList<IOption> options = new ArrayList<>();
 
-    private int costToMe;
+    private double costToMe;
 
-    private int myCost;
+    private double myCost;
 
     private int TTL;
 
@@ -41,7 +41,7 @@ public class Node implements INode {
     private Node me = this;
 
 
-    Node(NodeType type, IPathingProvider master, INode parent, int currentCost, int myCost, Pos myPos, Pos destination, int TTL) { //TODO am i a replicant or not, fix adj to destination but solid block issue
+    Node(NodeType type, IPathingProvider master, INode parent, double currentCost, double myCost, Pos myPos, Pos destination, int TTL) { //TODO am i a replicant or not, fix adj to destination but solid block issue
         this.myType = type;
         this.master = master;
         this.parent = parent;
@@ -88,12 +88,12 @@ public class Node implements INode {
     }
 
     @Override
-    public int myCost() {
+    public double myCost() {
         return myCost;
     }
 
     @Override
-    public int costToMe() {
+    public double costToMe() {
         return costToMe;
     }
 
@@ -133,7 +133,7 @@ public class Node implements INode {
         Collections.sort(options, new Comparator<IOption>() {
             @Override
             public int compare(IOption o1, IOption o2) {
-                return Integer.compare(o1.cost(), o2.cost());
+                return Double.compare(o1.cost(), o2.cost());
             }
         });
         if (!(options.size() > 0)) {
@@ -145,6 +145,9 @@ public class Node implements INode {
             Main.logger.info("Candidate: " + opt.typeCandidate() + " Cost: " + opt.cost());
         }
         IOption option1 = options.get(0);
+        if (options.size() == 2) { //TODO actually get around to implementing antpathing so we dont have to do this
+            if (options.get(0).typeCandidate() == NodeType.ASCEND_TOWER && options.get(1).typeCandidate() == NodeType.DESCEND_MINE) option1 = options.get(1);
+        }
         //IOption option2 = options.get(1); Note: make sure there are sufficient choices
         //IOption option3 = options.get(2);
         //Runnable runnable = new Runnable() {

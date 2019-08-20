@@ -14,6 +14,7 @@ public class NodeTypeRules {
     }
     public IRule GetStepUp() {
         IRule rule = new Rule();
+        rule.ruleMeta().RequireHeadSpace = true;
         rule.PushToStack(2, Rules.PASSABLE);
         rule.PushToStack(1, Rules.PASSABLE);
         rule.PushToStack(0, Rules.IMPASSABLE_NOT_LAVA);
