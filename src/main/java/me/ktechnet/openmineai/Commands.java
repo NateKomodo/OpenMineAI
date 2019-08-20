@@ -5,6 +5,8 @@ import me.ktechnet.openmineai.Helpers.PlayerControl;
 import me.ktechnet.openmineai.Helpers.PlayerMovement;
 import me.ktechnet.openmineai.Models.Classes.PopulousAStarSearch;
 import me.ktechnet.openmineai.Models.Classes.Pos;
+import me.ktechnet.openmineai.Models.Enums.NodeType;
+import me.ktechnet.openmineai.Models.Interfaces.INode;
 import me.ktechnet.openmineai.Models.Interfaces.IPathingCallback;
 import me.ktechnet.openmineai.Models.Interfaces.IPathingProvider;
 import me.ktechnet.openmineai.Models.Interfaces.IRoute;
@@ -14,6 +16,7 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.client.IClientCommand;
 
@@ -90,6 +93,33 @@ public class Commands extends CommandBase implements IClientCommand, IPathingCal
         LocalDateTime now = LocalDateTime.now();
         long diff = ChronoUnit.MILLIS.between(pre, now);
         ChatMessageHandler.SendMessage("Found complete route, took " + diff + "ms");
+        for (INode node : route.path()) {
+            if (node.pos().IsEqual(node.master().destination())) {
+                Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.EMERALD_BLOCK.getDefaultState());
+                continue;
+            }
+            switch (node.myType()) {
+                case PLAYER:
+                    Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.REDSTONE_BLOCK.getDefaultState());
+                    break;
+                case MOVE:
+                case ASCEND_TOWER:
+                    Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.COBBLESTONE.getDefaultState());
+                    break;
+                case STEP_UP:
+                    Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.LAPIS_BLOCK.getDefaultState());
+                    break;
+                case STEP_UP_AND_BREAK:
+                case DESCEND_MINE:
+                case ASCEND_BREAK_AND_TOWER:
+                case BREAK_AND_MOVE:
+                    Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.BRICK_BLOCK.getDefaultState());
+                    break;
+                case STEP_DOWN:
+                    Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.YELLOW_GLAZED_TERRACOTTA.getDefaultState());
+                    break;
+            }
+        }
     }
 
     @Override

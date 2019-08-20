@@ -6,4 +6,6 @@ public interface IPathingCallback {
     void partialRouteFound(IRoute route);
 
     void alternateRouteFound(IRoute route);
+
+    //TODO failed to find path
 }

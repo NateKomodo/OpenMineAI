@@ -12,21 +12,22 @@ public class CostResolve {
             case PLAYER:
             case DESCEND:
             case ASCEND:
-                return 1 + dist;
             case STEP_UP:
             case STEP_DOWN:
-                return 2 + dist;
+                return 1 + dist; //Basic movement
+            case DROP:
             case BRIDGE:
             case PARKOUR:
             case BRIDGE_AND_PARKOUR:
             case ASCEND_TOWER:
-                return 3 + dist;
+                return 2 + dist; //Advanced movement and quick actions
             case BREAK:
             case DESCEND_MINE:
             case BREAK_AND_MOVE:
             case ASCEND_BREAK_AND_TOWER:
             case STEP_UP_AND_BREAK:
-                return 4 + dist;
+            case STEP_DOWN_AND_BREAK:
+                return 3 + dist; //Lengthy process of breaking stuffs
             default:
                 return 99;
         }

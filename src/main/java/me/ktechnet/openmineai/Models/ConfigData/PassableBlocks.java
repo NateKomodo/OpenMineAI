@@ -12,5 +12,6 @@ public class PassableBlocks {
         blocks.add(Blocks.TALLGRASS);
         blocks.add(Blocks.RED_FLOWER);
         blocks.add(Blocks.YELLOW_FLOWER);
+        blocks.add(Blocks.DEADBUSH);
     }
 }

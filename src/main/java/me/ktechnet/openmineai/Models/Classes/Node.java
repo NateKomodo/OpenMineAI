@@ -41,7 +41,7 @@ public class Node implements INode {
     private Node me = this;
 
 
-    Node(NodeType type, IPathingProvider master, INode parent, int currentCost, int myCost, Pos myPos, Pos destination, int TTL) { //TODO am i a replicant or not
+    Node(NodeType type, IPathingProvider master, INode parent, int currentCost, int myCost, Pos myPos, Pos destination, int TTL) { //TODO am i a replicant or not, fix adj to destination but solid block issue
         this.myType = type;
         this.master = master;
         this.parent = parent;
@@ -53,24 +53,7 @@ public class Node implements INode {
         master.nodeManifest().put(myPos, this);
         //TODO check for collisions, and partial backprop
         optionProvider = new OptionProvider(this);
-        if (type == NodeType.PLAYER) {
-            //ChatMessageHandler.SendMessage("PlayerNode");
-            Minecraft.getMinecraft().world.setBlockState(myPos.ConvertToBlockPos(), Blocks.REDSTONE_BLOCK.getDefaultState());
-        } else if (myPos.IsEqual(destination)) {
-            //ChatMessageHandler.SendMessage("Dest");
-            Minecraft.getMinecraft().world.setBlockState(myPos.ConvertToBlockPos(), Blocks.EMERALD_BLOCK.getDefaultState());
-        } else {
-            //ChatMessageHandler.SendMessage("Node, proxim to dest: " + DistanceHelper.CalcDistance(myPos, master.destination()) + " TTL: " + TTL + " myPos: " + myPos.x + "," + myPos.y + "," + myPos.z+ " dest: " + destination.x + "," + destination.y + "," + destination.z + " Type: " + myType);
-            switch (myType)
-            {
-                case STEP_DOWN:
-                    Minecraft.getMinecraft().world.setBlockState(myPos.ConvertToBlockPos(), Blocks.LAPIS_BLOCK.getDefaultState());
-                case STEP_UP:
-                    Minecraft.getMinecraft().world.setBlockState(myPos.ConvertToBlockPos(), Blocks.YELLOW_GLAZED_TERRACOTTA.getDefaultState());
-                case MOVE:
-                    Minecraft.getMinecraft().world.setBlockState(myPos.ConvertToBlockPos(), Blocks.COBBLESTONE.getDefaultState());
-            }
-        }
+        Main.logger.info("Node, proxim to dest: " + DistanceHelper.CalcDistance(myPos, master.destination()) + " TTL: " + TTL + " myPos: " + myPos.x + "," + myPos.y + "," + myPos.z+ " dest: " + destination.x + "," + destination.y + "," + destination.z + " Type: " + myType);
     }
 
 
@@ -131,6 +114,7 @@ public class Node implements INode {
             path.add(this);
             parent.Backpropagate(condition, path);
         } else {
+            path.add(this);
             master.RouteFound(condition, path);
         }
     }
@@ -152,8 +136,14 @@ public class Node implements INode {
                 return Integer.compare(o1.cost(), o2.cost());
             }
         });
-        if (!(options.size() > 0)) return;
+        if (!(options.size() > 0)) {
+            ChatMessageHandler.SendMessage("No options found.");
+            return;
+        }
         if (options.get(0).cost() > options.get(options.size() - 1).cost()) Collections.reverse(options);
+        for (IOption opt : options) {
+            Main.logger.info("Candidate: " + opt.typeCandidate() + " Cost: " + opt.cost());
+        }
         IOption option1 = options.get(0);
         //IOption option2 = options.get(1); Note: make sure there are sufficient choices
         //IOption option3 = options.get(2);
@@ -175,7 +165,7 @@ public class Node implements INode {
         //    }
         //};
         //new Thread(runnable2).start();
-        Node node = new Node(option1.typeCandidate(), master, me, costToMe, option1.cost(), option1.position(), destination, TTL - 1);
+        Node node = new Node(option1.typeCandidate(), master, me, costToMe + option1.cost(), option1.cost(), option1.position(), destination, TTL - 1);
         children.add(node);
         node.SpawnChildren();
     }
