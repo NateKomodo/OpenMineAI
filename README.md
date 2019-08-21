@@ -4,7 +4,7 @@ OpenMineAI is a work-in-progress Minecraft pathfinder and automation tool, with 
 
 ## Current features
 
-As of 0.0.6, the following is done:
+As of 0.1.2, the following is done:
 
 - Movement
 - Breaking and placing
@@ -13,11 +13,11 @@ As of 0.0.6, the following is done:
 
 ## Todo
 
-- Finish pathing selection
+- Finish pathing selection (Parkour + optimizations)
 - Path partials/segment pathing
 - Switch to alternate paths
 - Path merging (Such as when a low cost route meets a longer, but higher cost route and switches base)
-- Bidirectional search
+- Antpathing
 - Following paths
 - Chat commands
 - Combat
