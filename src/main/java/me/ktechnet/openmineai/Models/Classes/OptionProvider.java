@@ -3,12 +3,20 @@ package me.ktechnet.openmineai.Models.Classes;
 import me.ktechnet.openmineai.Helpers.BrokenBlocksHelper;
 import me.ktechnet.openmineai.Helpers.ChatMessageHandler;
 import me.ktechnet.openmineai.Helpers.NodeTypeRules;
+import me.ktechnet.openmineai.Helpers.PlacedBlocksHelper;
 import me.ktechnet.openmineai.Models.ConfigData.CostResolve;
 import me.ktechnet.openmineai.Models.Enums.NodeType;
 import me.ktechnet.openmineai.Models.Interfaces.INode;
 import me.ktechnet.openmineai.Models.Interfaces.IOption;
 import me.ktechnet.openmineai.Models.Interfaces.IOptionProvider;
 import me.ktechnet.openmineai.Models.Interfaces.IRuleEvaluator;
+import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,8 +25,39 @@ import java.util.Comparator;
 public class OptionProvider implements IOptionProvider {
     private INode parent;
 
+    private NodeTypeRules r;
+
+    private IRuleEvaluator rev;
+
+    private Pos parentPos;
+
+    private Pos grandparent;
+
+    private Pos entry;
+
+    private Pos dest;
+
     public OptionProvider(INode parent) {
         this.parent = parent;
+        //Get data from 3 previous nodes as these are the most likely to effect us
+        this.parentPos = this.parent.pos();
+        this.grandparent = this.parent.pos();
+        this.entry = new Pos(parentPos.x, parentPos.y, parentPos.z);
+        ArrayList<Pos> Broken = new BrokenBlocksHelper().Broken(this.parent.myType(), this.parent.pos());
+        ArrayList<Pos> Placed = new PlacedBlocksHelper().Placed(this.parent.myType(), this.parent.pos());
+        if (this.parent.parent() != null) {
+            entry = this.parent.parent().pos();
+            Broken.addAll(new BrokenBlocksHelper().Broken(this.parent.parent().myType(), this.parent.parent().pos()));
+            Placed.addAll(new PlacedBlocksHelper().Placed(this.parent.parent().myType(), this.parent.parent().pos()));
+            if (this.parent.parent().parent() != null) {
+                grandparent = this.parent.parent().parent().pos();
+                Broken.addAll(new BrokenBlocksHelper().Broken(this.parent.parent().parent().myType(), this.parent.parent().parent().pos()));
+                Placed.addAll(new PlacedBlocksHelper().Placed(this.parent.parent().parent().myType(), this.parent.parent().parent().pos()));
+            }
+        }
+        this.r = new NodeTypeRules();
+        this.rev = new RuleEvaluator(Broken, Placed, parentPos);
+        this.dest = this.parent.master().destination();
     }
 
     @Override
@@ -27,29 +66,10 @@ public class OptionProvider implements IOptionProvider {
     }
 
     @Override
-    public IOption EvaluatePosition(Pos pos, boolean diagonal) { //TODO parkour handler, check chunk is loaded, gravity blocks, water, fire
-        //Get data from 3 previous nodes as these are the most likely to effect us
-        Pos parent = this.parent.pos();
-        Pos grandparent = this.parent.pos();
-        Pos entry = new Pos(parent.x, parent.y, parent.z);
-        ArrayList<Pos> Broken = new BrokenBlocksHelper().Broken(this.parent.myType(), this.parent.pos());
-        if (this.parent.parent() != null) {
-            entry = this.parent.parent().pos();
-            Broken.addAll(new BrokenBlocksHelper().Broken(this.parent.parent().myType(), this.parent.parent().pos()));
-            if (this.parent.parent().parent() != null) {
-                grandparent = this.parent.parent().parent().pos();
-                Broken.addAll(new BrokenBlocksHelper().Broken(this.parent.parent().myType(), this.parent.parent().pos()));
-            }
-        }
-
-        Pos dest = this.parent.master().destination();
-
+    public IOption EvaluatePosition(Pos pos, boolean diagonal) { //TODO parkour handler, check chunk is loaded, gravity blocks, water, fire, doors/interactable
         if (pos.IsEqual(entry) || pos.IsEqual(this.parent.pos()) || pos.IsEqual(grandparent)) {
             return null;
         }
-
-        NodeTypeRules r = new NodeTypeRules();
-        IRuleEvaluator rev = new RuleEvaluator(Broken, parent);
 
         ArrayList<IOption> candidates = new ArrayList<>();
 
@@ -57,7 +77,7 @@ public class OptionProvider implements IOptionProvider {
             return new Option(0, NodeType.DESTINATION, pos);
         }
 
-        if (pos.y - parent.y == 1) {
+        if (pos.y - parentPos.y == 1) {
             //Ascend
             if (rev.Evaluate(pos, r.GetBreakAndTower())) {
                 candidates.add(new Option(CostResolve.Resolve(NodeType.ASCEND_BREAK_AND_TOWER, pos, dest), NodeType.ASCEND_BREAK_AND_TOWER, pos));
@@ -68,10 +88,9 @@ public class OptionProvider implements IOptionProvider {
             } else if (rev.Evaluate(pos, r.GetLadder())) {
                 candidates.add(new Option(CostResolve.Resolve(NodeType.ASCEND, pos, dest), NodeType.ASCEND, pos));
             }
-        } else if (pos.y - parent.y == -1) {
+        } else if (pos.y - parentPos.y == -1) {
             //Descend
             if (rev.Evaluate(pos, r.GetRareDrop())) { //Should never be encountered, but still going to put a drop node in here just in case
-                ChatMessageHandler.SendMessage("Somehow, DROP was encountered");
                 candidates.add(new Option(CostResolve.Resolve(NodeType.DROP, pos, dest), NodeType.DROP, pos));
 
             } else if (rev.Evaluate(pos, r.GetDescentMine())) {
@@ -122,10 +141,18 @@ public class OptionProvider implements IOptionProvider {
                 }
                 candidates.add(new Option(CostResolve.Resolve(NodeType.STEP_DOWN_AND_BREAK, pos, dest), NodeType.STEP_DOWN_AND_BREAK, pos));
 
-            } else if (rev.Evaluate(pos, r.GetDecentOrParkourOrBridge())) {
-                //TODO choose drop node or bridge, or parkour
+            } else if (rev.Evaluate(pos, r.GetDecentOrParkourOrBridge(diagonal))) {
+                if (!diagonal) candidates.add(new Option(CostResolve.Resolve(NodeType.BRIDGE, pos, dest), NodeType.BRIDGE, pos));
+                BlockPos bottom = GetBlockBeneath(pos);
+                if (bottom != null) {
+                    int dist = pos.y - bottom.getY();
+                    Block b = Minecraft.getMinecraft().world.getBlockState(bottom).getBlock();
+                    if (dist <= 10 || (b == Blocks.WATER || b == Blocks.FLOWING_WATER) || parent.master().settings().hasWaterBucket)
+                        candidates.add(new Option(CostResolve.Resolve(NodeType.DROP, new Pos(bottom.getX(), bottom.getY() + 1, bottom.getZ()), dest), NodeType.DROP, pos));
+                }
+                //TODO parkour
                 //Update: as we now eval all, we can split these up
-                //Note: as previous node will be on a block, this node will always be in the air, and therefore the executor must know what to do before starting to move
+                //Note: Parkour nodes will always be in the air, and the executor starts executing them while on the previous solid block
             }
         }
         if (candidates.size() > 0) {
@@ -144,10 +171,30 @@ public class OptionProvider implements IOptionProvider {
 
     @Override
     public ArrayList<IOption> EvaluateOptions() {
-        //TODO modify position due to previous node being drop
         Pos pos = parent.pos();
         ArrayList<IOption> list = new ArrayList<>();
-        if (!(parent.myType() == NodeType.PARKOUR || parent.myType() == NodeType.BRIDGE_AND_PARKOUR)) { //TODO || parent.myType() == NodeType.DROP
+        if (!(parent.myType() == NodeType.PARKOUR || parent.myType() == NodeType.DROP)) {
+            list.add(EvaluatePosition(new Pos(pos.x + 1, pos.y, pos.z), false));
+            list.add(EvaluatePosition(new Pos(pos.x + -1, pos.y, pos.z), false));
+            list.add(EvaluatePosition(new Pos(pos.x, pos.y + 1, pos.z), false));
+            list.add(EvaluatePosition(new Pos(pos.x, pos.y - 1, pos.z), false));
+            list.add(EvaluatePosition(new Pos(pos.x, pos.y, pos.z + 1), false));
+            list.add(EvaluatePosition(new Pos(pos.x, pos.y, pos.z - 1), false));
+            list.add(EvaluatePosition(new Pos(pos.x + 1, pos.y, pos.z + 1), true));
+            list.add(EvaluatePosition(new Pos(pos.x + 1, pos.y, pos.z - 1), true));
+            list.add(EvaluatePosition(new Pos(pos.x - 1, pos.y, pos.z + 1), true));
+            list.add(EvaluatePosition(new Pos(pos.x - 1, pos.y, pos.z - 1), true));
+        } else if (parent.myType() == NodeType.DROP) {
+            BlockPos bPos = GetBlockBeneath(pos);
+            pos = new Pos(bPos.getX(), bPos.getY() + 1, bPos.getZ());
+            if (pos.IsEqual(parent.master().destination())) {
+                Pos finalPos = pos;
+                return new ArrayList<IOption>() {
+                    {
+                        add(new Option(0, NodeType.DESTINATION, finalPos));
+                    }
+                };
+            }
             list.add(EvaluatePosition(new Pos(pos.x + 1, pos.y, pos.z), false));
             list.add(EvaluatePosition(new Pos(pos.x + -1, pos.y, pos.z), false));
             list.add(EvaluatePosition(new Pos(pos.x, pos.y + 1, pos.z), false));
@@ -159,9 +206,19 @@ public class OptionProvider implements IOptionProvider {
             list.add(EvaluatePosition(new Pos(pos.x - 1, pos.y, pos.z + 1), true));
             list.add(EvaluatePosition(new Pos(pos.x - 1, pos.y, pos.z - 1), true));
         } else {
-            //TODO get blocks to parkour to or the drop location
+            //TODO parkour
         }
         list.removeAll(Collections.singleton(null));
         return list;
+    }
+
+    private BlockPos GetBlockBeneath(Pos start)
+    {
+        for (int i = start.y; i >= 0; i--) {
+            BlockPos bPos = new BlockPos(start.x, i, start.z);
+            Block b = Minecraft.getMinecraft().world.getBlockState(bPos).getBlock();
+            if (b != Blocks.AIR) return bPos;
+        }
+        return null;
     }
 }

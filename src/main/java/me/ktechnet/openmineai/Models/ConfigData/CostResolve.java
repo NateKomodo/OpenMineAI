@@ -11,7 +11,7 @@ import java.util.HashMap;
 
 public class CostResolve {
     public static double Resolve(NodeType type, Pos pos, Pos dest) {
-        return DynamicResolve(type, pos, dest);
+        return DynamicResolve(type, pos, dest); //Im lazy and cant be bothered to change all calls to this to dynamic
         //double dist = DistanceHelper.CalcDistance(pos, dest);
         //switch (type) {
         //    case MOVE:
@@ -40,7 +40,7 @@ public class CostResolve {
         //}
     }
 
-    public static double DynamicResolve(NodeType type, Pos pos, Pos dest) {
+    private static double DynamicResolve(NodeType type, Pos pos, Pos dest) {
         DistComponent comp = DistanceHelper.GetComponents(pos, dest);
         double nClass = ClassResolve(type);
         if (comp.h > comp.v) { //Bias to h

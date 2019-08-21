@@ -14,7 +14,6 @@ public enum NodeType {
     DROP,
     BRIDGE,
     PARKOUR,
-    BRIDGE_AND_PARKOUR,
     BREAK,
     BREAK_AND_MOVE,
     PLAYER,

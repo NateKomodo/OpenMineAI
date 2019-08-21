@@ -17,16 +17,18 @@ import java.util.Map;
 
 public class RuleEvaluator implements IRuleEvaluator {
     private ArrayList<Pos> brokenBlocks;
+    private ArrayList<Pos> placedBlocks;
     private Pos parent;
 
-    public RuleEvaluator(ArrayList<Pos> brokenBlocks, Pos parent) {
+    public RuleEvaluator(ArrayList<Pos> brokenBlocks, ArrayList<Pos> placedBlocks, Pos parent) {
         this.brokenBlocks = brokenBlocks;
+        this.placedBlocks = placedBlocks;
         this.parent = parent;
     }
     @Override
     public boolean Evaluate(Pos pos, IRule rule) {
-        ArrayList<Block> pBlocks = new PassableBlocks().blocks;
-        ArrayList<Block> aBlocks = new AvoidBlocks().blocks;
+        ArrayList<Block> pBlocks = PassableBlocks.blocks;
+        ArrayList<Block> aBlocks = AvoidBlocks.blocks;
         if (rule.ruleMeta().RequireHeadSpace) {
             if (!pBlocks.contains(FetchBlock(new Pos(parent.x, parent.y + 2, parent.z)))) return false;
         }
@@ -43,7 +45,7 @@ public class RuleEvaluator implements IRuleEvaluator {
                 case ANY:
                     continue;
                 case PASSABLE:
-                    if (!pBlocks.contains(b) && !IsBroken(inStack)) return false;
+                    if (!pBlocks.contains(b) && !IsBroken(inStack) || IsPlaced(inStack)) return false;
                     continue;
                 case IMPASSABLE:
                     if (pBlocks.contains(b) || IsBroken(inStack)) return false;
@@ -59,11 +61,11 @@ public class RuleEvaluator implements IRuleEvaluator {
                     if (rule.ruleMeta().CheckBreakableLavaAdj && AdjacentLavaHelper.Check(pos.ConvertToBlockPos())) return false;
                     continue;
                 case BREAKABLE_OR_PASSABLE:
-                    if (aBlocks.contains(b) || b == Blocks.BEDROCK || IsBroken(inStack)) return false;
+                    if (aBlocks.contains(b) || b == Blocks.BEDROCK) return false; //|| IsBroken(inStack) <- not sure why that was there, keeping it here in case something breaks
                     if (!(pBlocks.contains(b)) && rule.ruleMeta().CheckBreakableLavaAdj && AdjacentLavaHelper.Check(pos.ConvertToBlockPos())) return false;
                     continue;
                 case CLIMBABLE:
-                    if (b != Blocks.LADDER && b != Blocks.VINE) return false;
+                    if ((b != Blocks.LADDER && b != Blocks.VINE) || IsBroken(inStack)) return false;
                     continue;
             }
         }
@@ -72,6 +74,15 @@ public class RuleEvaluator implements IRuleEvaluator {
 
     private boolean IsBroken(Pos inStack) {
         for (Pos pos : brokenBlocks) {
+            if (pos.IsEqual(inStack)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean IsPlaced(Pos inStack) {
+        for (Pos pos : placedBlocks) {
             if (pos.IsEqual(inStack)) {
                 return true;
             }

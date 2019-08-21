@@ -1,6 +1,7 @@
 package me.ktechnet.openmineai.Models.Classes;
 
 import me.ktechnet.openmineai.Helpers.DistanceHelper;
+import me.ktechnet.openmineai.Models.ConfigData.Settings;
 import me.ktechnet.openmineai.Models.Enums.BackpropagateCondition;
 import me.ktechnet.openmineai.Models.Enums.NodeType;
 import me.ktechnet.openmineai.Models.Interfaces.INode;
@@ -9,6 +10,7 @@ import me.ktechnet.openmineai.Models.Interfaces.IPathingProvider;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
 public class PopulousAStarSearch implements IPathingProvider {
 
@@ -21,6 +23,8 @@ public class PopulousAStarSearch implements IPathingProvider {
     private IPathingCallback callback;
 
     private boolean hasFoundRoute = false;
+
+    private Settings settings;
 
     @Override
     public HashMap<Pos, INode> nodeManifest() {
@@ -38,8 +42,14 @@ public class PopulousAStarSearch implements IPathingProvider {
     }
 
     @Override
-    public void StartPathfinding(Pos destination, Pos start, IPathingCallback callbackClass) { //TODO fix jankyness of it going all of the place
+    public Settings settings() {
+        return settings;
+    }
+
+    @Override
+    public void StartPathfinding(Pos destination, Pos start, IPathingCallback callbackClass, Settings settings) { //TODO for executor, see if we can save on ASCEND_TOWER_BREAK
         dest = destination;
+        this.settings = settings;
         this.callback = callbackClass;
         initial = new Node(NodeType.PLAYER, this, null, 0,0, start, destination, ((int)DistanceHelper.CalcDistance(start, destination) + 10) * 4);
         initial.SpawnChildren();

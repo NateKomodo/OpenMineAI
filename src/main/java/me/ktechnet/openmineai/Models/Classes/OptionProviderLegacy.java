@@ -16,6 +16,7 @@ import net.minecraft.init.Blocks;
 import java.util.ArrayList;
 import java.util.Collections;
 
+@Deprecated
 public class OptionProviderLegacy implements IOptionProvider {
     private INode parent;
 
@@ -40,8 +41,8 @@ public class OptionProviderLegacy implements IOptionProvider {
             return null;
         }
         Block b = Minecraft.getMinecraft().world.getBlockState(pos.ConvertToBlockPos()).getBlock();
-        ArrayList<Block> pBlocks = new PassableBlocks().blocks;
-        ArrayList<Block> aBlocks = new AvoidBlocks().blocks;
+        ArrayList<Block> pBlocks = PassableBlocks.blocks;
+        ArrayList<Block> aBlocks = AvoidBlocks.blocks;
         if (pos.y - parent.y == 1) {
             //Ascend
             if (pBlocks.contains(b)) {
@@ -96,7 +97,7 @@ public class OptionProviderLegacy implements IOptionProvider {
         //TODO get nearby locations and push to EvaluatePosition(Pos)
         Pos pos = parent.pos();
         ArrayList<IOption> list = new ArrayList<>();
-        if (!(parent.myType() == NodeType.PARKOUR || parent.myType() == NodeType.BRIDGE_AND_PARKOUR)) {
+        if (!(parent.myType() == NodeType.PARKOUR)) {
             list.add(EvaluatePosition(new Pos(pos.x + 1, pos.y, pos.z), false));
             list.add(EvaluatePosition(new Pos(pos.x + -1, pos.y, pos.z), false));
             list.add(EvaluatePosition(new Pos(pos.x, pos.y + 1, pos.z), false));

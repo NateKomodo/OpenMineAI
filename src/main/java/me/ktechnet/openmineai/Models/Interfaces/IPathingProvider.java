@@ -2,6 +2,7 @@ package me.ktechnet.openmineai.Models.Interfaces;
 
 import com.sun.jna.ptr.ByReference;
 import me.ktechnet.openmineai.Models.Classes.Pos;
+import me.ktechnet.openmineai.Models.ConfigData.Settings;
 import me.ktechnet.openmineai.Models.Enums.BackpropagateCondition;
 
 import java.util.ArrayList;
@@ -14,7 +15,9 @@ public interface IPathingProvider {
 
     Pos destination();
 
-    void StartPathfinding(Pos destination, Pos start, IPathingCallback callbackclass);
+    Settings settings();
+
+    void StartPathfinding(Pos destination, Pos start, IPathingCallback callbackclass, Settings settings);
 
     void RouteFound(BackpropagateCondition condition, ArrayList<INode> path);
 }

@@ -6,12 +6,14 @@ import net.minecraft.init.Blocks;
 import java.util.ArrayList;
 
 public class PassableBlocks {
-    public ArrayList<Block> blocks = new ArrayList<>(); //TODO move to init and static
-    public PassableBlocks() {
-        blocks.add(Blocks.AIR);
-        blocks.add(Blocks.TALLGRASS);
-        blocks.add(Blocks.RED_FLOWER);
-        blocks.add(Blocks.YELLOW_FLOWER);
-        blocks.add(Blocks.DEADBUSH);
-    }
+    public static ArrayList<Block> blocks = new ArrayList<Block>() {
+        {
+            add(Blocks.AIR);
+            add(Blocks.TALLGRASS);
+            add(Blocks.RED_FLOWER);
+            add(Blocks.YELLOW_FLOWER);
+            add(Blocks.DEADBUSH);
+            add(Blocks.SNOW_LAYER);
+        }
+    };
 }

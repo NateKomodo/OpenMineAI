@@ -2,9 +2,9 @@ package me.ktechnet.openmineai;
 
 import me.ktechnet.openmineai.Helpers.ChatMessageHandler;
 import me.ktechnet.openmineai.Helpers.PlayerControl;
-import me.ktechnet.openmineai.Helpers.PlayerMovement;
 import me.ktechnet.openmineai.Models.Classes.PopulousAStarSearch;
 import me.ktechnet.openmineai.Models.Classes.Pos;
+import me.ktechnet.openmineai.Models.ConfigData.Settings;
 import me.ktechnet.openmineai.Models.Enums.NodeType;
 import me.ktechnet.openmineai.Models.Interfaces.INode;
 import me.ktechnet.openmineai.Models.Interfaces.IPathingCallback;
@@ -18,6 +18,9 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.IClientCommand;
 
 import java.time.LocalDateTime;
@@ -77,7 +80,14 @@ public class Commands extends CommandBase implements IClientCommand, IPathingCal
                 Pos pos = new Pos((int)p.posX, (int)p.posY, (int)p.posZ);
                 Pos dest = new Pos(Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]));
                 pre = LocalDateTime.now();
-                pathingProvider.StartPathfinding(dest, pos, this);
+                pathingProvider.StartPathfinding(dest, pos, this, new Settings());
+            }
+            else if (args[0].equals(6))
+            {
+                EntityPlayerSP p = Minecraft.getMinecraft().player;
+                Pos pos = new Pos((int)p.posX, (int)p.posY, (int)p.posZ);
+                BlockPos bPos = rayTrace(pos).getBlockPos();
+                ChatMessageHandler.SendMessage("Hit: " + bPos.getX() + "," + bPos.getY() + "," + bPos.getZ());
             }
         }
     }
@@ -118,6 +128,10 @@ public class Commands extends CommandBase implements IClientCommand, IPathingCal
                 case STEP_DOWN:
                     Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.YELLOW_GLAZED_TERRACOTTA.getDefaultState());
                     break;
+                case DROP:
+                    Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.PURPUR_BLOCK.getDefaultState());
+                case BRIDGE:
+                    Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.BLACK_GLAZED_TERRACOTTA.getDefaultState());
             }
         }
     }
@@ -130,5 +144,13 @@ public class Commands extends CommandBase implements IClientCommand, IPathingCal
     @Override
     public void alternateRouteFound(IRoute route) {
         ChatMessageHandler.SendMessage("Found alternate route");
+    }
+
+    private RayTraceResult rayTrace(Pos start)
+    {
+        EntityPlayer player = Minecraft.getMinecraft().player;
+        Vec3d vecStart = new Vec3d(start.x, start.y, start.z);
+        Vec3d vecLook = new Vec3d(0, -10, 0);
+        return player.world.rayTraceBlocks(vecStart, vecLook, true, false, true);
     }
 }

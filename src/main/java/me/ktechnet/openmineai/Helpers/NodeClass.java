@@ -17,7 +17,6 @@ public class NodeClass {
             add(NodeType.STEP_DOWN_AND_BREAK);
             add(NodeType.STEP_UP);
             add(NodeType.STEP_UP_AND_BREAK);
-            add(NodeType.BRIDGE_AND_PARKOUR);
             add(NodeType.PARKOUR);
         }
     };
@@ -30,7 +29,6 @@ public class NodeClass {
             add(NodeType.STEP_DOWN);
             add(NodeType.BRIDGE);
             add(NodeType.BREAK_AND_MOVE);
-            add(NodeType.BRIDGE_AND_PARKOUR);
             add(NodeType.PARKOUR);
         }
     };
@@ -53,7 +51,6 @@ public class NodeClass {
             add(NodeType.ASCEND_BREAK_AND_TOWER);
             add(NodeType.DESCEND_MINE);
             add(NodeType.BRIDGE);
-            add(NodeType.BRIDGE_AND_PARKOUR);
         }
     };
     public static ArrayList<NodeType> class3 = new ArrayList<NodeType>() {
@@ -62,7 +59,6 @@ public class NodeClass {
             add(NodeType.STEP_DOWN_AND_BREAK);
             add(NodeType.BREAK);
             add(NodeType.BREAK_AND_MOVE);
-
         }
     };
 }

@@ -59,9 +59,10 @@ public class NodeTypeRules {
         rule.PushToStack(-1, Rules.IMPASSABLE_NOT_LAVA);
         return rule;
     }
-    public IRule GetDecentOrParkourOrBridge() {
+    public IRule GetDecentOrParkourOrBridge(boolean diagonal) {
         IRule rule = new Rule();
-        rule.ruleMeta().CheckBreakableLavaAdj = true;
+        rule.ruleMeta().Diagonal = diagonal;
+        rule.ruleMeta().diagonalTest = GetDiagCheckMove();
         rule.PushToStack(0, Rules.PASSABLE);
         rule.PushToStack(-1, Rules.PASSABLE);
         rule.PushToStack(-2, Rules.PASSABLE);
@@ -85,7 +86,7 @@ public class NodeTypeRules {
         rule.PushToStack(0, Rules.CLIMBABLE);
         return rule;
     }
-    public IRule GetRareDrop() { //TODO test, unsure when this may be triggered
+    public IRule GetRareDrop() {
         IRule rule = new Rule();
         rule.PushToStack(0, Rules.PASSABLE);
         return rule;
