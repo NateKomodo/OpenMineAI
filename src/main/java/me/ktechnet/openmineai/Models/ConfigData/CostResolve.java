@@ -43,6 +43,7 @@ public class CostResolve {
     private static double DynamicResolve(NodeType type, Pos pos, Pos dest) {
         DistComponent comp = DistanceHelper.GetComponents(pos, dest);
         double nClass = ClassResolve(type);
+        //TODO balance this to make it stop eating walls
         if (comp.h > comp.v) { //Bias to h
             if (NodeClass.horizontal.contains(type)) {
                 return comp.n + (nClass / 2);
@@ -60,8 +61,9 @@ public class CostResolve {
     }
     private static double ClassResolve(NodeType type) {
         if (NodeClass.class1.contains(type)) return 1;
-        if (NodeClass.class2.contains(type)) return 2;
-        if (NodeClass.class3.contains(type)) return 3;
+        if (NodeClass.class2.contains(type)) return 1.5;
+        if (NodeClass.class3.contains(type)) return 2;
+        if (NodeClass.class4.contains(type)) return 2.5;
         return 4;
     }
 }

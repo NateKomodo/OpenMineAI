@@ -18,6 +18,7 @@ As of 0.1.2, the following is done:
 - Switch to alternate paths
 - Path merging (Such as when a low cost route meets a longer, but higher cost route and switches base)
 - Antpathing
+- Route caching
 - Following paths
 - Chat commands
 - Combat

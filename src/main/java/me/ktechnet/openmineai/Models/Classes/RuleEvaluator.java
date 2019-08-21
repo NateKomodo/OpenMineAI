@@ -67,6 +67,8 @@ public class RuleEvaluator implements IRuleEvaluator {
                 case CLIMBABLE:
                     if ((b != Blocks.LADDER && b != Blocks.VINE) || IsBroken(inStack)) return false;
                     continue;
+                case PASSABLE_OR_CLIMBABLE:
+                    if ((!pBlocks.contains(b) && (b != Blocks.LADDER && b != Blocks.VINE)) || IsBroken(inStack)) return false;
             }
         }
         return true;

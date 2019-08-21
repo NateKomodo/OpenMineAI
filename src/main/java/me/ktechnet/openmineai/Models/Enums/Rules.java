@@ -9,4 +9,5 @@ public enum Rules {
     BREAKABLE,
     BREAKABLE_OR_PASSABLE,
     CLIMBABLE,
+    PASSABLE_OR_CLIMBABLE,
 }

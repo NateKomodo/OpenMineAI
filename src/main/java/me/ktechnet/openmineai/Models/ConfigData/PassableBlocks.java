@@ -14,6 +14,10 @@ public class PassableBlocks {
             add(Blocks.YELLOW_FLOWER);
             add(Blocks.DEADBUSH);
             add(Blocks.SNOW_LAYER);
+            add(Blocks.RAIL);
+            add(Blocks.ACTIVATOR_RAIL);
+            add(Blocks.DETECTOR_RAIL);
+            add(Blocks.GOLDEN_RAIL);
         }
     };
 }

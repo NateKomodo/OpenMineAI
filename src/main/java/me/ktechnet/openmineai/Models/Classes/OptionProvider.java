@@ -82,22 +82,24 @@ public class OptionProvider implements IOptionProvider {
             if (rev.Evaluate(pos, r.GetBreakAndTower())) {
                 candidates.add(new Option(CostResolve.Resolve(NodeType.ASCEND_BREAK_AND_TOWER, pos, dest), NodeType.ASCEND_BREAK_AND_TOWER, pos));
 
-            } else if (rev.Evaluate(pos, r.GetTower())) {
-                candidates.add(new Option(CostResolve.Resolve(NodeType.ASCEND_TOWER, pos, dest), NodeType.ASCEND_TOWER, pos));
-
             } else if (rev.Evaluate(pos, r.GetLadder())) {
                 candidates.add(new Option(CostResolve.Resolve(NodeType.ASCEND, pos, dest), NodeType.ASCEND, pos));
+
+            }else if (rev.Evaluate(pos, r.GetTower())) {
+                candidates.add(new Option(CostResolve.Resolve(NodeType.ASCEND_TOWER, pos, dest), NodeType.ASCEND_TOWER, pos));
+
             }
         } else if (pos.y - parentPos.y == -1) {
             //Descend
             if (rev.Evaluate(pos, r.GetRareDrop())) { //Should never be encountered, but still going to put a drop node in here just in case
                 candidates.add(new Option(CostResolve.Resolve(NodeType.DROP, pos, dest), NodeType.DROP, pos));
 
+            } else if (rev.Evaluate(pos, r.GetLadder())) {
+                candidates.add(new Option(CostResolve.Resolve(NodeType.DESCEND, pos, dest), NodeType.DESCEND, pos));
+
             } else if (rev.Evaluate(pos, r.GetDescentMine())) {
                 candidates.add(new Option(CostResolve.Resolve(NodeType.DESCEND_MINE, pos, dest), NodeType.DESCEND_MINE, pos));
 
-            } else if (rev.Evaluate(pos, r.GetLadder())) {
-                candidates.add(new Option(CostResolve.Resolve(NodeType.DESCEND, pos, dest), NodeType.DESCEND, pos));
             }
         } else { //TODO swim
             //Side nodes

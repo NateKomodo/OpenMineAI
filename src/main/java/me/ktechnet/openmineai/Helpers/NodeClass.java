@@ -50,10 +50,15 @@ public class NodeClass {
             add(NodeType.ASCEND_TOWER);
             add(NodeType.ASCEND_BREAK_AND_TOWER);
             add(NodeType.DESCEND_MINE);
-            add(NodeType.BRIDGE);
+
         }
     };
     public static ArrayList<NodeType> class3 = new ArrayList<NodeType>() {
+        {
+            add(NodeType.BRIDGE);
+        }
+    };
+    public static ArrayList<NodeType> class4 = new ArrayList<NodeType>() {
         {
             add(NodeType.STEP_UP_AND_BREAK);
             add(NodeType.STEP_DOWN_AND_BREAK);

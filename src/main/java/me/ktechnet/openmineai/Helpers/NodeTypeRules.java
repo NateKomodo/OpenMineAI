@@ -19,8 +19,8 @@ public class NodeTypeRules {
         rule.ruleMeta().Diagonal = diagonal;
         rule.ruleMeta().RequireHeadSpace = true;
         rule.ruleMeta().diagonalTest = GetDiagCheckStepUp();
-        rule.PushToStack(2, Rules.PASSABLE);
-        rule.PushToStack(1, Rules.PASSABLE);
+        rule.PushToStack(2, Rules.PASSABLE_OR_CLIMBABLE);
+        rule.PushToStack(1, Rules.PASSABLE_OR_CLIMBABLE);
         rule.PushToStack(0, Rules.IMPASSABLE_NOT_LAVA);
         return rule;
     }
@@ -38,7 +38,7 @@ public class NodeTypeRules {
         rule.ruleMeta().diagonalTest = GetDiagCheckStepDown();
         rule.PushToStack(1, Rules.PASSABLE);
         rule.PushToStack(0, Rules.PASSABLE);
-        rule.PushToStack(-1, Rules.PASSABLE);
+        rule.PushToStack(-1, Rules.PASSABLE_OR_CLIMBABLE);
         rule.PushToStack(-2, Rules.IMPASSABLE_NOT_LAVA);
         return rule;
     }
@@ -63,6 +63,7 @@ public class NodeTypeRules {
         IRule rule = new Rule();
         rule.ruleMeta().Diagonal = diagonal;
         rule.ruleMeta().diagonalTest = GetDiagCheckMove();
+        rule.PushToStack(1, Rules.PASSABLE);
         rule.PushToStack(0, Rules.PASSABLE);
         rule.PushToStack(-1, Rules.PASSABLE);
         rule.PushToStack(-2, Rules.PASSABLE);
