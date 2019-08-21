@@ -110,11 +110,10 @@ public class Node implements INode {
     @Override
     public void Backpropagate(BackpropagateCondition condition, ArrayList<INode> path) {
         //ChatMessageHandler.SendMessage("Backpropagate!");
+        path.add(this);
         if (myType != NodeType.PLAYER) {
-            path.add(this);
             parent.Backpropagate(condition, path);
         } else {
-            path.add(this);
             master.RouteFound(condition, path);
         }
     }

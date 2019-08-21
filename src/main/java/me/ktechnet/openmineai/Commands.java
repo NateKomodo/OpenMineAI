@@ -94,7 +94,7 @@ public class Commands extends CommandBase implements IClientCommand, IPathingCal
         long diff = ChronoUnit.MILLIS.between(pre, now);
         ChatMessageHandler.SendMessage("Found complete route, took " + diff + "ms");
         for (INode node : route.path()) {
-            if (node.pos().IsEqual(node.master().destination())) {
+            if (node.pos().IsEqual(node.master().destination()) || node.myType() == NodeType.DESTINATION) {
                 Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.EMERALD_BLOCK.getDefaultState());
                 continue;
             }

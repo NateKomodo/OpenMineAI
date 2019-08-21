@@ -30,6 +30,12 @@ public class RuleEvaluator implements IRuleEvaluator {
         if (rule.ruleMeta().RequireHeadSpace) {
             if (!pBlocks.contains(FetchBlock(new Pos(parent.x, parent.y + 2, parent.z)))) return false;
         }
+        if (rule.ruleMeta().Diagonal) {
+            //Ensure we can actually go diagonally
+            Pos toCheckX = new Pos(pos.x - (pos.x - parent.x), pos.y, pos.z);
+            Pos toCheckZ = new Pos(pos.x, pos.y, pos.z - (pos.z - parent.z));
+            if (!Evaluate(toCheckX, rule.ruleMeta().diagonalTest) || !Evaluate(toCheckZ, rule.ruleMeta().diagonalTest)) return false;
+        }
         for (Map.Entry entry : rule.ruleStack().entrySet()) {
             Pos inStack = new Pos(pos.x, pos.y + (int)entry.getKey(), pos.z);
             Block b = FetchBlock(inStack);

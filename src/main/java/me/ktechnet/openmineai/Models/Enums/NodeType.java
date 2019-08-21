@@ -18,4 +18,5 @@ public enum NodeType {
     BREAK,
     BREAK_AND_MOVE,
     PLAYER,
+    DESTINATION,
 }

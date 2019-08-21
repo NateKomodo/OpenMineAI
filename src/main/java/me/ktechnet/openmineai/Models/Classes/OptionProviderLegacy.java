@@ -29,7 +29,7 @@ public class OptionProviderLegacy implements IOptionProvider {
     }
 
     @Override
-    public IOption EvaluatePosition(Pos pos) { //TODO parkour handler, check chunk is loaded, diagonals, fix ascent, move all of this to a rule based system
+    public IOption EvaluatePosition(Pos pos, boolean diagonal) { //TODO parkour handler, check chunk is loaded, diagonals, fix ascent, move all of this to a rule based system
         Pos parent = this.parent.pos();
         Pos entry = new Pos(parent.x, parent.y, parent.z);
         if (this.parent.parent() != null) {
@@ -97,12 +97,12 @@ public class OptionProviderLegacy implements IOptionProvider {
         Pos pos = parent.pos();
         ArrayList<IOption> list = new ArrayList<>();
         if (!(parent.myType() == NodeType.PARKOUR || parent.myType() == NodeType.BRIDGE_AND_PARKOUR)) {
-            list.add(EvaluatePosition(new Pos(pos.x + 1, pos.y, pos.z)));
-            list.add(EvaluatePosition(new Pos(pos.x + -1, pos.y, pos.z)));
-            list.add(EvaluatePosition(new Pos(pos.x, pos.y + 1, pos.z)));
-            list.add(EvaluatePosition(new Pos(pos.x, pos.y - 1, pos.z)));
-            list.add(EvaluatePosition(new Pos(pos.x, pos.y, pos.z + 1)));
-            list.add(EvaluatePosition(new Pos(pos.x, pos.y, pos.z - 1)));
+            list.add(EvaluatePosition(new Pos(pos.x + 1, pos.y, pos.z), false));
+            list.add(EvaluatePosition(new Pos(pos.x + -1, pos.y, pos.z), false));
+            list.add(EvaluatePosition(new Pos(pos.x, pos.y + 1, pos.z), false));
+            list.add(EvaluatePosition(new Pos(pos.x, pos.y - 1, pos.z), false));
+            list.add(EvaluatePosition(new Pos(pos.x, pos.y, pos.z + 1), false));
+            list.add(EvaluatePosition(new Pos(pos.x, pos.y, pos.z - 1), false));
         } else {
             //TODO some thing to get blocks to parkour to
         }
