@@ -126,6 +126,7 @@ public class Node implements INode {
         }
         if (TTL == 1) {
             ChatMessageHandler.SendMessage("TTL exceeded.");
+            Backpropagate(BackpropagateCondition.PARTIAL, new ArrayList<>());
             return;
         }
         options = optionProvider.EvaluateOptions();

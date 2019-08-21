@@ -33,26 +33,34 @@ public class OptionProvider implements IOptionProvider {
 
     private Pos grandparent;
 
+    private Pos greatgrandparent;
+
     private Pos entry;
 
     private Pos dest;
 
     public OptionProvider(INode parent) {
         this.parent = parent;
-        //Get data from 3 previous nodes as these are the most likely to effect us
+        //Get data from 4 previous nodes as these are the most likely to effect us
         this.parentPos = this.parent.pos();
         this.grandparent = this.parent.pos();
-        this.entry = new Pos(parentPos.x, parentPos.y, parentPos.z);
+        this.greatgrandparent = this.parent.pos();
+        this.entry = this.parent.pos();
         ArrayList<Pos> Broken = new BrokenBlocksHelper().Broken(this.parent.myType(), this.parent.pos());
         ArrayList<Pos> Placed = new PlacedBlocksHelper().Placed(this.parent.myType(), this.parent.pos());
         if (this.parent.parent() != null) {
             entry = this.parent.parent().pos();
-            Broken.addAll(new BrokenBlocksHelper().Broken(this.parent.parent().myType(), this.parent.parent().pos()));
-            Placed.addAll(new PlacedBlocksHelper().Placed(this.parent.parent().myType(), this.parent.parent().pos()));
+            Broken.addAll(new BrokenBlocksHelper().Broken(this.parent.parent().myType(), entry));
+            Placed.addAll(new PlacedBlocksHelper().Placed(this.parent.parent().myType(), entry));
             if (this.parent.parent().parent() != null) {
                 grandparent = this.parent.parent().parent().pos();
-                Broken.addAll(new BrokenBlocksHelper().Broken(this.parent.parent().parent().myType(), this.parent.parent().parent().pos()));
-                Placed.addAll(new PlacedBlocksHelper().Placed(this.parent.parent().parent().myType(), this.parent.parent().parent().pos()));
+                Broken.addAll(new BrokenBlocksHelper().Broken(this.parent.parent().parent().myType(), grandparent));
+                Placed.addAll(new PlacedBlocksHelper().Placed(this.parent.parent().parent().myType(), grandparent));
+                if (this.parent.parent().parent().parent() != null) {
+                    greatgrandparent = this.parent.parent().parent().parent().pos();
+                    Broken.addAll(new BrokenBlocksHelper().Broken(this.parent.parent().parent().parent().myType(), greatgrandparent));
+                    Placed.addAll(new PlacedBlocksHelper().Placed(this.parent.parent().parent().parent().myType(), greatgrandparent));
+                }
             }
         }
         this.r = new NodeTypeRules();
@@ -67,7 +75,7 @@ public class OptionProvider implements IOptionProvider {
 
     @Override
     public IOption EvaluatePosition(Pos pos, boolean diagonal) { //TODO parkour handler, check chunk is loaded, gravity blocks, water, fire, doors/interactable
-        if (pos.IsEqual(entry) || pos.IsEqual(this.parent.pos()) || pos.IsEqual(grandparent)) {
+        if (pos.IsEqual(entry) || pos.IsEqual(this.parent.pos()) || pos.IsEqual(grandparent) || pos.IsEqual(greatgrandparent)) {
             return null;
         }
 
@@ -110,7 +118,7 @@ public class OptionProvider implements IOptionProvider {
             } else if (rev.Evaluate(pos, r.GetStepUp(diagonal))) {
                 //Step up
                 pos.y++;
-                if (pos.IsEqual(entry) || pos.IsEqual(this.parent.pos()) || pos.IsEqual(grandparent)) { //Check that we didnt just step up into an old pos. Also checks grandparent to prevent loop
+                if (pos.IsEqual(entry) || pos.IsEqual(this.parent.pos()) || pos.IsEqual(grandparent) || pos.IsEqual(greatgrandparent)) { //Check that we didnt just step up into an old pos. Also checks grandparent to prevent loop
                     return null;
                 }
                 candidates.add(new Option(CostResolve.Resolve(NodeType.STEP_UP, pos, dest), NodeType.STEP_UP, pos));
@@ -122,7 +130,7 @@ public class OptionProvider implements IOptionProvider {
             } else if (rev.Evaluate(pos, r.GetStepDown(diagonal))) {
                 //Step down
                 pos.y--;
-                if (pos.IsEqual(entry) || pos.IsEqual(this.parent.pos()) || pos.IsEqual(grandparent)) { //Check that we didnt just step up into an old pos. Also checks grandparent to prevent loop
+                if (pos.IsEqual(entry) || pos.IsEqual(this.parent.pos()) || pos.IsEqual(grandparent)  || pos.IsEqual(greatgrandparent)) { //Check that we didnt just step up into an old pos. Also checks grandparent to prevent loop
                     return null;
                 }
                 candidates.add(new Option(CostResolve.Resolve(NodeType.STEP_DOWN, pos, dest), NodeType.STEP_DOWN, pos));
@@ -130,7 +138,7 @@ public class OptionProvider implements IOptionProvider {
             } else if (rev.Evaluate(pos, r.GetStepUpAndBreak()) && !diagonal) {
                 //Step up and break
                 pos.y++;
-                if (pos.IsEqual(entry) || pos.IsEqual(this.parent.pos()) || pos.IsEqual(grandparent)) { //Check that we didnt just step up into an old pos. Also checks grandparent to prevent loop
+                if (pos.IsEqual(entry) || pos.IsEqual(this.parent.pos()) || pos.IsEqual(grandparent) || pos.IsEqual(greatgrandparent)) { //Check that we didnt just step up into an old pos. Also checks grandparent to prevent loop
                     return null;
                 }
                 candidates.add(new Option(CostResolve.Resolve(NodeType.STEP_UP_AND_BREAK, pos, dest), NodeType.STEP_UP_AND_BREAK, pos));
@@ -138,7 +146,7 @@ public class OptionProvider implements IOptionProvider {
             } else if (rev.Evaluate(pos, r.GetStepDownAndBreak()) && !diagonal) {
                 //Step down and break
                 pos.y--;
-                if (pos.IsEqual(entry) || pos.IsEqual(this.parent.pos()) || pos.IsEqual(grandparent)) { //Check that we didnt just step up into an old pos. Also checks grandparent to prevent loop
+                if (pos.IsEqual(entry) || pos.IsEqual(this.parent.pos()) || pos.IsEqual(grandparent) || pos.IsEqual(greatgrandparent)) { //Check that we didnt just step up into an old pos. Also checks grandparent to prevent loop
                     return null;
                 }
                 candidates.add(new Option(CostResolve.Resolve(NodeType.STEP_DOWN_AND_BREAK, pos, dest), NodeType.STEP_DOWN_AND_BREAK, pos));
@@ -147,10 +155,12 @@ public class OptionProvider implements IOptionProvider {
                 if (!diagonal) candidates.add(new Option(CostResolve.Resolve(NodeType.BRIDGE, pos, dest), NodeType.BRIDGE, pos));
                 BlockPos bottom = GetBlockBeneath(pos);
                 if (bottom != null) {
+                    Pos bPos = new Pos(bottom.getX(), bottom.getY() + 1, bottom.getZ());
                     int dist = pos.y - bottom.getY();
                     Block b = Minecraft.getMinecraft().world.getBlockState(bottom).getBlock();
                     if (dist <= 10 || (b == Blocks.WATER || b == Blocks.FLOWING_WATER) || parent.master().settings().hasWaterBucket)
-                        candidates.add(new Option(CostResolve.Resolve(NodeType.DROP, new Pos(bottom.getX(), bottom.getY() + 1, bottom.getZ()), dest), NodeType.DROP, pos));
+                        if (!bPos.IsEqual(entry) && !bPos.IsEqual(this.parent.pos()) && !bPos.IsEqual(grandparent) && !bPos.IsEqual(greatgrandparent))
+                            candidates.add(new Option(CostResolve.Resolve(NodeType.DROP, new Pos(bottom.getX(), bottom.getY() + 1, bottom.getZ()), dest), NodeType.DROP, pos));
                 }
                 //TODO parkour
                 //Update: as we now eval all, we can split these up

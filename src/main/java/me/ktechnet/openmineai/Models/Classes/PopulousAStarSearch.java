@@ -47,7 +47,7 @@ public class PopulousAStarSearch implements IPathingProvider {
     }
 
     @Override
-    public void StartPathfinding(Pos destination, Pos start, IPathingCallback callbackClass, Settings settings) { //TODO for executor, see if we can save on ASCEND_TOWER_BREAK
+    public void StartPathfinding(Pos destination, Pos start, IPathingCallback callbackClass, Settings settings) { //TODO for executor, see if we can save on ASCEND_TOWER_BREAK, or shortcuts in general
         dest = destination;
         this.settings = settings;
         this.callback = callbackClass;
@@ -62,13 +62,15 @@ public class PopulousAStarSearch implements IPathingProvider {
         {
             case PARTIAL:
                 callback.partialRouteFound(route);
+                break;
             case COMPLETE:
                 if (!hasFoundRoute) {
                     callback.completeRouteFound(route);
                     hasFoundRoute = true;
-                }
-                else {
+                    break;
+                } else {
                     callback.alternateRouteFound(route);
+                    break;
                 }
         }
     }

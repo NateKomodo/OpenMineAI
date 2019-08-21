@@ -43,16 +43,20 @@ public class CostResolve {
     private static double DynamicResolve(NodeType type, Pos pos, Pos dest) {
         DistComponent comp = DistanceHelper.GetComponents(pos, dest);
         double nClass = ClassResolve(type);
+        double percentageVertical = GetPercent(comp.v, comp.n);
+        double percentageHorizontal = GetPercent(comp.h, comp.n);
         //TODO balance this to make it stop eating walls
-        if (comp.h > comp.v) { //Bias to h
-            if (NodeClass.horizontal.contains(type)) {
-                return comp.n + (nClass / 2);
+        boolean tooClose = false;
+        if (Math.abs(percentageHorizontal - percentageVertical) <= 0.05 || comp.n < 5) tooClose = true;
+        if (percentageHorizontal > percentageVertical) { //Bias to h
+            if (NodeClass.horizontal.contains(type) && !tooClose) {
+                return comp.n + (nClass - 1);
             } else {
                 return comp.n + nClass;
             }
         } else { //Bias to v
-            if (NodeClass.vertical.contains(type)) {
-                return comp.n + (nClass / 2);
+            if (NodeClass.vertical.contains(type) && !tooClose) {
+                return comp.n + (nClass - 1);
             } else {
                 return comp.n + nClass;
             }
@@ -63,7 +67,10 @@ public class CostResolve {
         if (NodeClass.class1.contains(type)) return 1;
         if (NodeClass.class2.contains(type)) return 1.5;
         if (NodeClass.class3.contains(type)) return 2;
-        if (NodeClass.class4.contains(type)) return 2.5;
         return 4;
+    }
+    private static double GetPercent(double a, double b) {
+        if (b == 0) return 0;
+        return (a / b);
     }
 }
