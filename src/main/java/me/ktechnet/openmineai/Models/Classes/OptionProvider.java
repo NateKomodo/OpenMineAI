@@ -73,7 +73,7 @@ public class OptionProvider implements IOptionProvider {
 
         ArrayList<IOption> candidates = new ArrayList<>();
 
-        if (pos.IsEqual(this.parent.master().destination())) {
+        if (pos.IsEqual(this.parent.master().destination()) && !diagonal) {
             return new Option(0, NodeType.DESTINATION, pos);
         }
 
