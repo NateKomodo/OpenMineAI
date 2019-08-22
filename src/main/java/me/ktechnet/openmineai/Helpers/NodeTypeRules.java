@@ -11,7 +11,7 @@ public class NodeTypeRules {
         rule.ruleMeta().diagonalTest = GetDiagCheckMove();
         rule.PushToStack(1, Rules.PASSABLE);
         rule.PushToStack(0, Rules.PASSABLE);
-        rule.PushToStack(-1, Rules.IMPASSABLE_NOT_LAVA);
+        rule.PushToStack(-1, Rules.IMPASSABLE_NOT_LIQUID);
         return rule;
     }
     public IRule GetStepUp(boolean diagonal) {
@@ -21,7 +21,7 @@ public class NodeTypeRules {
         rule.ruleMeta().diagonalTest = GetDiagCheckStepUp();
         rule.PushToStack(2, Rules.PASSABLE_OR_CLIMBABLE);
         rule.PushToStack(1, Rules.PASSABLE_OR_CLIMBABLE);
-        rule.PushToStack(0, Rules.IMPASSABLE_NOT_LAVA);
+        rule.PushToStack(0, Rules.IMPASSABLE_NOT_LIQUID);
         return rule;
     }
     public IRule GetStepUpAndBreak() { //TODO this may cause diagonal tunneling, testing needed
@@ -29,7 +29,7 @@ public class NodeTypeRules {
         rule.ruleMeta().CheckBreakableLavaAdj = true;
         rule.PushToStack(2, Rules.BREAKABLE_OR_PASSABLE);
         rule.PushToStack(1, Rules.BREAKABLE_OR_PASSABLE);
-        rule.PushToStack(0, Rules.IMPASSABLE_NOT_LAVA);
+        rule.PushToStack(0, Rules.IMPASSABLE_NOT_LIQUID);
         return rule;
     }
     public IRule GetStepDown(boolean diagonal) {
@@ -39,7 +39,7 @@ public class NodeTypeRules {
         rule.PushToStack(1, Rules.PASSABLE);
         rule.PushToStack(0, Rules.PASSABLE);
         rule.PushToStack(-1, Rules.PASSABLE_OR_CLIMBABLE);
-        rule.PushToStack(-2, Rules.IMPASSABLE_NOT_LAVA);
+        rule.PushToStack(-2, Rules.IMPASSABLE_NOT_LIQUID);
         return rule;
     }
     public IRule GetStepDownAndBreak() { //TODO this may cause diagonal tunneling, testing needed
@@ -48,7 +48,7 @@ public class NodeTypeRules {
         rule.PushToStack(1, Rules.BREAKABLE_OR_PASSABLE);
         rule.PushToStack(0, Rules.BREAKABLE_OR_PASSABLE);
         rule.PushToStack(-1, Rules.BREAKABLE_OR_PASSABLE);
-        rule.PushToStack(-2, Rules.IMPASSABLE_NOT_LAVA);
+        rule.PushToStack(-2, Rules.IMPASSABLE_NOT_LIQUID);
         return rule;
     }
     public IRule GetBreakAndMove() {
@@ -56,7 +56,7 @@ public class NodeTypeRules {
         rule.ruleMeta().CheckBreakableLavaAdj = true;
         rule.PushToStack(1, Rules.BREAKABLE_OR_PASSABLE);
         rule.PushToStack(0, Rules.BREAKABLE_OR_PASSABLE);
-        rule.PushToStack(-1, Rules.IMPASSABLE_NOT_LAVA);
+        rule.PushToStack(-1, Rules.IMPASSABLE_NOT_LIQUID);
         return rule;
     }
     public IRule GetDecentOrParkourOrBridge(boolean diagonal) {
@@ -67,6 +67,13 @@ public class NodeTypeRules {
         rule.PushToStack(0, Rules.PASSABLE);
         rule.PushToStack(-1, Rules.PASSABLE);
         rule.PushToStack(-2, Rules.PASSABLE);
+        return rule;
+    }
+    public IRule GetLiquidBridge() {
+        IRule rule = new Rule();
+        rule.PushToStack(1, Rules.PASSABLE);
+        rule.PushToStack(0, Rules.PASSABLE);
+        rule.PushToStack(-1, Rules.LIQUID);
         return rule;
     }
     public IRule GetTower() {
@@ -97,6 +104,22 @@ public class NodeTypeRules {
         rule.ruleMeta().CheckBreakableLavaAdj = true;
         rule.PushToStack(1, Rules.PASSABLE);
         rule.PushToStack(0, Rules.BREAKABLE);
+        return rule;
+    }
+    public IRule GetSwim(boolean diagonal) {
+        IRule rule = new Rule();
+        rule.ruleMeta().diagonalTest = GetDiagCheckSwim();
+        rule.ruleMeta().Diagonal = diagonal;
+        rule.PushToStack(1, Rules.PASSABLE);
+        rule.PushToStack(0, Rules.PASSABLE);
+        rule.PushToStack(-1, Rules.WATER);
+        return rule;
+    }
+    public IRule GetDiagCheckSwim() {
+        IRule rule = new Rule();
+        rule.PushToStack(1, Rules.WATER_OR_PASSABLE);
+        rule.PushToStack(0, Rules.WATER_OR_PASSABLE);
+        rule.PushToStack(-1, Rules.WATER_OR_PASSABLE);
         return rule;
     }
     public IRule GetDiagCheckMove() {

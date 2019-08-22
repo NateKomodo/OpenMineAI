@@ -2,6 +2,7 @@ package me.ktechnet.openmineai.Models.ConfigData;
 
 import me.ktechnet.openmineai.Helpers.DistanceHelper;
 import me.ktechnet.openmineai.Helpers.NodeClass;
+import me.ktechnet.openmineai.Main;
 import me.ktechnet.openmineai.Models.Classes.DistComponent;
 import me.ktechnet.openmineai.Models.Classes.Node;
 import me.ktechnet.openmineai.Models.Classes.Pos;
@@ -45,17 +46,18 @@ public class CostResolve {
         double nClass = ClassResolve(type);
         double percentageVertical = GetPercent(comp.v, comp.n);
         double percentageHorizontal = GetPercent(comp.h, comp.n);
-        //TODO balance this to make it stop eating walls
         boolean tooClose = false;
-        if (Math.abs(percentageHorizontal - percentageVertical) <= 0.05 || comp.n < 5) tooClose = true;
+        if (Math.abs(percentageHorizontal - percentageVertical) <= 0.05 || comp.n < 10) tooClose = true;
         if (percentageHorizontal > percentageVertical) { //Bias to h
             if (NodeClass.horizontal.contains(type) && !tooClose) {
-                return comp.n + (nClass - 1);
+                Main.logger.info("Bias to h");
+                return comp.n + (nClass - 0.4);
             } else {
                 return comp.n + nClass;
             }
         } else { //Bias to v
             if (NodeClass.vertical.contains(type) && !tooClose) {
+                Main.logger.info("Bias to v");
                 return comp.n + (nClass - 1);
             } else {
                 return comp.n + nClass;

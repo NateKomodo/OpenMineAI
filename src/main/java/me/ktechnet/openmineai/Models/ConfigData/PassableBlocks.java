@@ -18,6 +18,8 @@ public class PassableBlocks {
             add(Blocks.ACTIVATOR_RAIL);
             add(Blocks.DETECTOR_RAIL);
             add(Blocks.GOLDEN_RAIL);
+            add(Blocks.WATERLILY);
+            add(Blocks.DOUBLE_PLANT);
         }
     };
 }

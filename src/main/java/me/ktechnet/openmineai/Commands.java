@@ -130,8 +130,13 @@ public class Commands extends CommandBase implements IClientCommand, IPathingCal
                     break;
                 case DROP:
                     Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.PURPUR_BLOCK.getDefaultState());
+                    break;
                 case BRIDGE:
                     Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.BLACK_GLAZED_TERRACOTTA.getDefaultState());
+                    break;
+                case SWIM:
+                    Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.BLUE_GLAZED_TERRACOTTA.getDefaultState());
+                    break;
             }
         }
     }
@@ -171,6 +176,9 @@ public class Commands extends CommandBase implements IClientCommand, IPathingCal
                     break;
                 case BRIDGE:
                     Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.BLACK_GLAZED_TERRACOTTA.getDefaultState());
+                    break;
+                case SWIM:
+                    Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.BLUE_GLAZED_TERRACOTTA.getDefaultState());
                     break;
             }
         }

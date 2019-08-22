@@ -3,7 +3,9 @@ package me.ktechnet.openmineai.Models.Classes;
 import me.ktechnet.openmineai.Helpers.AdjacentLavaHelper;
 import me.ktechnet.openmineai.Main;
 import me.ktechnet.openmineai.Models.ConfigData.AvoidBlocks;
+import me.ktechnet.openmineai.Models.ConfigData.HazardBlocks;
 import me.ktechnet.openmineai.Models.ConfigData.PassableBlocks;
+import me.ktechnet.openmineai.Models.ConfigData.WaterBlocks;
 import me.ktechnet.openmineai.Models.Enums.Rules;
 import me.ktechnet.openmineai.Models.Interfaces.INode;
 import me.ktechnet.openmineai.Models.Interfaces.IRule;
@@ -29,6 +31,8 @@ public class RuleEvaluator implements IRuleEvaluator {
     public boolean Evaluate(Pos pos, IRule rule) {
         ArrayList<Block> pBlocks = PassableBlocks.blocks;
         ArrayList<Block> aBlocks = AvoidBlocks.blocks;
+        ArrayList<Block> wBlocks = WaterBlocks.blocks;
+        ArrayList<Block> hBlocks = HazardBlocks.blocks;
         if (rule.ruleMeta().RequireHeadSpace) {
             if (!pBlocks.contains(FetchBlock(new Pos(parent.x, parent.y + 2, parent.z)))) return false;
         }
@@ -50,18 +54,18 @@ public class RuleEvaluator implements IRuleEvaluator {
                 case IMPASSABLE:
                     if (pBlocks.contains(b) || IsBroken(inStack)) return false;
                     continue;
-                case IMPASSABLE_NOT_LAVA:
-                    if (pBlocks.contains(b) || aBlocks.contains(b) || IsBroken(inStack)) return false;
+                case IMPASSABLE_NOT_LIQUID:
+                    if (pBlocks.contains(b) || aBlocks.contains(b) || IsBroken(inStack) || wBlocks.contains(b) || hBlocks.contains(b)) return false;
                     continue;
-                case ANY_NOT_LAVA:
-                    if (aBlocks.contains(b)) return false;
+                case ANY_NOT_LIQUID:
+                    if (aBlocks.contains(b) || wBlocks.contains(b)) return false;
                     continue;
                 case BREAKABLE:
-                    if (pBlocks.contains(b) || aBlocks.contains(b) || b == Blocks.BEDROCK || IsBroken(inStack)) return false;
+                    if ((pBlocks.contains(b) || aBlocks.contains(b) || b == Blocks.BEDROCK || IsBroken(inStack) || wBlocks.contains(b)) && !IsPlaced(inStack)) return false;
                     if (rule.ruleMeta().CheckBreakableLavaAdj && AdjacentLavaHelper.Check(pos.ConvertToBlockPos())) return false;
                     continue;
                 case BREAKABLE_OR_PASSABLE:
-                    if (aBlocks.contains(b) || b == Blocks.BEDROCK) return false; //|| IsBroken(inStack) <- not sure why that was there, keeping it here in case something breaks
+                    if ((aBlocks.contains(b) || b == Blocks.BEDROCK || wBlocks.contains(b)) && !IsPlaced(inStack) && !IsBroken(inStack)) return false; //|| IsBroken(inStack) <- not sure why that was there, keeping it here in case something breaks
                     if (!(pBlocks.contains(b)) && rule.ruleMeta().CheckBreakableLavaAdj && AdjacentLavaHelper.Check(pos.ConvertToBlockPos())) return false;
                     continue;
                 case CLIMBABLE:
@@ -69,6 +73,19 @@ public class RuleEvaluator implements IRuleEvaluator {
                     continue;
                 case PASSABLE_OR_CLIMBABLE:
                     if ((!pBlocks.contains(b) && (b != Blocks.LADDER && b != Blocks.VINE)) || IsBroken(inStack)) return false;
+                    continue;
+                case LAVA:
+                    if (!aBlocks.contains(b)) return false;
+                    continue;
+                case WATER:
+                    if (!wBlocks.contains(b)) return false;
+                    continue;
+                case LIQUID:
+                    if (!wBlocks.contains(b) && !aBlocks.contains(b)) return false;
+                    continue;
+                case WATER_OR_PASSABLE:
+                    if (!wBlocks.contains(b) && !pBlocks.contains(b)) return false;
+                    continue;
             }
         }
         return true;

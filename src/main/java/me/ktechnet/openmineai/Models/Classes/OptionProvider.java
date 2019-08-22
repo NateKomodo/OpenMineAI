@@ -4,6 +4,8 @@ import me.ktechnet.openmineai.Helpers.BrokenBlocksHelper;
 import me.ktechnet.openmineai.Helpers.ChatMessageHandler;
 import me.ktechnet.openmineai.Helpers.NodeTypeRules;
 import me.ktechnet.openmineai.Helpers.PlacedBlocksHelper;
+import me.ktechnet.openmineai.Main;
+import me.ktechnet.openmineai.Models.ConfigData.AvoidBlocks;
 import me.ktechnet.openmineai.Models.ConfigData.CostResolve;
 import me.ktechnet.openmineai.Models.Enums.NodeType;
 import me.ktechnet.openmineai.Models.Interfaces.INode;
@@ -123,10 +125,6 @@ public class OptionProvider implements IOptionProvider {
                 }
                 candidates.add(new Option(CostResolve.Resolve(NodeType.STEP_UP, pos, dest), NodeType.STEP_UP, pos));
 
-            } else if (rev.Evaluate(pos, r.GetBreakAndMove()) && !diagonal) {
-                //Break and move into
-                candidates.add(new Option(CostResolve.Resolve(NodeType.BREAK_AND_MOVE, pos, dest), NodeType.BREAK_AND_MOVE, pos));
-
             } else if (rev.Evaluate(pos, r.GetStepDown(diagonal))) {
                 //Step down
                 pos.y--;
@@ -135,7 +133,11 @@ public class OptionProvider implements IOptionProvider {
                 }
                 candidates.add(new Option(CostResolve.Resolve(NodeType.STEP_DOWN, pos, dest), NodeType.STEP_DOWN, pos));
 
-            } else if (rev.Evaluate(pos, r.GetStepUpAndBreak()) && !diagonal) {
+            } else if (rev.Evaluate(pos, r.GetBreakAndMove()) && !diagonal) {
+                //Break and move into
+                candidates.add(new Option(CostResolve.Resolve(NodeType.BREAK_AND_MOVE, pos, dest), NodeType.BREAK_AND_MOVE, pos));
+
+            }else if (rev.Evaluate(pos, r.GetStepUpAndBreak()) && !diagonal) {
                 //Step up and break
                 pos.y++;
                 if (pos.IsEqual(entry) || pos.IsEqual(this.parent.pos()) || pos.IsEqual(grandparent) || pos.IsEqual(greatgrandparent)) { //Check that we didnt just step up into an old pos. Also checks grandparent to prevent loop
@@ -151,6 +153,12 @@ public class OptionProvider implements IOptionProvider {
                 }
                 candidates.add(new Option(CostResolve.Resolve(NodeType.STEP_DOWN_AND_BREAK, pos, dest), NodeType.STEP_DOWN_AND_BREAK, pos));
 
+            } else if (rev.Evaluate(pos, r.GetSwim(diagonal))) {
+                candidates.add(new Option(CostResolve.Resolve(NodeType.SWIM, pos, dest), NodeType.SWIM, pos));
+
+            } else if (rev.Evaluate(pos, r.GetLiquidBridge()) && !diagonal) {
+                candidates.add(new Option(CostResolve.Resolve(NodeType.BRIDGE, pos, dest), NodeType.BRIDGE, pos));
+
             } else if (rev.Evaluate(pos, r.GetDecentOrParkourOrBridge(diagonal))) {
                 if (!diagonal) candidates.add(new Option(CostResolve.Resolve(NodeType.BRIDGE, pos, dest), NodeType.BRIDGE, pos));
                 BlockPos bottom = GetBlockBeneath(pos);
@@ -158,7 +166,7 @@ public class OptionProvider implements IOptionProvider {
                     Pos bPos = new Pos(bottom.getX(), bottom.getY() + 1, bottom.getZ());
                     int dist = pos.y - bottom.getY();
                     Block b = Minecraft.getMinecraft().world.getBlockState(bottom).getBlock();
-                    if (dist <= 10 || (b == Blocks.WATER || b == Blocks.FLOWING_WATER) || parent.master().settings().hasWaterBucket)
+                    if ((dist <= 10 || (b == Blocks.WATER || b == Blocks.FLOWING_WATER) || parent.master().settings().hasWaterBucket) && !AvoidBlocks.blocks.contains(b))
                         if (!bPos.IsEqual(entry) && !bPos.IsEqual(this.parent.pos()) && !bPos.IsEqual(grandparent) && !bPos.IsEqual(greatgrandparent))
                             candidates.add(new Option(CostResolve.Resolve(NodeType.DROP, new Pos(bottom.getX(), bottom.getY() + 1, bottom.getZ()), dest), NodeType.DROP, pos));
                 }
