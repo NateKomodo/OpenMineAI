@@ -5,6 +5,15 @@ import me.ktechnet.openmineai.Models.Enums.NodeType;
 import java.util.ArrayList;
 
 public class NodeClass {
+    public static ArrayList<NodeType> gravityCheck = new ArrayList<NodeType>() {
+        {
+            add(NodeType.ASCEND_BREAK_AND_TOWER);
+            add(NodeType.STEP_DOWN_AND_BREAK);
+            add(NodeType.STEP_UP_AND_BREAK);
+            add(NodeType.BREAK_AND_MOVE);
+        }
+    };
+
     public static ArrayList<NodeType> vertical = new ArrayList<NodeType>() {
         {
             add(NodeType.DESCEND_MINE);

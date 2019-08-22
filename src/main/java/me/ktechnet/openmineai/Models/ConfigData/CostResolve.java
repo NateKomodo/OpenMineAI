@@ -1,5 +1,6 @@
 package me.ktechnet.openmineai.Models.ConfigData;
 
+import me.ktechnet.openmineai.Helpers.AdjacentBlocksHelper;
 import me.ktechnet.openmineai.Helpers.DistanceHelper;
 import me.ktechnet.openmineai.Helpers.NodeClass;
 import me.ktechnet.openmineai.Main;
@@ -46,18 +47,18 @@ public class CostResolve {
         double nClass = ClassResolve(type);
         double percentageVertical = GetPercent(comp.v, comp.n);
         double percentageHorizontal = GetPercent(comp.h, comp.n);
+        int gravityBlocks = AdjacentBlocksHelper.GravityBlocksAbove(pos);
         boolean tooClose = false;
         if (Math.abs(percentageHorizontal - percentageVertical) <= 0.05 || comp.n < 10) tooClose = true;
+        if (NodeClass.gravityCheck.contains(type)) nClass = nClass + (gravityBlocks / 2);
         if (percentageHorizontal > percentageVertical) { //Bias to h
             if (NodeClass.horizontal.contains(type) && !tooClose) {
-                Main.logger.info("Bias to h");
                 return comp.n + (nClass - 0.4);
             } else {
                 return comp.n + nClass;
             }
         } else { //Bias to v
             if (NodeClass.vertical.contains(type) && !tooClose) {
-                Main.logger.info("Bias to v");
                 return comp.n + (nClass - 1);
             } else {
                 return comp.n + nClass;

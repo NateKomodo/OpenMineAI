@@ -76,7 +76,7 @@ public class OptionProvider implements IOptionProvider {
     }
 
     @Override
-    public IOption EvaluatePosition(Pos pos, boolean diagonal) { //TODO parkour handler, check chunk is loaded, gravity blocks, water, fire, doors/interactable
+    public IOption EvaluatePosition(Pos pos, boolean diagonal) { //TODO parkour handler, check chunk is loaded, fire, doors/interactable
         if (pos.IsEqual(entry) || pos.IsEqual(this.parent.pos()) || pos.IsEqual(grandparent) || pos.IsEqual(greatgrandparent)) {
             return null;
         }
@@ -111,7 +111,7 @@ public class OptionProvider implements IOptionProvider {
                 candidates.add(new Option(CostResolve.Resolve(NodeType.DESCEND_MINE, pos, dest), NodeType.DESCEND_MINE, pos));
 
             }
-        } else { //TODO swim
+        } else {
             //Side nodes
             if (rev.Evaluate(pos, r.GetMove(diagonal))) {
                 //Walk floor
