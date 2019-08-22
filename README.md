@@ -4,7 +4,7 @@ OpenMineAI is a work-in-progress Minecraft pathfinder and automation tool, with 
 
 ## Current features
 
-As of 0.1.2, the following is done:
+As of 0.1.8, the following is done:
 
 - Movement
 - Breaking and placing
