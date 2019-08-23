@@ -9,6 +9,8 @@ public class HazardBlocks {
     public static ArrayList<Block> blocks = new ArrayList<Block>() {
         {
             add(Blocks.CACTUS);
+            add(Blocks.MAGMA);
+            add(Blocks.FIRE);
         }
     };
 }

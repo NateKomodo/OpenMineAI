@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
-@Mod(modid = Main.MODID, name = Main.NAME, version = Main.VERSION, acceptedMinecraftVersions = "")
+@Mod(modid = Main.MODID, name = Main.NAME, version = Main.VERSION)
 public class Main
 {
     public static final String NAME = "Open Mine AI";

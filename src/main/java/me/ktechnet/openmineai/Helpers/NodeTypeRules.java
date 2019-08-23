@@ -24,7 +24,7 @@ public class NodeTypeRules {
         rule.PushToStack(0, Rules.IMPASSABLE_NOT_LIQUID);
         return rule;
     }
-    public IRule GetStepUpAndBreak() { //TODO this may cause diagonal tunneling, testing needed
+    public IRule GetStepUpAndBreak() {
         IRule rule = new Rule();
         rule.ruleMeta().CheckBreakableLavaAdj = true;
         rule.PushToStack(2, Rules.BREAKABLE_OR_PASSABLE);
@@ -42,7 +42,7 @@ public class NodeTypeRules {
         rule.PushToStack(-2, Rules.IMPASSABLE_NOT_LIQUID);
         return rule;
     }
-    public IRule GetStepDownAndBreak() { //TODO this may cause diagonal tunneling, testing needed
+    public IRule GetStepDownAndBreak() {
         IRule rule = new Rule();
         rule.ruleMeta().CheckBreakableLavaAdj = true;
         rule.PushToStack(1, Rules.BREAKABLE_OR_PASSABLE);

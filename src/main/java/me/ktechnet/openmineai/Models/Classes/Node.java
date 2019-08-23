@@ -158,7 +158,7 @@ public class Node implements INode {
         //        node.SpawnChildren();
         //    }
         //};
-        //new Thread(runnable).start(); //TODO thread control / async
+        //new Thread(runnable).start(); //TODO Antpath
         //Runnable runnable2 = new Runnable() {
         //    @Override
         //    public void run() {

@@ -193,27 +193,18 @@ public class OptionProvider implements IOptionProvider {
     public ArrayList<IOption> EvaluateOptions() {
         Pos pos = parent.pos();
         ArrayList<IOption> list = new ArrayList<>();
-        if (!(parent.myType() == NodeType.PARKOUR || parent.myType() == NodeType.DROP)) {
-            list.add(EvaluatePosition(new Pos(pos.x + 1, pos.y, pos.z), false));
-            list.add(EvaluatePosition(new Pos(pos.x + -1, pos.y, pos.z), false));
-            list.add(EvaluatePosition(new Pos(pos.x, pos.y + 1, pos.z), false));
-            list.add(EvaluatePosition(new Pos(pos.x, pos.y - 1, pos.z), false));
-            list.add(EvaluatePosition(new Pos(pos.x, pos.y, pos.z + 1), false));
-            list.add(EvaluatePosition(new Pos(pos.x, pos.y, pos.z - 1), false));
-            list.add(EvaluatePosition(new Pos(pos.x + 1, pos.y, pos.z + 1), true));
-            list.add(EvaluatePosition(new Pos(pos.x + 1, pos.y, pos.z - 1), true));
-            list.add(EvaluatePosition(new Pos(pos.x - 1, pos.y, pos.z + 1), true));
-            list.add(EvaluatePosition(new Pos(pos.x - 1, pos.y, pos.z - 1), true));
-        } else if (parent.myType() == NodeType.DROP) {
-            BlockPos bPos = GetBlockBeneath(pos);
-            pos = new Pos(bPos.getX(), bPos.getY() + 1, bPos.getZ());
-            if (pos.IsEqual(parent.master().destination())) {
-                Pos finalPos = pos;
-                return new ArrayList<IOption>() {
-                    {
-                        add(new Option(0, NodeType.DESTINATION, finalPos));
-                    }
-                };
+        if (!(parent.myType() == NodeType.PARKOUR)) {
+            if (parent.myType() == NodeType.DROP) {
+                BlockPos bPos = GetBlockBeneath(pos);
+                pos = new Pos(bPos.getX(), bPos.getY() + 1, bPos.getZ());
+                if (pos.IsEqual(parent.master().destination())) {
+                    Pos finalPos = pos;
+                    return new ArrayList<IOption>() {
+                        {
+                            add(new Option(0, NodeType.DESTINATION, finalPos));
+                        }
+                    };
+                }
             }
             list.add(EvaluatePosition(new Pos(pos.x + 1, pos.y, pos.z), false));
             list.add(EvaluatePosition(new Pos(pos.x + -1, pos.y, pos.z), false));
