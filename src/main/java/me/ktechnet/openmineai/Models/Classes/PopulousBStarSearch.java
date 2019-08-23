@@ -11,7 +11,7 @@ import me.ktechnet.openmineai.Models.Interfaces.IPathingProvider;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class PopulousAStarSearch implements IPathingProvider {
+public class PopulousBStarSearch implements IPathingProvider {
 
     private ConcurrentHashMap<Pos, INode> nodes = new ConcurrentHashMap<>(); //Holds a list of ref's to each node, excluding initial
 

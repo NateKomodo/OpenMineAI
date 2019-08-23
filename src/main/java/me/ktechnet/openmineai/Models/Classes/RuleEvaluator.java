@@ -51,10 +51,10 @@ public class RuleEvaluator implements IRuleEvaluator {
                     if (!pBlocks.contains(b) && !IsBroken(inStack) || IsPlaced(inStack)) return false;
                     continue;
                 case IMPASSABLE:
-                    if (pBlocks.contains(b) || IsBroken(inStack)) return false;
+                    if ((pBlocks.contains(b) || IsBroken(inStack)) && !IsPlaced(inStack)) return false;
                     continue;
                 case IMPASSABLE_NOT_LIQUID:
-                    if (pBlocks.contains(b) || aBlocks.contains(b) || IsBroken(inStack) || wBlocks.contains(b) || hBlocks.contains(b)) return false;
+                    if ((pBlocks.contains(b) || aBlocks.contains(b) || IsBroken(inStack) || wBlocks.contains(b) || hBlocks.contains(b)) && !IsPlaced(inStack)) return false;
                     continue;
                 case ANY_NOT_LIQUID:
                     if (aBlocks.contains(b) || wBlocks.contains(b)) return false;

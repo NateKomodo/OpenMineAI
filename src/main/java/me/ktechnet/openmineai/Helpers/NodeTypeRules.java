@@ -19,8 +19,8 @@ public class NodeTypeRules {
         rule.ruleMeta().Diagonal = diagonal;
         rule.ruleMeta().RequireHeadSpace = true;
         rule.ruleMeta().diagonalTest = GetDiagCheckStepUp();
-        rule.PushToStack(2, Rules.PASSABLE_OR_CLIMBABLE);
-        rule.PushToStack(1, Rules.PASSABLE_OR_CLIMBABLE);
+        rule.PushToStack(2, Rules.PASSABLE);
+        rule.PushToStack(1, Rules.PASSABLE);
         rule.PushToStack(0, Rules.IMPASSABLE_NOT_LIQUID);
         return rule;
     }
@@ -39,7 +39,7 @@ public class NodeTypeRules {
         rule.ruleMeta().diagonalTest = GetDiagCheckStepDown();
         rule.PushToStack(1, Rules.PASSABLE);
         rule.PushToStack(0, Rules.PASSABLE);
-        rule.PushToStack(-1, Rules.PASSABLE_OR_CLIMBABLE);
+        rule.PushToStack(-1, Rules.PASSABLE);
         rule.PushToStack(-2, Rules.IMPASSABLE_NOT_LIQUID);
         return rule;
     }
@@ -85,6 +85,7 @@ public class NodeTypeRules {
         rule.ruleMeta().PlaceRequired = true;
         rule.PushToStack(1, Rules.PASSABLE);
         rule.PushToStack(0, Rules.PASSABLE);
+        rule.PushToStack(-2, Rules.IMPASSABLE_NOT_LIQUID);
         return rule;
     }
     public IRule GetBreakAndTower() {
@@ -94,6 +95,7 @@ public class NodeTypeRules {
         rule.ruleMeta().BreakRequired = true;
         rule.PushToStack(1, Rules.BREAKABLE);
         rule.PushToStack(0, Rules.PASSABLE);
+        rule.PushToStack(-2, Rules.IMPASSABLE_NOT_LIQUID);
         return rule;
     }
     public IRule GetLadder() {

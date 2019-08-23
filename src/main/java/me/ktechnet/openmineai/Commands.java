@@ -2,7 +2,7 @@ package me.ktechnet.openmineai;
 
 import me.ktechnet.openmineai.Helpers.ChatMessageHandler;
 import me.ktechnet.openmineai.Helpers.PlayerControl;
-import me.ktechnet.openmineai.Models.Classes.PopulousAStarSearch;
+import me.ktechnet.openmineai.Models.Classes.PopulousBStarSearch;
 import me.ktechnet.openmineai.Models.Classes.Pos;
 import me.ktechnet.openmineai.Models.ConfigData.Settings;
 import me.ktechnet.openmineai.Models.Enums.NodeType;
@@ -74,7 +74,7 @@ public class Commands extends CommandBase implements IClientCommand, IPathingCal
             }
             else if (args[0].equals("5") && args.length == 6)
             {
-                IPathingProvider pathingProvider = new PopulousAStarSearch();
+                IPathingProvider pathingProvider = new PopulousBStarSearch();
                 EntityPlayerSP p = Minecraft.getMinecraft().player;
                 Pos pos = new Pos((int)p.posX, (int)p.posY, (int)p.posZ);
                 Pos dest = new Pos(Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]));
