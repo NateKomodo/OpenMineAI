@@ -7,6 +7,7 @@ import me.ktechnet.openmineai.Helpers.PlacedBlocksHelper;
 import me.ktechnet.openmineai.Main;
 import me.ktechnet.openmineai.Models.ConfigData.AvoidBlocks;
 import me.ktechnet.openmineai.Models.ConfigData.CostResolve;
+import me.ktechnet.openmineai.Models.ConfigData.PassableBlocks;
 import me.ktechnet.openmineai.Models.Enums.NodeType;
 import me.ktechnet.openmineai.Models.Interfaces.INode;
 import me.ktechnet.openmineai.Models.Interfaces.IOption;
@@ -66,7 +67,7 @@ public class OptionProvider implements IOptionProvider {
             }
         }
         this.r = new NodeTypeRules();
-        this.rev = new RuleEvaluator(Broken, Placed, parentPos);
+        this.rev = new RuleEvaluator(Broken, Placed, parentPos, this.parent.master().settings());
         this.dest = this.parent.master().destination();
     }
 
@@ -160,7 +161,7 @@ public class OptionProvider implements IOptionProvider {
                 candidates.add(new Option(CostResolve.Resolve(NodeType.BRIDGE, pos, dest), NodeType.BRIDGE, pos));
 
             } else if (rev.Evaluate(pos, r.GetDecentOrParkourOrBridge(diagonal))) {
-                if (!diagonal) candidates.add(new Option(CostResolve.Resolve(NodeType.BRIDGE, pos, dest), NodeType.BRIDGE, pos));
+                if (!diagonal && this.parent.master().settings().allowPlace) candidates.add(new Option(CostResolve.Resolve(NodeType.BRIDGE, pos, dest), NodeType.BRIDGE, pos));
                 BlockPos bottom = GetBlockBeneath(pos);
                 if (bottom != null) {
                     Pos bPos = new Pos(bottom.getX(), bottom.getY() + 1, bottom.getZ());
@@ -228,7 +229,7 @@ public class OptionProvider implements IOptionProvider {
         for (int i = start.y; i >= 0; i--) {
             BlockPos bPos = new BlockPos(start.x, i, start.z);
             Block b = Minecraft.getMinecraft().world.getBlockState(bPos).getBlock();
-            if (b != Blocks.AIR) return bPos;
+            if (!PassableBlocks.blocks.contains(b)) return bPos;
         }
         return null;
     }

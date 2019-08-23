@@ -1,15 +1,14 @@
 package me.ktechnet.openmineai.Models.Interfaces;
 
-import com.sun.jna.ptr.ByReference;
 import me.ktechnet.openmineai.Models.Classes.Pos;
 import me.ktechnet.openmineai.Models.ConfigData.Settings;
 import me.ktechnet.openmineai.Models.Enums.BackpropagateCondition;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public interface IPathingProvider {
-    HashMap<Pos, INode> nodeManifest(); //Holds a list of ref's to each node, excluding initial
+    ConcurrentHashMap<Pos, INode> nodeManifest(); //Holds a list of ref's to each node, excluding initial
 
     INode initial();
 

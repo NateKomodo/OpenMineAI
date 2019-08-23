@@ -27,6 +27,7 @@ public class NodeTypeRules {
     public IRule GetStepUpAndBreak() {
         IRule rule = new Rule();
         rule.ruleMeta().CheckBreakableLavaAdj = true;
+        rule.ruleMeta().BreakRequired = true;
         rule.PushToStack(2, Rules.BREAKABLE_OR_PASSABLE);
         rule.PushToStack(1, Rules.BREAKABLE_OR_PASSABLE);
         rule.PushToStack(0, Rules.IMPASSABLE_NOT_LIQUID);
@@ -45,6 +46,7 @@ public class NodeTypeRules {
     public IRule GetStepDownAndBreak() {
         IRule rule = new Rule();
         rule.ruleMeta().CheckBreakableLavaAdj = true;
+        rule.ruleMeta().BreakRequired = true;
         rule.PushToStack(1, Rules.BREAKABLE_OR_PASSABLE);
         rule.PushToStack(0, Rules.BREAKABLE_OR_PASSABLE);
         rule.PushToStack(-1, Rules.BREAKABLE_OR_PASSABLE);
@@ -54,6 +56,7 @@ public class NodeTypeRules {
     public IRule GetBreakAndMove() {
         IRule rule = new Rule();
         rule.ruleMeta().CheckBreakableLavaAdj = true;
+        rule.ruleMeta().BreakRequired = true;
         rule.PushToStack(1, Rules.BREAKABLE_OR_PASSABLE);
         rule.PushToStack(0, Rules.BREAKABLE_OR_PASSABLE);
         rule.PushToStack(-1, Rules.IMPASSABLE_NOT_LIQUID);
@@ -71,6 +74,7 @@ public class NodeTypeRules {
     }
     public IRule GetLiquidBridge() {
         IRule rule = new Rule();
+        rule.ruleMeta().PlaceRequired = true;
         rule.PushToStack(1, Rules.PASSABLE);
         rule.PushToStack(0, Rules.PASSABLE);
         rule.PushToStack(-1, Rules.LIQUID);
@@ -78,6 +82,7 @@ public class NodeTypeRules {
     }
     public IRule GetTower() {
         IRule rule = new Rule();
+        rule.ruleMeta().PlaceRequired = true;
         rule.PushToStack(1, Rules.PASSABLE);
         rule.PushToStack(0, Rules.PASSABLE);
         return rule;
@@ -85,6 +90,8 @@ public class NodeTypeRules {
     public IRule GetBreakAndTower() {
         IRule rule = new Rule();
         rule.ruleMeta().CheckBreakableLavaAdj = true;
+        rule.ruleMeta().PlaceRequired = true;
+        rule.ruleMeta().BreakRequired = true;
         rule.PushToStack(1, Rules.BREAKABLE);
         rule.PushToStack(0, Rules.PASSABLE);
         return rule;
@@ -102,6 +109,7 @@ public class NodeTypeRules {
     public IRule GetDescentMine() {
         IRule rule = new Rule();
         rule.ruleMeta().CheckBreakableLavaAdj = true;
+        rule.ruleMeta().BreakRequired = true;
         rule.PushToStack(1, Rules.PASSABLE);
         rule.PushToStack(0, Rules.BREAKABLE);
         return rule;

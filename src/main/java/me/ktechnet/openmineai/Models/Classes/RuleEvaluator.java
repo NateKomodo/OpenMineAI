@@ -1,13 +1,8 @@
 package me.ktechnet.openmineai.Models.Classes;
 
 import me.ktechnet.openmineai.Helpers.AdjacentLavaHelper;
-import me.ktechnet.openmineai.Main;
-import me.ktechnet.openmineai.Models.ConfigData.AvoidBlocks;
-import me.ktechnet.openmineai.Models.ConfigData.HazardBlocks;
-import me.ktechnet.openmineai.Models.ConfigData.PassableBlocks;
-import me.ktechnet.openmineai.Models.ConfigData.WaterBlocks;
+import me.ktechnet.openmineai.Models.ConfigData.*;
 import me.ktechnet.openmineai.Models.Enums.Rules;
-import me.ktechnet.openmineai.Models.Interfaces.INode;
 import me.ktechnet.openmineai.Models.Interfaces.IRule;
 import me.ktechnet.openmineai.Models.Interfaces.IRuleEvaluator;
 import net.minecraft.block.Block;
@@ -21,11 +16,13 @@ public class RuleEvaluator implements IRuleEvaluator {
     private ArrayList<Pos> brokenBlocks;
     private ArrayList<Pos> placedBlocks;
     private Pos parent;
+    private Settings settings;
 
-    public RuleEvaluator(ArrayList<Pos> brokenBlocks, ArrayList<Pos> placedBlocks, Pos parent) {
+    public RuleEvaluator(ArrayList<Pos> brokenBlocks, ArrayList<Pos> placedBlocks, Pos parent, Settings settings) {
         this.brokenBlocks = brokenBlocks;
         this.placedBlocks = placedBlocks;
         this.parent = parent;
+        this.settings = settings;
     }
     @Override
     public boolean Evaluate(Pos pos, IRule rule) {
@@ -36,6 +33,8 @@ public class RuleEvaluator implements IRuleEvaluator {
         if (rule.ruleMeta().RequireHeadSpace) {
             if (!pBlocks.contains(FetchBlock(new Pos(parent.x, parent.y + 2, parent.z)))) return false;
         }
+        if (rule.ruleMeta().BreakRequired && !settings.allowBreak) return false;
+        if (rule.ruleMeta().PlaceRequired && !settings.allowPlace) return false;
         if (rule.ruleMeta().Diagonal) {
             //Ensure we can actually go diagonally
             Pos toCheckX = new Pos(pos.x - (pos.x - parent.x), pos.y, pos.z);

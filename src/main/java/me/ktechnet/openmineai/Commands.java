@@ -18,7 +18,6 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.IClientCommand;
@@ -73,21 +72,17 @@ public class Commands extends CommandBase implements IClientCommand, IPathingCal
                 PlayerControl.Jump = false;
                 PlayerControl.Sprint = false;
             }
-            else if (args[0].equals("5") && args.length == 4)
+            else if (args[0].equals("5") && args.length == 6)
             {
                 IPathingProvider pathingProvider = new PopulousAStarSearch();
                 EntityPlayerSP p = Minecraft.getMinecraft().player;
                 Pos pos = new Pos((int)p.posX, (int)p.posY, (int)p.posZ);
                 Pos dest = new Pos(Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]));
                 pre = LocalDateTime.now();
-                pathingProvider.StartPathfinding(dest, pos, this, new Settings());
-            }
-            else if (args[0].equals(6))
-            {
-                EntityPlayerSP p = Minecraft.getMinecraft().player;
-                Pos pos = new Pos((int)p.posX, (int)p.posY, (int)p.posZ);
-                BlockPos bPos = rayTrace(pos).getBlockPos();
-                ChatMessageHandler.SendMessage("Hit: " + bPos.getX() + "," + bPos.getY() + "," + bPos.getZ());
+                Settings settings = new Settings();
+                settings.allowBreak = Boolean.parseBoolean(args[4]);
+                settings.allowPlace = Boolean.parseBoolean(args[5]);
+                pathingProvider.StartPathfinding(dest, pos, this, settings);
             }
         }
     }

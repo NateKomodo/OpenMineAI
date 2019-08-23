@@ -9,12 +9,11 @@ import me.ktechnet.openmineai.Models.Interfaces.IPathingCallback;
 import me.ktechnet.openmineai.Models.Interfaces.IPathingProvider;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PopulousAStarSearch implements IPathingProvider {
 
-    private HashMap<Pos, INode> nodes = new HashMap<>(); //Holds a list of ref's to each node, excluding initial
+    private ConcurrentHashMap<Pos, INode> nodes = new ConcurrentHashMap<>(); //Holds a list of ref's to each node, excluding initial
 
     private INode initial;
 
@@ -27,7 +26,7 @@ public class PopulousAStarSearch implements IPathingProvider {
     private Settings settings;
 
     @Override
-    public HashMap<Pos, INode> nodeManifest() {
+    public ConcurrentHashMap<Pos, INode> nodeManifest() {
         return nodes;
     }
 
