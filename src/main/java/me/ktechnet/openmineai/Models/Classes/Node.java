@@ -134,12 +134,7 @@ public class Node implements INode {
             Backpropagate(BackpropagateCondition.OUT_OF_CHUNK, new ArrayList<>());
             return;
         }
-        Collections.sort(options, new Comparator<IOption>() {
-            @Override
-            public int compare(IOption o1, IOption o2) {
-                return Double.compare(o1.cost(), o2.cost());
-            }
-        });
+        Collections.sort(options, Comparator.comparingDouble(IOption::cost));
         if (!(options.size() > 0)) {
             ChatMessageHandler.SendMessage("No options found.");
             return;

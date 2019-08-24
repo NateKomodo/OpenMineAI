@@ -9,10 +9,7 @@ import me.ktechnet.openmineai.Models.ConfigData.CostResolve;
 import me.ktechnet.openmineai.Models.ConfigData.PassableBlocks;
 import me.ktechnet.openmineai.Models.Enums.BackpropagateCondition;
 import me.ktechnet.openmineai.Models.Enums.NodeType;
-import me.ktechnet.openmineai.Models.Interfaces.INode;
-import me.ktechnet.openmineai.Models.Interfaces.IOption;
-import me.ktechnet.openmineai.Models.Interfaces.IOptionProvider;
-import me.ktechnet.openmineai.Models.Interfaces.IRuleEvaluator;
+import me.ktechnet.openmineai.Models.Interfaces.*;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
@@ -168,18 +165,17 @@ public class OptionProvider implements IOptionProvider {
                         if (!bPos.IsEqual(entry) && !bPos.IsEqual(this.parent.pos()) && !bPos.IsEqual(grandparent) && !bPos.IsEqual(greatgrandparent))
                             candidates.add(new Option(CostResolve.Resolve(NodeType.DROP, new Pos(bottom.getX(), bottom.getY() + 1, bottom.getZ()), dest), NodeType.DROP, pos));
                 }
-                //TODO parkour
-                //Update: as we now eval all, we can split these up
-                //Note: Parkour nodes will always be in the air, and the executor starts executing them while on the previous solid block
+                ArrayList<IParkourOption> parkourOptions = new ParkourProvider().GetParkourLocations(pos, parentPos); //Note: Parkour nodes will always be in the air, and the executor starts executing them while on the previous solid block
+                if (parkourOptions.size() > 0) {
+                    Collections.sort(parkourOptions, Comparator.comparingDouble(IParkourOption::Cost));
+                    if (parkourOptions.get(0).Cost() > parkourOptions.get(candidates.size() - 1).Cost()) Collections.reverse(parkourOptions);
+                    IParkourOption prkO = parkourOptions.get(0);
+                    candidates.add(new Option(CostResolve.Resolve(NodeType.PARKOUR, prkO.pos(), dest), NodeType.PARKOUR, pos));
+                }
             }
         }
         if (candidates.size() > 0) {
-            Collections.sort(candidates, new Comparator<IOption>() {
-                @Override
-                public int compare(IOption o1, IOption o2) {
-                    return Double.compare(o1.cost(), o2.cost());
-                }
-            });
+            Collections.sort(candidates, Comparator.comparingDouble(IOption::cost));
             if (candidates.get(0).cost() > candidates.get(candidates.size() - 1).cost()) Collections.reverse(candidates);
             return candidates.get(0);
         } else {
