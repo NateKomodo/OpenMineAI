@@ -7,5 +7,7 @@ public interface IPathingCallback {
 
     void alternateRouteFound(IRoute route);
 
+    void outOfChunk(IRoute route);
+
     //TODO failed to find path
 }

@@ -66,11 +66,13 @@ public class PopulousBStarSearch implements IPathingProvider {
                 if (!hasFoundRoute) {
                     callback.completeRouteFound(route);
                     hasFoundRoute = true;
-                    break;
                 } else {
                     callback.alternateRouteFound(route);
-                    break;
                 }
+                break;
+            case OUT_OF_CHUNK:
+                callback.outOfChunk(route);
+                break;
         }
     }
 }

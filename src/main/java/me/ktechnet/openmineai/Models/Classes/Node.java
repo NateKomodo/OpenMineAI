@@ -130,6 +130,10 @@ public class Node implements INode {
             return;
         }
         options = optionProvider.EvaluateOptions();
+        if (options == null) {
+            Backpropagate(BackpropagateCondition.OUT_OF_CHUNK, new ArrayList<>());
+            return;
+        }
         Collections.sort(options, new Comparator<IOption>() {
             @Override
             public int compare(IOption o1, IOption o2) {

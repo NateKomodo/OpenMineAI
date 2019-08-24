@@ -1,13 +1,13 @@
 package me.ktechnet.openmineai.Models.Classes;
 
+import me.ktechnet.openmineai.Helpers.AdjacentBlocksHelper;
 import me.ktechnet.openmineai.Helpers.BrokenBlocksHelper;
-import me.ktechnet.openmineai.Helpers.ChatMessageHandler;
 import me.ktechnet.openmineai.Helpers.NodeTypeRules;
 import me.ktechnet.openmineai.Helpers.PlacedBlocksHelper;
-import me.ktechnet.openmineai.Main;
 import me.ktechnet.openmineai.Models.ConfigData.AvoidBlocks;
 import me.ktechnet.openmineai.Models.ConfigData.CostResolve;
 import me.ktechnet.openmineai.Models.ConfigData.PassableBlocks;
+import me.ktechnet.openmineai.Models.Enums.BackpropagateCondition;
 import me.ktechnet.openmineai.Models.Enums.NodeType;
 import me.ktechnet.openmineai.Models.Interfaces.INode;
 import me.ktechnet.openmineai.Models.Interfaces.IOption;
@@ -15,11 +15,8 @@ import me.ktechnet.openmineai.Models.Interfaces.IOptionProvider;
 import me.ktechnet.openmineai.Models.Interfaces.IRuleEvaluator;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -193,10 +190,12 @@ public class OptionProvider implements IOptionProvider {
     @Override
     public ArrayList<IOption> EvaluateOptions() {
         Pos pos = parent.pos();
+        if (AdjacentBlocksHelper.AdjacentOutOfChunk(pos)) return null;
         ArrayList<IOption> list = new ArrayList<>();
         if (!(parent.myType() == NodeType.PARKOUR)) {
             if (parent.myType() == NodeType.DROP) {
                 BlockPos bPos = GetBlockBeneath(pos);
+                if (bPos == null) return null;
                 pos = new Pos(bPos.getX(), bPos.getY() + 1, bPos.getZ());
                 if (pos.IsEqual(parent.master().destination())) {
                     Pos finalPos = pos;

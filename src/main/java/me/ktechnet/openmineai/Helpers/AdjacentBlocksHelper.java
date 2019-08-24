@@ -24,4 +24,15 @@ public class AdjacentBlocksHelper {
         }
         return amount;
     }
+    public static boolean AdjacentOutOfChunk(Pos pos) {
+        if (!Minecraft.getMinecraft().world.getChunkFromBlockCoords(new Pos(pos.x + 1, pos.y, pos.z).ConvertToBlockPos()).isLoaded()) return true;
+        if (!Minecraft.getMinecraft().world.getChunkFromBlockCoords(new Pos(pos.x - 1, pos.y, pos.z).ConvertToBlockPos()).isLoaded()) return true;
+        if (!Minecraft.getMinecraft().world.getChunkFromBlockCoords(new Pos(pos.x, pos.y, pos.z + 1).ConvertToBlockPos()).isLoaded()) return true;
+        if (!Minecraft.getMinecraft().world.getChunkFromBlockCoords(new Pos(pos.x, pos.y, pos.z - 1).ConvertToBlockPos()).isLoaded()) return true;
+        if (!Minecraft.getMinecraft().world.getChunkFromBlockCoords(new Pos(pos.x + 1, pos.y, pos.z + 1).ConvertToBlockPos()).isLoaded()) return true;
+        if (!Minecraft.getMinecraft().world.getChunkFromBlockCoords(new Pos(pos.x + 1, pos.y, pos.z - 1).ConvertToBlockPos()).isLoaded()) return true;
+        if (!Minecraft.getMinecraft().world.getChunkFromBlockCoords(new Pos(pos.x - 1, pos.y, pos.z + 1).ConvertToBlockPos()).isLoaded()) return true;
+        if (!Minecraft.getMinecraft().world.getChunkFromBlockCoords(new Pos(pos.x - 1, pos.y, pos.z - 1).ConvertToBlockPos()).isLoaded()) return true;
+        return false;
+    }
 }
