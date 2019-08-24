@@ -10,6 +10,8 @@ public class Option implements IOption {
 
     private Pos position;
 
+    private Pos artificalParent;
+
     @Override
     public double cost() {
         return cost;
@@ -25,9 +27,15 @@ public class Option implements IOption {
         return position;
     }
 
-    public Option(double cost, NodeType candidate, Pos position) {
+    @Override
+    public Pos artificalParent() {
+        return artificalParent;
+    }
+
+    public Option(double cost, NodeType candidate, Pos position, Pos artificalParent) {
         this.cost = cost;
         this.typeCandidate = candidate;
         this.position = position;
+        this.artificalParent = artificalParent;
     }
 }

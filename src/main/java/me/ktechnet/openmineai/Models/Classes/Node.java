@@ -40,8 +40,10 @@ public class Node implements INode {
 
     private Node me = this;
 
+    private Pos artificalParent;
 
-    Node(NodeType type, IPathingProvider master, INode parent, double currentCost, double myCost, Pos myPos, Pos destination, int TTL) { //TODO am i a replicant or not, fix adj to destination but solid block issue
+
+    Node(NodeType type, IPathingProvider master, INode parent, double currentCost, double myCost, Pos myPos, Pos destination, int TTL, Pos artificalParent) { //TODO am i a replicant or not, fix adj to destination but solid block issue
         this.myType = type;
         this.master = master;
         this.parent = parent;
@@ -50,6 +52,7 @@ public class Node implements INode {
         this.myPos = myPos;
         this.destination = destination;
         this.TTL = TTL;
+        this.artificalParent = artificalParent;
         master.nodeManifest().put(myPos, this);
         //TODO check for collisions, and partial backprop
         optionProvider = new OptionProvider(this);
@@ -105,6 +108,11 @@ public class Node implements INode {
     @Override
     public int TTL() {
         return TTL;
+    }
+
+    @Override
+    public Pos artificialParent() {
+        return artificalParent;
     }
 
     @Override
@@ -168,7 +176,7 @@ public class Node implements INode {
         //    }
         //};
         //new Thread(runnable2).start();
-        Node node = new Node(option1.typeCandidate(), master, me, costToMe + option1.cost(), option1.cost(), option1.position(), destination, TTL - 1);
+        Node node = new Node(option1.typeCandidate(), master, me, costToMe + option1.cost(), option1.cost(), option1.position(), destination, TTL - 1, option1.artificalParent());
         children.add(node);
         node.SpawnChildren();
     }

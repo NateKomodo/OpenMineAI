@@ -27,6 +27,8 @@ public interface INode {
 
     int TTL();
 
+    Pos artificialParent();
+
     void Backpropagate(BackpropagateCondition condition, ArrayList<INode> path);
 
     void SpawnChildren();

@@ -71,7 +71,7 @@ public class OptionProvider implements IOptionProvider {
     }
 
     @Override
-    public IOption EvaluatePosition(Pos pos, boolean diagonal) { //TODO parkour handler, check chunk is loaded
+    public IOption EvaluatePosition(Pos pos, boolean diagonal, Pos artificalParent) { //TODO parkour handler, check chunk is loaded
         if (pos.IsEqual(entry) || pos.IsEqual(this.parent.pos()) || pos.IsEqual(grandparent) || pos.IsEqual(greatgrandparent)) {
             return null;
         }
@@ -79,38 +79,38 @@ public class OptionProvider implements IOptionProvider {
         ArrayList<IOption> candidates = new ArrayList<>();
 
         if (pos.IsEqual(this.parent.master().destination()) && !diagonal) {
-            return new Option(0, NodeType.DESTINATION, pos);
+            return new Option(0, NodeType.DESTINATION, pos, null);
         }
 
         if (pos.y - parentPos.y == 1) {
             //Ascend
             if (rev.Evaluate(pos, r.GetBreakAndTower())) {
-                candidates.add(new Option(CostResolve.Resolve(NodeType.ASCEND_BREAK_AND_TOWER, pos, dest), NodeType.ASCEND_BREAK_AND_TOWER, pos));
+                candidates.add(new Option(CostResolve.Resolve(NodeType.ASCEND_BREAK_AND_TOWER, pos, dest), NodeType.ASCEND_BREAK_AND_TOWER, pos, null));
 
             } else if (rev.Evaluate(pos, r.GetLadder())) {
-                candidates.add(new Option(CostResolve.Resolve(NodeType.ASCEND, pos, dest), NodeType.ASCEND, pos));
+                candidates.add(new Option(CostResolve.Resolve(NodeType.ASCEND, pos, dest), NodeType.ASCEND, pos, null));
 
             }else if (rev.Evaluate(pos, r.GetTower())) {
-                candidates.add(new Option(CostResolve.Resolve(NodeType.ASCEND_TOWER, pos, dest), NodeType.ASCEND_TOWER, pos));
+                candidates.add(new Option(CostResolve.Resolve(NodeType.ASCEND_TOWER, pos, dest), NodeType.ASCEND_TOWER, pos, null));
 
             }
         } else if (pos.y - parentPos.y == -1) {
             //Descend
             if (rev.Evaluate(pos, r.GetRareDrop())) { //Should never be encountered, but still going to put a drop node in here just in case
-                candidates.add(new Option(CostResolve.Resolve(NodeType.DROP, pos, dest), NodeType.DROP, pos));
+                candidates.add(new Option(CostResolve.Resolve(NodeType.DROP, pos, dest), NodeType.DROP, pos, null));
 
             } else if (rev.Evaluate(pos, r.GetLadder())) {
-                candidates.add(new Option(CostResolve.Resolve(NodeType.DESCEND, pos, dest), NodeType.DESCEND, pos));
+                candidates.add(new Option(CostResolve.Resolve(NodeType.DESCEND, pos, dest), NodeType.DESCEND, pos, null));
 
             } else if (rev.Evaluate(pos, r.GetDescentMine())) {
-                candidates.add(new Option(CostResolve.Resolve(NodeType.DESCEND_MINE, pos, dest), NodeType.DESCEND_MINE, pos));
+                candidates.add(new Option(CostResolve.Resolve(NodeType.DESCEND_MINE, pos, dest), NodeType.DESCEND_MINE, pos, null));
 
             }
         } else {
             //Side nodes
             if (rev.Evaluate(pos, r.GetMove(diagonal))) {
                 //Walk floor
-                candidates.add(new Option(CostResolve.Resolve(NodeType.MOVE, pos, dest), NodeType.MOVE, pos));
+                candidates.add(new Option(CostResolve.Resolve(NodeType.MOVE, pos, dest), NodeType.MOVE, pos, null));
 
             } else if (rev.Evaluate(pos, r.GetStepUp(diagonal))) {
                 //Step up
@@ -118,7 +118,7 @@ public class OptionProvider implements IOptionProvider {
                 if (pos.IsEqual(entry) || pos.IsEqual(this.parent.pos()) || pos.IsEqual(grandparent) || pos.IsEqual(greatgrandparent)) { //Check that we didnt just step up into an old pos. Also checks grandparent to prevent loop
                     return null;
                 }
-                candidates.add(new Option(CostResolve.Resolve(NodeType.STEP_UP, pos, dest), NodeType.STEP_UP, pos));
+                candidates.add(new Option(CostResolve.Resolve(NodeType.STEP_UP, pos, dest), NodeType.STEP_UP, pos, null));
 
             } else if (rev.Evaluate(pos, r.GetStepDown(diagonal))) {
                 //Step down
@@ -126,11 +126,11 @@ public class OptionProvider implements IOptionProvider {
                 if (pos.IsEqual(entry) || pos.IsEqual(this.parent.pos()) || pos.IsEqual(grandparent)  || pos.IsEqual(greatgrandparent)) { //Check that we didnt just step up into an old pos. Also checks grandparent to prevent loop
                     return null;
                 }
-                candidates.add(new Option(CostResolve.Resolve(NodeType.STEP_DOWN, pos, dest), NodeType.STEP_DOWN, pos));
+                candidates.add(new Option(CostResolve.Resolve(NodeType.STEP_DOWN, pos, dest), NodeType.STEP_DOWN, pos, null));
 
             } else if (rev.Evaluate(pos, r.GetBreakAndMove()) && !diagonal) {
                 //Break and move into
-                candidates.add(new Option(CostResolve.Resolve(NodeType.BREAK_AND_MOVE, pos, dest), NodeType.BREAK_AND_MOVE, pos));
+                candidates.add(new Option(CostResolve.Resolve(NodeType.BREAK_AND_MOVE, pos, dest), NodeType.BREAK_AND_MOVE, pos, null));
 
             }else if (rev.Evaluate(pos, r.GetStepUpAndBreak()) && !diagonal) {
                 //Step up and break
@@ -138,7 +138,7 @@ public class OptionProvider implements IOptionProvider {
                 if (pos.IsEqual(entry) || pos.IsEqual(this.parent.pos()) || pos.IsEqual(grandparent) || pos.IsEqual(greatgrandparent)) { //Check that we didnt just step up into an old pos. Also checks grandparent to prevent loop
                     return null;
                 }
-                candidates.add(new Option(CostResolve.Resolve(NodeType.STEP_UP_AND_BREAK, pos, dest), NodeType.STEP_UP_AND_BREAK, pos));
+                candidates.add(new Option(CostResolve.Resolve(NodeType.STEP_UP_AND_BREAK, pos, dest), NodeType.STEP_UP_AND_BREAK, pos, null));
 
             } else if (rev.Evaluate(pos, r.GetStepDownAndBreak()) && !diagonal) {
                 //Step down and break
@@ -146,16 +146,16 @@ public class OptionProvider implements IOptionProvider {
                 if (pos.IsEqual(entry) || pos.IsEqual(this.parent.pos()) || pos.IsEqual(grandparent) || pos.IsEqual(greatgrandparent)) { //Check that we didnt just step up into an old pos. Also checks grandparent to prevent loop
                     return null;
                 }
-                candidates.add(new Option(CostResolve.Resolve(NodeType.STEP_DOWN_AND_BREAK, pos, dest), NodeType.STEP_DOWN_AND_BREAK, pos));
+                candidates.add(new Option(CostResolve.Resolve(NodeType.STEP_DOWN_AND_BREAK, pos, dest), NodeType.STEP_DOWN_AND_BREAK, pos, null));
 
             } else if (rev.Evaluate(pos, r.GetSwim(diagonal))) {
-                candidates.add(new Option(CostResolve.Resolve(NodeType.SWIM, pos, dest), NodeType.SWIM, pos));
+                candidates.add(new Option(CostResolve.Resolve(NodeType.SWIM, pos, dest), NodeType.SWIM, pos, null));
 
             } else if (rev.Evaluate(pos, r.GetLiquidBridge()) && !diagonal) {
-                candidates.add(new Option(CostResolve.Resolve(NodeType.BRIDGE, pos, dest), NodeType.BRIDGE, pos));
+                candidates.add(new Option(CostResolve.Resolve(NodeType.BRIDGE, pos, dest), NodeType.BRIDGE, pos, null));
 
             } else if (rev.Evaluate(pos, r.GetDecentOrParkourOrBridge(diagonal))) {
-                if (!diagonal && this.parent.master().settings().allowPlace) candidates.add(new Option(CostResolve.Resolve(NodeType.BRIDGE, pos, dest), NodeType.BRIDGE, pos));
+                if (!diagonal && this.parent.master().settings().allowPlace) candidates.add(new Option(CostResolve.Resolve(NodeType.BRIDGE, pos, dest), NodeType.BRIDGE, pos, null));
                 BlockPos bottom = GetBlockBeneath(pos);
                 if (bottom != null) {
                     Pos bPos = new Pos(bottom.getX(), bottom.getY() + 1, bottom.getZ());
@@ -163,14 +163,14 @@ public class OptionProvider implements IOptionProvider {
                     Block b = Minecraft.getMinecraft().world.getBlockState(bottom).getBlock();
                     if ((dist <= 10 || (b == Blocks.WATER || b == Blocks.FLOWING_WATER) || parent.master().settings().hasWaterBucket) && !AvoidBlocks.blocks.contains(b))
                         if (!bPos.IsEqual(entry) && !bPos.IsEqual(this.parent.pos()) && !bPos.IsEqual(grandparent) && !bPos.IsEqual(greatgrandparent))
-                            candidates.add(new Option(CostResolve.Resolve(NodeType.DROP, new Pos(bottom.getX(), bottom.getY() + 1, bottom.getZ()), dest), NodeType.DROP, pos));
+                            candidates.add(new Option(CostResolve.Resolve(NodeType.DROP, new Pos(bottom.getX(), bottom.getY() + 1, bottom.getZ()), dest), NodeType.DROP, pos, artificalParent));
                 }
-                ArrayList<IParkourOption> parkourOptions = new ParkourProvider().GetParkourLocations(pos, parentPos, dest); //Note: Parkour nodes will always be in the air, and the executor starts executing them while on the previous solid block
+                ArrayList<IParkourOption> parkourOptions = new ParkourProvider().GetParkourLocations(pos, artificalParent, dest); //Note: Parkour nodes will always be in the air, and the executor starts executing them while on the previous solid block
                 if (parkourOptions.size() > 0) {
                     Collections.sort(parkourOptions, Comparator.comparingDouble(IParkourOption::Cost));
                     if (parkourOptions.get(0).Cost() > parkourOptions.get(parkourOptions.size() - 1).Cost()) Collections.reverse(parkourOptions);
                     IParkourOption prkO = parkourOptions.get(0);
-                    candidates.add(new Option(CostResolve.Resolve(NodeType.PARKOUR, prkO.pos(), dest), NodeType.PARKOUR, pos));
+                    candidates.add(new Option(CostResolve.Resolve(NodeType.PARKOUR, prkO.pos(), dest), NodeType.PARKOUR, pos, artificalParent));
                 }
             }
         }
@@ -196,12 +196,12 @@ public class OptionProvider implements IOptionProvider {
                 Pos finalPos = pos;
                 return new ArrayList<IOption>() {
                     {
-                        add(new Option(0, NodeType.DESTINATION, finalPos));
+                        add(new Option(0, NodeType.DESTINATION, finalPos, null));
                     }
                 };
             }
-        } else if (parent.myType() == NodeType.PARKOUR) {
-            ArrayList<IParkourOption> parkourOptions = new ParkourProvider().GetParkourLocations(parent.pos(), parent.parent().pos(), dest); //Note: Parkour nodes will always be in the air, and the executor starts executing them while on the previous solid block
+        } else if (parent.myType() == NodeType.PARKOUR) { //TODO fix this appearing in weird places
+            ArrayList<IParkourOption> parkourOptions = new ParkourProvider().GetParkourLocations(parent.pos(), parent.artificialParent(), dest); //Note: Parkour nodes will always be in the air, and the executor starts executing them while on the previous solid block
             if (parkourOptions.size() > 0) {
                 Collections.sort(parkourOptions, Comparator.comparingDouble(IParkourOption::Cost));
                 if (parkourOptions.get(0).Cost() > parkourOptions.get(parkourOptions.size() - 1).Cost()) Collections.reverse(parkourOptions);
@@ -211,22 +211,22 @@ public class OptionProvider implements IOptionProvider {
                     Pos finalPos = pos;
                     return new ArrayList<IOption>() {
                         {
-                            add(new Option(0, NodeType.DESTINATION, finalPos));
+                            add(new Option(0, NodeType.DESTINATION, finalPos, null));
                         }
                     };
                 }
             }
         }
-        list.add(EvaluatePosition(new Pos(pos.x + 1, pos.y, pos.z), false));
-        list.add(EvaluatePosition(new Pos(pos.x + -1, pos.y, pos.z), false));
-        list.add(EvaluatePosition(new Pos(pos.x, pos.y + 1, pos.z), false));
-        list.add(EvaluatePosition(new Pos(pos.x, pos.y - 1, pos.z), false));
-        list.add(EvaluatePosition(new Pos(pos.x, pos.y, pos.z + 1), false));
-        list.add(EvaluatePosition(new Pos(pos.x, pos.y, pos.z - 1), false));
-        list.add(EvaluatePosition(new Pos(pos.x + 1, pos.y, pos.z + 1), true));
-        list.add(EvaluatePosition(new Pos(pos.x + 1, pos.y, pos.z - 1), true));
-        list.add(EvaluatePosition(new Pos(pos.x - 1, pos.y, pos.z + 1), true));
-        list.add(EvaluatePosition(new Pos(pos.x - 1, pos.y, pos.z - 1), true));
+        list.add(EvaluatePosition(new Pos(pos.x + 1, pos.y, pos.z), false, pos));
+        list.add(EvaluatePosition(new Pos(pos.x + -1, pos.y, pos.z), false, pos));
+        list.add(EvaluatePosition(new Pos(pos.x, pos.y + 1, pos.z), false, pos));
+        list.add(EvaluatePosition(new Pos(pos.x, pos.y - 1, pos.z), false, pos));
+        list.add(EvaluatePosition(new Pos(pos.x, pos.y, pos.z + 1), false, pos));
+        list.add(EvaluatePosition(new Pos(pos.x, pos.y, pos.z - 1), false, pos));
+        list.add(EvaluatePosition(new Pos(pos.x + 1, pos.y, pos.z + 1), true, pos));
+        list.add(EvaluatePosition(new Pos(pos.x + 1, pos.y, pos.z - 1), true, pos));
+        list.add(EvaluatePosition(new Pos(pos.x - 1, pos.y, pos.z + 1), true, pos));
+        list.add(EvaluatePosition(new Pos(pos.x - 1, pos.y, pos.z - 1), true, pos));
         list.removeAll(Collections.singleton(null));
         return list;
     }

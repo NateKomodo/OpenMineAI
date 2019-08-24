@@ -9,4 +9,6 @@ public interface IOption {
     NodeType typeCandidate();
 
     Pos position();
+
+    Pos artificalParent();
 }

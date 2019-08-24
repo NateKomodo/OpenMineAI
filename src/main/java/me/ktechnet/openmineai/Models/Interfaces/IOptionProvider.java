@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public interface IOptionProvider {
     INode parent();
 
-    IOption EvaluatePosition(Pos position, boolean diagonal);
+    IOption EvaluatePosition(Pos position, boolean diagonal, Pos artificalParent);
 
     ArrayList<IOption> EvaluateOptions();
 }

@@ -1,5 +1,6 @@
 package me.ktechnet.openmineai.Models.Classes;
 
+import me.ktechnet.openmineai.Helpers.AdjacentBlocksHelper;
 import me.ktechnet.openmineai.Helpers.NodeTypeRules;
 import me.ktechnet.openmineai.Main;
 import me.ktechnet.openmineai.Models.ConfigData.CostResolve;
@@ -28,14 +29,15 @@ public class ParkourProvider implements IParkourProvider {
                 int newXoffset = xOffset * i;
                 int newZoffset = zOffset * i;
                 Pos newPos = new Pos(pos.x + newXoffset, pos.y + y, pos.z + newZoffset);
-                if (rev.Evaluate(newPos, r.GetMove(diagonal))) {
+                if (rev.Evaluate(newPos, r.GetMove(diagonal)) && !PassableBlocks.blocks.contains(AdjacentBlocksHelper.Below(newPos))) {
                     parkourOptions.add(new ParkourOption(CostResolve.Resolve(NodeType.PARKOUR, newPos, dest), newPos));
                 } else if (rev.Evaluate(newPos, r.GetParkourBlocked())) {
-                    int dist = max - i;
+                    int dist = ((max + heightBonus) - negativeMod) - i;
                     if (dist > negativeMod) negativeMod = dist;
                     break;
                 }
             }
+            if (negativeMod >= 4) break;
         }
         return parkourOptions;
     }

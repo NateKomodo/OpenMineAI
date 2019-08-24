@@ -50,7 +50,7 @@ public class PopulousBadStarSearch implements IPathingProvider {
         dest = destination;
         this.settings = settings;
         this.callback = callbackClass;
-        initial = new Node(NodeType.PLAYER, this, null, 0,0, start, destination, ((int)DistanceHelper.CalcDistance(start, destination) + 10) * 4);
+        initial = new Node(NodeType.PLAYER, this, null, 0,0, start, destination, ((int)DistanceHelper.CalcDistance(start, destination) + 10) * 4, null);
         initial.SpawnChildren();
     }
 
