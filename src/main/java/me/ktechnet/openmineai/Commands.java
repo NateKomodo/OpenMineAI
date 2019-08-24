@@ -132,6 +132,9 @@ public class Commands extends CommandBase implements IClientCommand, IPathingCal
                 case SWIM:
                     Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.BLUE_GLAZED_TERRACOTTA.getDefaultState());
                     break;
+                case PARKOUR:
+                    Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.RED_GLAZED_TERRACOTTA.getDefaultState());
+                    break;
             }
         }
     }
@@ -174,6 +177,9 @@ public class Commands extends CommandBase implements IClientCommand, IPathingCal
                     break;
                 case SWIM:
                     Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.BLUE_GLAZED_TERRACOTTA.getDefaultState());
+                    break;
+                case PARKOUR:
+                    Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.RED_GLAZED_TERRACOTTA.getDefaultState());
                     break;
             }
         }

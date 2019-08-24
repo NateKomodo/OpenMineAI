@@ -165,10 +165,10 @@ public class OptionProvider implements IOptionProvider {
                         if (!bPos.IsEqual(entry) && !bPos.IsEqual(this.parent.pos()) && !bPos.IsEqual(grandparent) && !bPos.IsEqual(greatgrandparent))
                             candidates.add(new Option(CostResolve.Resolve(NodeType.DROP, new Pos(bottom.getX(), bottom.getY() + 1, bottom.getZ()), dest), NodeType.DROP, pos));
                 }
-                ArrayList<IParkourOption> parkourOptions = new ParkourProvider().GetParkourLocations(pos, parentPos); //Note: Parkour nodes will always be in the air, and the executor starts executing them while on the previous solid block
+                ArrayList<IParkourOption> parkourOptions = new ParkourProvider().GetParkourLocations(pos, parentPos, dest); //Note: Parkour nodes will always be in the air, and the executor starts executing them while on the previous solid block
                 if (parkourOptions.size() > 0) {
                     Collections.sort(parkourOptions, Comparator.comparingDouble(IParkourOption::Cost));
-                    if (parkourOptions.get(0).Cost() > parkourOptions.get(candidates.size() - 1).Cost()) Collections.reverse(parkourOptions);
+                    if (parkourOptions.get(0).Cost() > parkourOptions.get(parkourOptions.size() - 1).Cost()) Collections.reverse(parkourOptions);
                     IParkourOption prkO = parkourOptions.get(0);
                     candidates.add(new Option(CostResolve.Resolve(NodeType.PARKOUR, prkO.pos(), dest), NodeType.PARKOUR, pos));
                 }
@@ -188,11 +188,25 @@ public class OptionProvider implements IOptionProvider {
         Pos pos = parent.pos();
         if (AdjacentBlocksHelper.AdjacentOutOfChunk(pos)) return null;
         ArrayList<IOption> list = new ArrayList<>();
-        if (!(parent.myType() == NodeType.PARKOUR)) {
-            if (parent.myType() == NodeType.DROP) {
-                BlockPos bPos = GetBlockBeneath(pos);
-                if (bPos == null) return null;
-                pos = new Pos(bPos.getX(), bPos.getY() + 1, bPos.getZ());
+        if (parent.myType() == NodeType.DROP) {
+            BlockPos bPos = GetBlockBeneath(pos);
+            if (bPos == null) return null;
+            pos = new Pos(bPos.getX(), bPos.getY() + 1, bPos.getZ());
+            if (pos.IsEqual(parent.master().destination())) {
+                Pos finalPos = pos;
+                return new ArrayList<IOption>() {
+                    {
+                        add(new Option(0, NodeType.DESTINATION, finalPos));
+                    }
+                };
+            }
+        } else if (parent.myType() == NodeType.PARKOUR) {
+            ArrayList<IParkourOption> parkourOptions = new ParkourProvider().GetParkourLocations(parent.pos(), parent.parent().pos(), dest); //Note: Parkour nodes will always be in the air, and the executor starts executing them while on the previous solid block
+            if (parkourOptions.size() > 0) {
+                Collections.sort(parkourOptions, Comparator.comparingDouble(IParkourOption::Cost));
+                if (parkourOptions.get(0).Cost() > parkourOptions.get(parkourOptions.size() - 1).Cost()) Collections.reverse(parkourOptions);
+                IParkourOption prkO = parkourOptions.get(0);
+                pos = prkO.pos();
                 if (pos.IsEqual(parent.master().destination())) {
                     Pos finalPos = pos;
                     return new ArrayList<IOption>() {
@@ -202,19 +216,17 @@ public class OptionProvider implements IOptionProvider {
                     };
                 }
             }
-            list.add(EvaluatePosition(new Pos(pos.x + 1, pos.y, pos.z), false));
-            list.add(EvaluatePosition(new Pos(pos.x + -1, pos.y, pos.z), false));
-            list.add(EvaluatePosition(new Pos(pos.x, pos.y + 1, pos.z), false));
-            list.add(EvaluatePosition(new Pos(pos.x, pos.y - 1, pos.z), false));
-            list.add(EvaluatePosition(new Pos(pos.x, pos.y, pos.z + 1), false));
-            list.add(EvaluatePosition(new Pos(pos.x, pos.y, pos.z - 1), false));
-            list.add(EvaluatePosition(new Pos(pos.x + 1, pos.y, pos.z + 1), true));
-            list.add(EvaluatePosition(new Pos(pos.x + 1, pos.y, pos.z - 1), true));
-            list.add(EvaluatePosition(new Pos(pos.x - 1, pos.y, pos.z + 1), true));
-            list.add(EvaluatePosition(new Pos(pos.x - 1, pos.y, pos.z - 1), true));
-        } else {
-            //TODO parkour
         }
+        list.add(EvaluatePosition(new Pos(pos.x + 1, pos.y, pos.z), false));
+        list.add(EvaluatePosition(new Pos(pos.x + -1, pos.y, pos.z), false));
+        list.add(EvaluatePosition(new Pos(pos.x, pos.y + 1, pos.z), false));
+        list.add(EvaluatePosition(new Pos(pos.x, pos.y - 1, pos.z), false));
+        list.add(EvaluatePosition(new Pos(pos.x, pos.y, pos.z + 1), false));
+        list.add(EvaluatePosition(new Pos(pos.x, pos.y, pos.z - 1), false));
+        list.add(EvaluatePosition(new Pos(pos.x + 1, pos.y, pos.z + 1), true));
+        list.add(EvaluatePosition(new Pos(pos.x + 1, pos.y, pos.z - 1), true));
+        list.add(EvaluatePosition(new Pos(pos.x - 1, pos.y, pos.z + 1), true));
+        list.add(EvaluatePosition(new Pos(pos.x - 1, pos.y, pos.z - 1), true));
         list.removeAll(Collections.singleton(null));
         return list;
     }

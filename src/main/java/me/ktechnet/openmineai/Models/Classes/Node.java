@@ -137,6 +137,7 @@ public class Node implements INode {
         Collections.sort(options, Comparator.comparingDouble(IOption::cost));
         if (!(options.size() > 0)) {
             ChatMessageHandler.SendMessage("No options found.");
+            Backpropagate(BackpropagateCondition.PARTIAL, new ArrayList<>());
             return;
         }
         if (options.get(0).cost() > options.get(options.size() - 1).cost()) Collections.reverse(options);

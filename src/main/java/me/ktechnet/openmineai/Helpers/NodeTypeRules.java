@@ -151,4 +151,10 @@ public class NodeTypeRules {
         rule.PushToStack(0, Rules.PASSABLE);
         return rule;
     }
+    public IRule GetParkourBlocked() {
+        IRule rule = new Rule();
+        rule.PushToStack(1, Rules.IMPASSABLE);
+        rule.PushToStack(0, Rules.IMPASSABLE);
+        return rule;
+    }
 }
