@@ -16,7 +16,11 @@ public interface IPathingProvider {
 
     Settings settings();
 
+    boolean failed();
+
     void StartPathfinding(Pos destination, Pos start, IPathingCallback callbackclass, Settings settings);
 
     void RouteFound(BackpropagateCondition condition, ArrayList<INode> path);
+
+    void Cleanup();
 }

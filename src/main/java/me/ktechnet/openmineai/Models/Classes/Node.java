@@ -117,17 +117,25 @@ public class Node implements INode {
 
     @Override
     public void Backpropagate(BackpropagateCondition condition, ArrayList<INode> path) {
-        //ChatMessageHandler.SendMessage("Backpropagate!");
-        path.add(this);
-        if (myType != NodeType.PLAYER) {
-            parent.Backpropagate(condition, path);
+        if (condition != BackpropagateCondition.FAILED) {
+            path.add(this);
+            if (myType != NodeType.PLAYER) {
+                parent.Backpropagate(condition, path);
+            } else {
+                master.RouteFound(condition, path);
+            }
         } else {
-            master.RouteFound(condition, path);
+            children = null;
+            if (parent != null) parent.Backpropagate(condition, null);
         }
     }
 
     @Override
     public void SpawnChildren() {
+        if (master.failed()) {
+            Backpropagate(BackpropagateCondition.FAILED, null);
+            return;
+        }
         if (myPos.IsEqual(destination)) {
             Backpropagate(BackpropagateCondition.COMPLETE, new ArrayList<>());
             return;

@@ -195,6 +195,11 @@ public class Commands extends CommandBase implements IClientCommand, IPathingCal
         ChatMessageHandler.SendMessage("Out of chunk route found");
     }
 
+    @Override
+    public void failedToFindPath() {
+        ChatMessageHandler.SendMessage("Failed to find path");
+    }
+
     private RayTraceResult rayTrace(Pos start)
     {
         EntityPlayer player = Minecraft.getMinecraft().player;

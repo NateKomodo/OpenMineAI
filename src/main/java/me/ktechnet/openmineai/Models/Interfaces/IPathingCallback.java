@@ -9,5 +9,5 @@ public interface IPathingCallback {
 
     void outOfChunk(IRoute route);
 
-    //TODO failed to find path
+    void failedToFindPath();
 }

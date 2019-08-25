@@ -4,4 +4,5 @@ public enum BackpropagateCondition {
     PARTIAL,
     COMPLETE,
     OUT_OF_CHUNK,
+    FAILED,
 }

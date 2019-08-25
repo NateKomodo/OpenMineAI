@@ -23,6 +23,8 @@ public class PopulousBadStarSearch implements IPathingProvider {
 
     private boolean hasFoundRoute = false;
 
+    private boolean failed = false;
+
     private Settings settings;
 
     @Override
@@ -46,17 +48,35 @@ public class PopulousBadStarSearch implements IPathingProvider {
     }
 
     @Override
+    public boolean failed() {
+        return failed;
+    }
+
+    @Override
     public void StartPathfinding(Pos destination, Pos start, IPathingCallback callbackClass, Settings settings) { //TODO for executor, see if we can save on ASCEND_TOWER_BREAK, or shortcuts in general
         dest = destination;
         this.settings = settings;
         this.callback = callbackClass;
         initial = new Node(NodeType.PLAYER, this, null, 0,0, start, destination, ((int)DistanceHelper.CalcDistance(start, destination) + 10) * 4, null);
+        new java.util.Timer().schedule(
+                new java.util.TimerTask() {
+                    @Override
+                    public void run() {
+                        if (!hasFoundRoute) {
+                            callback.failedToFindPath();
+                            Cleanup();
+                        }
+                    }
+                },
+                5000
+        );
         initial.SpawnChildren();
     }
 
     @Override
     public void RouteFound(BackpropagateCondition condition, ArrayList<INode> path) {
         Route route = new Route(path, condition);
+        if (callback == null || failed) return;
         switch (condition)
         {
             case PARTIAL:
@@ -74,5 +94,11 @@ public class PopulousBadStarSearch implements IPathingProvider {
                 callback.outOfChunk(route);
                 break;
         }
+    }
+
+    @Override
+    public void Cleanup() {
+        failed = true;
+        nodes.clear();
     }
 }
