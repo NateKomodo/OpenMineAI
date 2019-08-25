@@ -11,6 +11,7 @@ import me.ktechnet.openmineai.Models.Interfaces.IParkourOption;
 import me.ktechnet.openmineai.Models.Interfaces.IParkourProvider;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.init.Blocks;
 
 import java.util.ArrayList;
 
@@ -20,6 +21,7 @@ public class ParkourProvider implements IParkourProvider {
         ArrayList<IParkourOption> parkourOptions = new ArrayList<>();
         int xOffset = pos.x - parent.x;
         int zOffset = pos.z - parent.z;
+        if (AdjacentBlocksHelper.Below(parent) == Blocks.WATER) return parkourOptions;
         RuleEvaluator rev = new RuleEvaluator(new ArrayList<>(), new ArrayList<>(), parent, new Settings());
         NodeTypeRules r = new NodeTypeRules();
         boolean diagonal = (xOffset != 0 && zOffset != 0);

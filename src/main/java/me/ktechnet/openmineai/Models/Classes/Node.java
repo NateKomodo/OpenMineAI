@@ -2,6 +2,7 @@ package me.ktechnet.openmineai.Models.Classes;
 
 import me.ktechnet.openmineai.Helpers.ChatMessageHandler;
 import me.ktechnet.openmineai.Helpers.DistanceHelper;
+import me.ktechnet.openmineai.Helpers.NodeClass;
 import me.ktechnet.openmineai.Main;
 import me.ktechnet.openmineai.Models.Enums.BackpropagateCondition;
 import me.ktechnet.openmineai.Models.Enums.NodeType;
@@ -42,8 +43,10 @@ public class Node implements INode {
 
     private Pos artificalParent;
 
+    private int replicationCount;
 
-    Node(NodeType type, IPathingProvider master, INode parent, double currentCost, double myCost, Pos myPos, Pos destination, int TTL, Pos artificalParent) { //TODO am i a replicant or not, fix adj to destination but solid block issue
+
+    Node(NodeType type, IPathingProvider master, INode parent, double currentCost, double myCost, Pos myPos, Pos destination, int TTL, Pos artificalParent, int replication) { //TODO am i a replicant or not, fix adj to destination but solid block issue
         this.myType = type;
         this.master = master;
         this.parent = parent;
@@ -53,6 +56,7 @@ public class Node implements INode {
         this.destination = destination;
         this.TTL = TTL;
         this.artificalParent = artificalParent;
+        this.replicationCount = replication;
         master.nodeManifest().put(myPos, this);
         //TODO check for collisions, and partial backprop
         optionProvider = new OptionProvider(this);
@@ -125,7 +129,7 @@ public class Node implements INode {
                 master.RouteFound(condition, path);
             }
         } else {
-            children = null;
+            children.clear();
             if (parent != null) parent.Backpropagate(condition, null);
         }
     }
@@ -133,16 +137,32 @@ public class Node implements INode {
     @Override
     public void SpawnChildren() {
         if (master.failed()) {
-            Backpropagate(BackpropagateCondition.FAILED, null);
+            new java.util.Timer().schedule(
+                    new java.util.TimerTask() {
+                        @Override
+                        public void run() {
+                            Backpropagate(BackpropagateCondition.FAILED, null); //Bypass recursion limit
+                        }
+                    },
+                    0
+            );
             return;
         }
         if (myPos.IsEqual(destination)) {
-            Backpropagate(BackpropagateCondition.COMPLETE, new ArrayList<>());
+            new java.util.Timer().schedule(
+                    new java.util.TimerTask() {
+                        @Override
+                        public void run() {
+                            Backpropagate(BackpropagateCondition.COMPLETE, new ArrayList<>()); //Bypass recursion limit
+                        }
+                    },
+                    0
+            );
             return;
         }
         if (TTL == 1) {
             ChatMessageHandler.SendMessage("TTL exceeded.");
-            Backpropagate(BackpropagateCondition.PARTIAL, new ArrayList<>());
+            master.RouteFound(BackpropagateCondition.FAILED, null);
             return;
         }
         options = optionProvider.EvaluateOptions();
@@ -153,38 +173,40 @@ public class Node implements INode {
         Collections.sort(options, Comparator.comparingDouble(IOption::cost));
         if (!(options.size() > 0)) {
             ChatMessageHandler.SendMessage("No options found.");
-            Backpropagate(BackpropagateCondition.PARTIAL, new ArrayList<>());
+            master.RouteFound(BackpropagateCondition.FAILED, null);
             return;
         }
         if (options.get(0).cost() > options.get(options.size() - 1).cost()) Collections.reverse(options);
+
         for (IOption opt : options) {
             Main.logger.info("Candidate: " + opt.typeCandidate() + " Cost: " + opt.cost());
         }
+
         IOption option1 = options.get(0);
-        if (options.size() == 2) { //TODO actually get around to implementing antpathing so we dont have to do this
-            if (options.get(0).typeCandidate() == NodeType.ASCEND_TOWER && options.get(1).typeCandidate() == NodeType.DESCEND_MINE) option1 = options.get(1);
+        int PsClass = NodeClass.GetStrictClass(option1.typeCandidate());
+
+        if (replicationCount < 1) {
+            if (options.size() >= 2) {
+                IOption option2 = options.get(1);
+                int sClass = NodeClass.GetStrictClass(option2.typeCandidate());
+                if (sClass != PsClass) {
+                    Node node = new Node(option2.typeCandidate(), master, me, costToMe, option2.cost(), option2.position(), destination, TTL - 1, null, replicationCount + 1);
+                    children.add(node);
+                    master.toProcess().add(node);
+                }
+            }
+            if (options.size() >= 3) {
+                IOption option3 = options.get(2);
+                int sClass = NodeClass.GetStrictClass(option3.typeCandidate());
+                if (sClass != PsClass) {
+                    Node node = new Node(option3.typeCandidate(), master, me, costToMe, option3.cost(), option3.position(), destination, TTL - 1, null, replicationCount + 1);
+                    children.add(node);
+                    master.toProcess().add(node);
+                }
+            }
         }
-        //IOption option2 = options.get(1); Note: make sure there are sufficient choices
-        //IOption option3 = options.get(2);
-        //Runnable runnable = new Runnable() {
-        //    @Override
-        //    public void run() {
-        //        Node node = new Node(option2.typeCandidate(), master, me, costToMe, option2.cost(), option2.position(), destination, TTL - 1);
-        //        children.add(node);
-        //        node.SpawnChildren();
-        //    }
-        //};
-        //new Thread(runnable).start(); //TODO Antpath
-        //Runnable runnable2 = new Runnable() {
-        //    @Override
-        //    public void run() {
-        //        Node node = new Node(option3.typeCandidate(), master, me, costToMe, option3.cost(), option3.position(), destination, TTL - 1);
-        //        children.add(node);
-        //        node.SpawnChildren();
-        //    }
-        //};
-        //new Thread(runnable2).start();
-        Node node = new Node(option1.typeCandidate(), master, me, costToMe + option1.cost(), option1.cost(), option1.position(), destination, TTL - 1, option1.artificalParent());
+
+        Node node = new Node(option1.typeCandidate(), master, me, costToMe + option1.cost(), option1.cost(), option1.position(), destination, TTL - 1, option1.artificalParent(), replicationCount);
         children.add(node);
         node.SpawnChildren();
     }

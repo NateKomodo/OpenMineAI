@@ -204,7 +204,8 @@ public class OptionProvider implements IOptionProvider {
                 };
             }
         } else if (parent.myType() == NodeType.PARKOUR) {
-            ArrayList<IParkourOption> parkourOptions = new ParkourProvider().GetParkourLocations(parent.pos(), parent.artificialParent(), dest); //Note: Parkour nodes will always be in the air, and the executor starts executing them while on the previous solid block
+            Pos artParent = parent.artificialParent() != null ? parent.artificialParent() : parent.parent().pos();
+            ArrayList<IParkourOption> parkourOptions = new ParkourProvider().GetParkourLocations(parent.pos(), artParent, dest);
             if (parkourOptions.size() > 0) {
                 Collections.sort(parkourOptions, Comparator.comparingDouble(IParkourOption::Cost));
                 if (parkourOptions.get(0).Cost() > parkourOptions.get(parkourOptions.size() - 1).Cost()) Collections.reverse(parkourOptions);

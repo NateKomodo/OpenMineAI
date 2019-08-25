@@ -5,11 +5,9 @@ import me.ktechnet.openmineai.Helpers.PlayerControl;
 import me.ktechnet.openmineai.Models.Classes.PopulousBadStarSearch;
 import me.ktechnet.openmineai.Models.Classes.Pos;
 import me.ktechnet.openmineai.Models.ConfigData.Settings;
+import me.ktechnet.openmineai.Models.Enums.BackpropagateCondition;
 import me.ktechnet.openmineai.Models.Enums.NodeType;
-import me.ktechnet.openmineai.Models.Interfaces.INode;
-import me.ktechnet.openmineai.Models.Interfaces.IPathingCallback;
-import me.ktechnet.openmineai.Models.Interfaces.IPathingProvider;
-import me.ktechnet.openmineai.Models.Interfaces.IRoute;
+import me.ktechnet.openmineai.Models.Interfaces.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.command.CommandBase;
@@ -21,13 +19,19 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.IClientCommand;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class Commands extends CommandBase implements IClientCommand, IPathingCallback {
 
     LocalDateTime pre;
+
+    ArrayList<IRoute> routes = new ArrayList<>();
 
     @Override
     public boolean allowUsageWithoutPrefix(ICommandSender sender, String message)
@@ -84,6 +88,25 @@ public class Commands extends CommandBase implements IClientCommand, IPathingCal
                 settings.allowPlace = Boolean.parseBoolean(args[5]);
                 pathingProvider.StartPathfinding(dest, pos, this, settings);
             }
+            else if (args[0].equals("6"))
+            {
+                Collections.sort(routes, Comparator.comparingDouble(IRoute::cost));
+                if (routes.get(0).cost() > routes.get(routes.size() - 1).cost()) Collections.reverse(routes);
+                ChatMessageHandler.SendMessage("Total routes: " + routes.size() + ", lowest cost: " + routes.get(0).cost() + " distance: " + routes.get(0).path().size());
+                SpawnRoute(routes.get(0));
+                ChatMessageHandler.SendMessage("Route spawned");
+                routes.clear();
+            }
+            else if (args[0].equals("7"))
+            {
+                Collections.sort(routes, Comparator.comparingDouble(IRoute::cost));
+                if (routes.get(0).cost() > routes.get(routes.size() - 1).cost()) Collections.reverse(routes);
+                Collections.reverse(routes);
+                ChatMessageHandler.SendMessage("Total routes: " + routes.size() + ", highest cost: " + routes.get(0).cost() + " distance: " + routes.get(0).path().size());
+                SpawnRoute(routes.get(0));
+                ChatMessageHandler.SendMessage("Route spawned");
+                routes.clear();
+            }
         }
     }
 
@@ -98,45 +121,7 @@ public class Commands extends CommandBase implements IClientCommand, IPathingCal
         LocalDateTime now = LocalDateTime.now();
         long diff = ChronoUnit.MILLIS.between(pre, now);
         ChatMessageHandler.SendMessage("Found complete route, took " + diff + "ms" + ". " + route.path().size() + " nodes");
-        for (INode node : route.path()) {
-            if (node.pos().IsEqual(node.master().destination()) || node.myType() == NodeType.DESTINATION) {
-                Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.EMERALD_BLOCK.getDefaultState());
-                continue;
-            }
-            switch (node.myType()) {
-                case PLAYER:
-                    Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.REDSTONE_BLOCK.getDefaultState());
-                    break;
-                case MOVE:
-                case ASCEND_TOWER:
-                    Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.COBBLESTONE.getDefaultState());
-                    break;
-                case STEP_UP:
-                    Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.LAPIS_BLOCK.getDefaultState());
-                    break;
-                case STEP_UP_AND_BREAK:
-                case DESCEND_MINE:
-                case ASCEND_BREAK_AND_TOWER:
-                case BREAK_AND_MOVE:
-                    Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.BRICK_BLOCK.getDefaultState());
-                    break;
-                case STEP_DOWN:
-                    Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.YELLOW_GLAZED_TERRACOTTA.getDefaultState());
-                    break;
-                case DROP:
-                    Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.PURPUR_BLOCK.getDefaultState());
-                    break;
-                case BRIDGE:
-                    Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.BLACK_GLAZED_TERRACOTTA.getDefaultState());
-                    break;
-                case SWIM:
-                    Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.BLUE_GLAZED_TERRACOTTA.getDefaultState());
-                    break;
-                case PARKOUR:
-                    Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.RED_GLAZED_TERRACOTTA.getDefaultState());
-                    break;
-            }
-        }
+        routes.add(route);
     }
 
     @Override
@@ -144,50 +129,15 @@ public class Commands extends CommandBase implements IClientCommand, IPathingCal
         LocalDateTime now = LocalDateTime.now();
         long diff = ChronoUnit.MILLIS.between(pre, now);
         ChatMessageHandler.SendMessage("Found partial route, took " + diff + "ms" + ". " + route.path().size() + " nodes");
-        for (INode node : route.path()) {
-            if (node.pos().IsEqual(node.master().destination()) || node.myType() == NodeType.DESTINATION) {
-                Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.EMERALD_BLOCK.getDefaultState());
-                continue;
-            }
-            switch (node.myType()) {
-                case PLAYER:
-                    Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.REDSTONE_BLOCK.getDefaultState());
-                    break;
-                case MOVE:
-                case ASCEND_TOWER:
-                    Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.COBBLESTONE.getDefaultState());
-                    break;
-                case STEP_UP:
-                    Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.LAPIS_BLOCK.getDefaultState());
-                    break;
-                case STEP_UP_AND_BREAK:
-                case DESCEND_MINE:
-                case ASCEND_BREAK_AND_TOWER:
-                case BREAK_AND_MOVE:
-                    Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.BRICK_BLOCK.getDefaultState());
-                    break;
-                case STEP_DOWN:
-                    Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.YELLOW_GLAZED_TERRACOTTA.getDefaultState());
-                    break;
-                case DROP:
-                    Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.PURPUR_BLOCK.getDefaultState());
-                    break;
-                case BRIDGE:
-                    Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.BLACK_GLAZED_TERRACOTTA.getDefaultState());
-                    break;
-                case SWIM:
-                    Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.BLUE_GLAZED_TERRACOTTA.getDefaultState());
-                    break;
-                case PARKOUR:
-                    Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.RED_GLAZED_TERRACOTTA.getDefaultState());
-                    break;
-            }
-        }
+        routes.add(route);
     }
 
     @Override
     public void alternateRouteFound(IRoute route) {
-        ChatMessageHandler.SendMessage("Found alternate route");
+        LocalDateTime now = LocalDateTime.now();
+        long diff = ChronoUnit.MILLIS.between(pre, now);
+        ChatMessageHandler.SendMessage("Found alternate route, took " + diff + "ms" + ". " + route.path().size() + " nodes");
+        routes.add(route);
     }
 
     @Override
@@ -206,5 +156,47 @@ public class Commands extends CommandBase implements IClientCommand, IPathingCal
         Vec3d vecStart = new Vec3d(start.x, start.y, start.z);
         Vec3d vecLook = new Vec3d(0, -10, 0);
         return player.world.rayTraceBlocks(vecStart, vecLook, true, false, true);
+    }
+
+    private void SpawnRoute(IRoute route) {
+        for (INode node : route.path()) {
+            if (node.pos().IsEqual(node.master().destination()) || node.myType() == NodeType.DESTINATION) {
+                Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.EMERALD_BLOCK.getDefaultState());
+                continue;
+            }
+            switch (node.myType()) {
+                case PLAYER:
+                    Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.REDSTONE_BLOCK.getDefaultState());
+                    break;
+                case MOVE:
+                case ASCEND_TOWER:
+                    Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.COBBLESTONE.getDefaultState());
+                    break;
+                case STEP_UP:
+                    Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.LAPIS_BLOCK.getDefaultState());
+                    break;
+                case STEP_UP_AND_BREAK:
+                case DESCEND_MINE:
+                case ASCEND_BREAK_AND_TOWER:
+                case BREAK_AND_MOVE:
+                    Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.BRICK_BLOCK.getDefaultState());
+                    break;
+                case STEP_DOWN:
+                    Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.YELLOW_GLAZED_TERRACOTTA.getDefaultState());
+                    break;
+                case DROP:
+                    Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.PURPUR_BLOCK.getDefaultState());
+                    break;
+                case BRIDGE:
+                    Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.BLACK_GLAZED_TERRACOTTA.getDefaultState());
+                    break;
+                case SWIM:
+                    Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.BLUE_GLAZED_TERRACOTTA.getDefaultState());
+                    break;
+                case PARKOUR:
+                    Minecraft.getMinecraft().world.setBlockState(node.pos().ConvertToBlockPos(), Blocks.RED_GLAZED_TERRACOTTA.getDefaultState());
+                    break;
+            }
+        }
     }
 }

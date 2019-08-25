@@ -40,6 +40,10 @@ public class PassableBlocks {
             add(Blocks.PUMPKIN_STEM);
             add(Blocks.BEETROOTS);
             add(Blocks.REEDS);
+            add(Blocks.STONE_PRESSURE_PLATE);
+            add(Blocks.WOODEN_PRESSURE_PLATE);
+            add(Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE);
+            add(Blocks.LIGHT_WEIGHTED_PRESSURE_PLATE);
         }
     };
 }
