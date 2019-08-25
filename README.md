@@ -15,7 +15,7 @@ As of 0.3.3, the following is done:
 
 Pathfinder:
 - Path partials/segment pathing (May not be required due to the low calculation times)
-- Route caching (May not be required due to the low calculation times
+- Route caching (May not be required due to the low calculation times)
 
 Path executor:
 - Switch to alternate paths
