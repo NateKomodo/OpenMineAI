@@ -13,7 +13,7 @@ As of 0.2.6, the following is done:
 
 ## Todo
 
-- Path partials/segment pathing
+- Path partials/segment pathing (May not be required due to the low calculation times)
 - Switch to alternate paths
 - Path merging (Such as when a low cost route meets a longer, but higher cost route and switches base)
 - Antpathing
