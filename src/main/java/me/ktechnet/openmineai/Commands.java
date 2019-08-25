@@ -33,6 +33,8 @@ public class Commands extends CommandBase implements IClientCommand, IPathingCal
 
     ArrayList<IRoute> routes = new ArrayList<>();
 
+    IRoute initial;
+
     @Override
     public boolean allowUsageWithoutPrefix(ICommandSender sender, String message)
     {
@@ -93,6 +95,7 @@ public class Commands extends CommandBase implements IClientCommand, IPathingCal
                 Collections.sort(routes, Comparator.comparingDouble(IRoute::cost));
                 if (routes.get(0).cost() > routes.get(routes.size() - 1).cost()) Collections.reverse(routes);
                 ChatMessageHandler.SendMessage("Total routes: " + routes.size() + ", lowest cost: " + routes.get(0).cost() + " distance: " + routes.get(0).path().size());
+                ChatMessageHandler.SendMessage("IsInitial? " + routes.get(0).equals(initial));
                 SpawnRoute(routes.get(0));
                 ChatMessageHandler.SendMessage("Route spawned");
                 routes.clear();
@@ -121,6 +124,7 @@ public class Commands extends CommandBase implements IClientCommand, IPathingCal
         LocalDateTime now = LocalDateTime.now();
         long diff = ChronoUnit.MILLIS.between(pre, now);
         ChatMessageHandler.SendMessage("Found complete route, took " + diff + "ms" + ". " + route.path().size() + " nodes");
+        initial = route;
         routes.add(route);
     }
 

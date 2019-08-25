@@ -5,13 +5,13 @@ import me.ktechnet.openmineai.Models.ConfigData.Settings;
 import me.ktechnet.openmineai.Models.Enums.BackpropagateCondition;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentHashMap;
 
 public interface IPathingProvider {
-    ConcurrentHashMap<Pos, INode> nodeManifest(); //Holds a list of ref's to each node, excluding initial
+    HashMap<String, INode> nodeManifest(); //Holds a list of ref's to each node, excluding initial
 
-    Queue<INode> toProcess(); //Queue for antpathing
+    ArrayList<INode> toProcess(); //Queue for antpathing
 
     INode initial();
 

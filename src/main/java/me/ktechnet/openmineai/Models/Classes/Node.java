@@ -12,6 +12,7 @@ import me.ktechnet.openmineai.Models.Interfaces.IOptionProvider;
 import me.ktechnet.openmineai.Models.Interfaces.IPathingProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 
 import java.util.*;
 
@@ -45,8 +46,10 @@ public class Node implements INode {
 
     private int replicationCount;
 
+    private boolean complete = false;
 
-    Node(NodeType type, IPathingProvider master, INode parent, double currentCost, double myCost, Pos myPos, Pos destination, int TTL, Pos artificalParent, int replication) { //TODO am i a replicant or not, fix adj to destination but solid block issue
+
+    Node(NodeType type, IPathingProvider master, INode parent, double currentCost, double myCost, Pos myPos, Pos destination, int TTL, Pos artificalParent, int replication) {
         this.myType = type;
         this.master = master;
         this.parent = parent;
@@ -57,10 +60,9 @@ public class Node implements INode {
         this.TTL = TTL;
         this.artificalParent = artificalParent;
         this.replicationCount = replication;
-        master.nodeManifest().put(myPos, this);
-        //TODO check for collisions, and partial backprop
+        ((PopulousBadStarSearch)master).nodes.put(myPos.toString(), me);
         optionProvider = new OptionProvider(this);
-        Main.logger.info("Node, proxim to dest: " + DistanceHelper.CalcDistance(myPos, master.destination()) + " TTL: " + TTL + " myPos: " + myPos.x + "," + myPos.y + "," + myPos.z+ " dest: " + destination.x + "," + destination.y + "," + destination.z + " Type: " + myType);
+        //Main.logger.info("Node, proxim to dest: " + DistanceHelper.CalcDistance(myPos, master.destination()) + " TTL: " + TTL + " myPos: " + myPos.x + "," + myPos.y + "," + myPos.z+ " dest: " + destination.x + "," + destination.y + "," + destination.z + " Type: " + myType);
     }
 
 
@@ -120,8 +122,36 @@ public class Node implements INode {
     }
 
     @Override
+    public boolean PartOfCompletedChain() {
+        return complete;
+    }
+
+    @Override
+    public void UpdateParent(INode newParent) {
+        parent = newParent;
+    }
+
+    @Override
+    public void ForwardPropagate() {
+        if (children.size() == 0) {
+            new java.util.Timer().schedule(
+                    new java.util.TimerTask() {
+                        @Override
+                        public void run() {
+                            Backpropagate(BackpropagateCondition.COMPLETE, new ArrayList<>()); //Bypass recursion limit
+                        }
+                    },
+                    0
+            );
+        } else {
+            children.get(0).ForwardPropagate();
+        }
+    }
+
+    @Override
     public void Backpropagate(BackpropagateCondition condition, ArrayList<INode> path) {
         if (condition != BackpropagateCondition.FAILED) {
+            complete = true;
             path.add(this);
             if (myType != NodeType.PLAYER) {
                 parent.Backpropagate(condition, path);
@@ -136,6 +166,10 @@ public class Node implements INode {
 
     @Override
     public void SpawnChildren() {
+        if (CheckForCollisions()) {
+            master.RouteFound(BackpropagateCondition.FAILED, null);
+            return;
+        }
         if (master.failed()) {
             new java.util.Timer().schedule(
                     new java.util.TimerTask() {
@@ -178,20 +212,15 @@ public class Node implements INode {
         }
         if (options.get(0).cost() > options.get(options.size() - 1).cost()) Collections.reverse(options);
 
-        for (IOption opt : options) {
-            Main.logger.info("Candidate: " + opt.typeCandidate() + " Cost: " + opt.cost());
-        }
-
         IOption option1 = options.get(0);
         int PsClass = NodeClass.GetStrictClass(option1.typeCandidate());
 
-        if (replicationCount < 1) {
+        if (replicationCount < master.settings().maxReplication) {
             if (options.size() >= 2) {
                 IOption option2 = options.get(1);
                 int sClass = NodeClass.GetStrictClass(option2.typeCandidate());
                 if (sClass != PsClass) {
                     Node node = new Node(option2.typeCandidate(), master, me, costToMe, option2.cost(), option2.position(), destination, TTL - 1, null, replicationCount + 1);
-                    children.add(node);
                     master.toProcess().add(node);
                 }
             }
@@ -200,7 +229,6 @@ public class Node implements INode {
                 int sClass = NodeClass.GetStrictClass(option3.typeCandidate());
                 if (sClass != PsClass) {
                     Node node = new Node(option3.typeCandidate(), master, me, costToMe, option3.cost(), option3.position(), destination, TTL - 1, null, replicationCount + 1);
-                    children.add(node);
                     master.toProcess().add(node);
                 }
             }
@@ -209,5 +237,28 @@ public class Node implements INode {
         Node node = new Node(option1.typeCandidate(), master, me, costToMe + option1.cost(), option1.cost(), option1.position(), destination, TTL - 1, option1.artificalParent(), replicationCount);
         children.add(node);
         node.SpawnChildren();
+    }
+
+    private boolean CheckForCollisions() {
+        if (master.nodeManifest().containsKey(myPos.toString())) {
+            //Collision!
+            INode collidedWith = ((PopulousBadStarSearch)master).nodes.get(myPos.toString());
+            if (collidedWith.PartOfCompletedChain()) {
+                if (collidedWith.costToMe() <= costToMe) {
+                    //We are inferior or the same, abort
+                    ChatMessageHandler.SendMessage("Collied but was inferior!");
+                } else {
+                    //We are superior, swap out the parent on the other route and forwardprop
+                    ChatMessageHandler.SendMessage("Collied and was superior!");
+                    if (collidedWith.children().size() > 0) {
+                        INode child = collidedWith.children().get(0);
+                        child.UpdateParent(me);
+                        child.ForwardPropagate();
+                    }
+                }
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -29,6 +29,12 @@ public interface INode {
 
     Pos artificialParent();
 
+    boolean PartOfCompletedChain();
+
+    void UpdateParent(INode newParent);
+
+    void ForwardPropagate();
+
     void Backpropagate(BackpropagateCondition condition, ArrayList<INode> path);
 
     void SpawnChildren();

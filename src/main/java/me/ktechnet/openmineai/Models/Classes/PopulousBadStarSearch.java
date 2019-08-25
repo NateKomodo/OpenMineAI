@@ -10,15 +10,14 @@ import me.ktechnet.openmineai.Models.Interfaces.IPathingCallback;
 import me.ktechnet.openmineai.Models.Interfaces.IPathingProvider;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashMap;
 
 public class PopulousBadStarSearch implements IPathingProvider {
 
-    private ConcurrentHashMap<Pos, INode> nodes = new ConcurrentHashMap<>(); //Holds a list of ref's to each node, excluding initial
+    //MEGA NOTE: Seeing as java HATES my Pos class, we are going to be using string instead, as x,y,z
+    public HashMap<String, INode> nodes = new HashMap<>(); //Holds a list of ref's to each node, excluding initial
 
-    LinkedList<INode> queue = new LinkedList<>();
+    ArrayList<INode> queue = new ArrayList<>();
 
     private INode initial;
 
@@ -33,12 +32,12 @@ public class PopulousBadStarSearch implements IPathingProvider {
     private Settings settings;
 
     @Override
-    public ConcurrentHashMap<Pos, INode> nodeManifest() {
+    public HashMap<String, INode> nodeManifest() {
         return nodes;
     }
 
     @Override
-    public Queue<INode> toProcess() {
+    public ArrayList<INode> toProcess() {
         return queue;
     }
 
@@ -62,12 +61,12 @@ public class PopulousBadStarSearch implements IPathingProvider {
         return failed;
     }
 
-    @Override
+    @Override //TODO stop pathfinding
     public void StartPathfinding(Pos destination, Pos start, IPathingCallback callbackClass, Settings settings) { //TODO for executor, see if we can save on ASCEND_TOWER_BREAK, or shortcuts in general
         dest = destination;
         this.settings = settings;
         this.callback = callbackClass;
-        initial = new Node(NodeType.PLAYER, this, null, 0,0, start, destination, (int)DistanceHelper.CalcDistance(start, destination) * 3, null, 0);
+        initial = new Node(NodeType.PLAYER, this, null, 0,0, start, destination, (int)DistanceHelper.CalcDistance(start, destination) * settings.TTLMultiplier, null, 0);
         new java.util.Timer().schedule(
                 new java.util.TimerTask() {
                     @Override
@@ -105,8 +104,9 @@ public class PopulousBadStarSearch implements IPathingProvider {
                     break;
             }
         }
-        INode next = queue.poll();
-        if (next != null) {
+        if (queue.size() > 0) {
+        INode next = queue.get(queue.size() - 1); //Start from end in order to get better stitching
+        queue.remove(next);
             new java.util.Timer().schedule(
                     new java.util.TimerTask() {
                         @Override
