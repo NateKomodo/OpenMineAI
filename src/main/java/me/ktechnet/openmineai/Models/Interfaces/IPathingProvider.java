@@ -26,4 +26,6 @@ public interface IPathingProvider {
     void RouteFound(BackpropagateCondition condition, ArrayList<INode> path);
 
     void Cleanup();
+
+    void StopPathfinding();
 }

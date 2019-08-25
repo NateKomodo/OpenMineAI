@@ -61,7 +61,7 @@ public class PopulousBadStarSearch implements IPathingProvider {
         return failed;
     }
 
-    @Override //TODO stop pathfinding
+    @Override
     public void StartPathfinding(Pos destination, Pos start, IPathingCallback callbackClass, Settings settings) { //TODO for executor, see if we can save on ASCEND_TOWER_BREAK, or shortcuts in general
         dest = destination;
         this.settings = settings;
@@ -123,5 +123,10 @@ public class PopulousBadStarSearch implements IPathingProvider {
     public void Cleanup() {
         failed = true;
         nodes.clear();
+    }
+
+    @Override
+    public void StopPathfinding() {
+        Cleanup();
     }
 }
