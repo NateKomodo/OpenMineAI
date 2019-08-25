@@ -8,17 +8,21 @@ As of 0.3.3, the following is done:
 
 - Movement
 - Breaking and placing
-- Pathfinding (Excluding antpathing / multipathing)
+- Pathfinding
 - Forge integration for 1.12.2
 
 ## Todo
 
+Pathfinder:
 - Path partials/segment pathing (May not be required due to the low calculation times)
+- Route caching (May not be required due to the low calculation times
+
+Path executor:
 - Switch to alternate paths
-- Path merging (Such as when a low cost route meets a longer, but higher cost route and switches base)
-- Antpathing
-- Route caching
 - Following paths
+- Shortcuts
+
+Modules:
 - Chat commands
 - Combat
 - Recon

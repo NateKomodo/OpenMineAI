@@ -245,11 +245,7 @@ public class Node implements INode {
             INode collidedWith = ((PopulousBadStarSearch)master).nodes.get(myPos.toString());
             if (collidedWith.PartOfCompletedChain()) {
                 if (collidedWith.costToMe() <= costToMe) {
-                    //We are inferior or the same, abort
-                    ChatMessageHandler.SendMessage("Collied but was inferior!");
                 } else {
-                    //We are superior, swap out the parent on the other route and forwardprop
-                    ChatMessageHandler.SendMessage("Collied and was superior!");
                     if (collidedWith.children().size() > 0) {
                         INode child = collidedWith.children().get(0);
                         child.UpdateParent(me);

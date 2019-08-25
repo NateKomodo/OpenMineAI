@@ -62,7 +62,7 @@ public class PopulousBadStarSearch implements IPathingProvider {
     }
 
     @Override
-    public void StartPathfinding(Pos destination, Pos start, IPathingCallback callbackClass, Settings settings) { //TODO for executor, see if we can save on ASCEND_TOWER_BREAK, or shortcuts in general
+    public void StartPathfinding(Pos destination, Pos start, IPathingCallback callbackClass, Settings settings) {
         dest = destination;
         this.settings = settings;
         this.callback = callbackClass;
