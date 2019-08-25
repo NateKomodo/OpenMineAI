@@ -24,17 +24,18 @@ public class ParkourProvider implements IParkourProvider {
         int max = diagonal ? 3 : 4;
         int negativeMod = 0;
         for (int y = 1; y > -11; y--) {
-            int heightBonus = (int) Math.floor(Math.abs(y) / 2);
+            int heightBonus = negativeMod == 0 ? (int) Math.floor(Math.abs(y) / 2) : 0;
+            boolean cantDoMore = false;
             for (int i = 1; i < (max + heightBonus) - negativeMod; i++) {
                 int newXoffset = xOffset * i;
                 int newZoffset = zOffset * i;
                 Pos newPos = new Pos(pos.x + newXoffset, pos.y + y, pos.z + newZoffset);
-                if (rev.Evaluate(newPos, r.GetMove(diagonal)) && !PassableBlocks.blocks.contains(AdjacentBlocksHelper.Below(newPos))) {
+                if (rev.Evaluate(newPos, r.GetMove(diagonal)) && !PassableBlocks.blocks.contains(AdjacentBlocksHelper.Below(newPos)) && !cantDoMore) {
                     parkourOptions.add(new ParkourOption(CostResolve.Resolve(NodeType.PARKOUR, newPos, dest), newPos));
                 } else if (rev.Evaluate(newPos, r.GetParkourBlocked())) {
                     int dist = ((max + heightBonus) - negativeMod) - i;
                     if (dist > negativeMod) negativeMod = dist;
-                    break;
+                    cantDoMore = true;
                 }
             }
             if (negativeMod >= 4) break;
