@@ -72,7 +72,7 @@ public class OptionProvider implements IOptionProvider {
     }
 
     @Override
-    public IOption EvaluatePosition(Pos pos, boolean diagonal, Pos artificalParent) { //TODO parkour handler, check chunk is loaded
+    public IOption EvaluatePosition(Pos pos, boolean diagonal, Pos artificalParent) {
         if (pos.IsEqual(entry) || pos.IsEqual(this.parent.pos()) || pos.IsEqual(grandparent) || pos.IsEqual(greatgrandparent)) {
             return null;
         }
