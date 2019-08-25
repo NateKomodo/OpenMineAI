@@ -22,4 +22,8 @@ public class Pos {
     public boolean IsEqual(Pos pos) {
         return ((x == pos.x) && (y == pos.y) && (z == pos.z));
     }
+
+    public String toString() {
+        return x + "," + y + "," + z;
+    }
 }

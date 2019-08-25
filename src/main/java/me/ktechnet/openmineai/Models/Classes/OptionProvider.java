@@ -4,6 +4,7 @@ import me.ktechnet.openmineai.Helpers.AdjacentBlocksHelper;
 import me.ktechnet.openmineai.Helpers.BrokenBlocksHelper;
 import me.ktechnet.openmineai.Helpers.NodeTypeRules;
 import me.ktechnet.openmineai.Helpers.PlacedBlocksHelper;
+import me.ktechnet.openmineai.Main;
 import me.ktechnet.openmineai.Models.ConfigData.AvoidBlocks;
 import me.ktechnet.openmineai.Models.ConfigData.CostResolve;
 import me.ktechnet.openmineai.Models.ConfigData.PassableBlocks;
@@ -75,6 +76,8 @@ public class OptionProvider implements IOptionProvider {
         if (pos.IsEqual(entry) || pos.IsEqual(this.parent.pos()) || pos.IsEqual(grandparent) || pos.IsEqual(greatgrandparent)) {
             return null;
         }
+
+        if (artificalParent != null) parentPos = artificalParent;
 
         ArrayList<IOption> candidates = new ArrayList<>();
 
@@ -200,13 +203,13 @@ public class OptionProvider implements IOptionProvider {
                     }
                 };
             }
-        } else if (parent.myType() == NodeType.PARKOUR) { //TODO fix this appearing in weird places
+        } else if (parent.myType() == NodeType.PARKOUR) {
             ArrayList<IParkourOption> parkourOptions = new ParkourProvider().GetParkourLocations(parent.pos(), parent.artificialParent(), dest); //Note: Parkour nodes will always be in the air, and the executor starts executing them while on the previous solid block
             if (parkourOptions.size() > 0) {
                 Collections.sort(parkourOptions, Comparator.comparingDouble(IParkourOption::Cost));
                 if (parkourOptions.get(0).Cost() > parkourOptions.get(parkourOptions.size() - 1).Cost()) Collections.reverse(parkourOptions);
                 IParkourOption prkO = parkourOptions.get(0);
-                pos = prkO.pos();
+                pos = new Pos(prkO.pos().x, prkO.pos().y, prkO.pos().z);
                 if (pos.IsEqual(parent.master().destination())) {
                     Pos finalPos = pos;
                     return new ArrayList<IOption>() {
