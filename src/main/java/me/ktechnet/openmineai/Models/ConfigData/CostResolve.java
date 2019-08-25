@@ -50,7 +50,7 @@ public class CostResolve {
         int gravityBlocks = AdjacentBlocksHelper.GravityBlocksAbove(pos);
         boolean tooClose = false;
         if (Math.abs(percentageHorizontal - percentageVertical) <= 0.05 || comp.n < 10) tooClose = true;
-        if (NodeClass.gravityCheck.contains(type)) nClass = nClass + (gravityBlocks / 2);
+        if (NodeClass.gravityCheck.contains(type)) nClass = nClass + (gravityBlocks / 3);
         if (percentageHorizontal > percentageVertical) { //Bias to h
             if (NodeClass.horizontal.contains(type) && !tooClose) {
                 return comp.n + (nClass - 0.4);

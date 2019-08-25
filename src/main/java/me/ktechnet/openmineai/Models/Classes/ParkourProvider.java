@@ -9,6 +9,8 @@ import me.ktechnet.openmineai.Models.ConfigData.Settings;
 import me.ktechnet.openmineai.Models.Enums.NodeType;
 import me.ktechnet.openmineai.Models.Interfaces.IParkourOption;
 import me.ktechnet.openmineai.Models.Interfaces.IParkourProvider;
+import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 
 import java.util.ArrayList;
 
@@ -26,13 +28,13 @@ public class ParkourProvider implements IParkourProvider {
         for (int y = 1; y > -11; y--) {
             int heightBonus = negativeMod == 0 ? (int) Math.floor(Math.abs(y) / 2) : 0;
             boolean cantDoMore = false;
-            for (int i = 1; i < (max + heightBonus) - negativeMod; i++) {
+            for (int i = 1; i < ((max - (y == 1 ? 1 : 0)) + heightBonus) - negativeMod; i++) {
                 int newXoffset = xOffset * i;
                 int newZoffset = zOffset * i;
                 Pos newPos = new Pos(pos.x + newXoffset, pos.y + y, pos.z + newZoffset);
                 if (rev.Evaluate(newPos, r.GetMove(diagonal)) && !PassableBlocks.blocks.contains(AdjacentBlocksHelper.Below(newPos)) && !cantDoMore) {
                     parkourOptions.add(new ParkourOption(CostResolve.Resolve(NodeType.PARKOUR, newPos, dest), newPos));
-                } else if (rev.Evaluate(newPos, r.GetParkourBlocked())) {
+                } else if (CheckBlocked(newPos, diagonal, new Pos(pos.x + (xOffset * (i - 1)), pos.y + y, pos.z + (zOffset * (i - 1))))) {
                     int dist = ((max + heightBonus) - negativeMod) - i;
                     if (dist > negativeMod) negativeMod = dist;
                     cantDoMore = true;
@@ -41,5 +43,17 @@ public class ParkourProvider implements IParkourProvider {
             if (negativeMod >= 4) break;
         }
         return parkourOptions;
+    }
+    private boolean CheckBlocked(Pos pos, boolean diagonal, Pos previous) {
+        Block b1 = Minecraft.getMinecraft().world.getBlockState(pos.ConvertToBlockPos()).getBlock();
+        Block b2 = Minecraft.getMinecraft().world.getBlockState(new Pos(pos.x, pos.y + 1, pos.z).ConvertToBlockPos()).getBlock();
+        Block b3 = Minecraft.getMinecraft().world.getBlockState(new Pos(pos.x, pos.y + 2, pos.z).ConvertToBlockPos()).getBlock();
+        if (!PassableBlocks.blocks.contains(b1) || !PassableBlocks.blocks.contains(b2) || !PassableBlocks.blocks.contains(b3)) return true;
+        if (diagonal && previous != null) {
+            boolean checkX = CheckBlocked(new Pos(pos.x - (pos.x - previous.x), pos.y, pos.z), false, null);
+            boolean checkZ = CheckBlocked(new Pos(pos.x, pos.y, pos.z - (pos.z - previous.z)), false, null);
+            if (checkX || checkZ) return true;
+        }
+        return false;
     }
 }
