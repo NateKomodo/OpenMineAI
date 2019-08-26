@@ -4,13 +4,13 @@ import me.ktechnet.openmineai.Models.Enums.NodeType;
 import me.ktechnet.openmineai.Models.Interfaces.IOption;
 
 public class Option implements IOption {
-    private double cost;
+    private final double cost;
 
-    private NodeType typeCandidate;
+    private final NodeType typeCandidate;
 
-    private Pos position;
+    private final Pos position;
 
-    private Pos artificalParent;
+    private final Pos artificalParent;
 
     @Override
     public double cost() {

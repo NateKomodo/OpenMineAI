@@ -3,8 +3,6 @@ package me.ktechnet.openmineai.Helpers;
 import me.ktechnet.openmineai.Models.Classes.DistComponent;
 import me.ktechnet.openmineai.Models.Classes.Pos;
 
-import java.util.HashMap;
-
 public class DistanceHelper {
     public static double CalcDistance(Pos pos1, Pos pos2) {
         double deltaX = pos1.x - pos2.x;

@@ -2,14 +2,10 @@ package me.ktechnet.openmineai.Models.ConfigData;
 
 import me.ktechnet.openmineai.Helpers.AdjacentBlocksHelper;
 import me.ktechnet.openmineai.Helpers.DistanceHelper;
-import me.ktechnet.openmineai.Helpers.NodeClass;
-import me.ktechnet.openmineai.Main;
 import me.ktechnet.openmineai.Models.Classes.DistComponent;
-import me.ktechnet.openmineai.Models.Classes.Node;
+import me.ktechnet.openmineai.Models.Classes.NodeClass;
 import me.ktechnet.openmineai.Models.Classes.Pos;
 import me.ktechnet.openmineai.Models.Enums.NodeType;
-
-import java.util.HashMap;
 
 public class CostResolve {
     public static double Resolve(NodeType type, Pos pos, Pos dest) {

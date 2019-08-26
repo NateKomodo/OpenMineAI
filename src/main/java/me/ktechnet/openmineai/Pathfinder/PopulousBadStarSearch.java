@@ -1,7 +1,7 @@
-package me.ktechnet.openmineai.Models.Classes;
+package me.ktechnet.openmineai.Pathfinder;
 
-import me.ktechnet.openmineai.Helpers.ChatMessageHandler;
 import me.ktechnet.openmineai.Helpers.DistanceHelper;
+import me.ktechnet.openmineai.Models.Classes.Pos;
 import me.ktechnet.openmineai.Models.ConfigData.Settings;
 import me.ktechnet.openmineai.Models.Enums.BackpropagateCondition;
 import me.ktechnet.openmineai.Models.Enums.NodeType;
@@ -15,9 +15,9 @@ import java.util.HashMap;
 public class PopulousBadStarSearch implements IPathingProvider {
 
     //MEGA NOTE: Seeing as java HATES my Pos class, we are going to be using string instead, as x,y,z
-    public HashMap<String, INode> nodes = new HashMap<>(); //Holds a list of ref's to each node, excluding initial
+    public final HashMap<String, INode> nodes = new HashMap<>(); //Holds a list of ref's to each node, excluding initial
 
-    ArrayList<INode> queue = new ArrayList<>();
+    private final ArrayList<INode> queue = new ArrayList<>();
 
     private INode initial;
 
@@ -116,7 +116,7 @@ public class PopulousBadStarSearch implements IPathingProvider {
                     },
                     0
             );
-        } else ChatMessageHandler.SendMessage("Completed all potential routes");
+        }
     }
 
     @Override

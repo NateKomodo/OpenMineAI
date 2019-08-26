@@ -3,6 +3,7 @@ package me.ktechnet.openmineai.Helpers;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.MovementInput;
 
+@SuppressWarnings("WeakerAccess")
 public class PlayerMovement extends MovementInput {
     public void updatePlayerMoveState() {
         this.moveForward = 0;

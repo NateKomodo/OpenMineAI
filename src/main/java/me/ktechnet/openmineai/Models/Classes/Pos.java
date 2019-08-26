@@ -1,12 +1,11 @@
 package me.ktechnet.openmineai.Models.Classes;
 
-import me.ktechnet.openmineai.Main;
 import net.minecraft.util.math.BlockPos;
 
 public class Pos {
-    public int x;
+    public final int x;
     public int y;
-    public int z;
+    public final int z;
 
     public Pos(int x, int y, int z)
     {

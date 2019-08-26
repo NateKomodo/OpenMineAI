@@ -1,8 +1,9 @@
-package me.ktechnet.openmineai.Models.Classes;
+package me.ktechnet.openmineai.Pathfinder;
 
 import me.ktechnet.openmineai.Helpers.AdjacentBlocksHelper;
 import me.ktechnet.openmineai.Helpers.NodeTypeRules;
-import me.ktechnet.openmineai.Main;
+import me.ktechnet.openmineai.Models.Classes.ParkourOption;
+import me.ktechnet.openmineai.Models.Classes.Pos;
 import me.ktechnet.openmineai.Models.ConfigData.CostResolve;
 import me.ktechnet.openmineai.Models.ConfigData.PassableBlocks;
 import me.ktechnet.openmineai.Models.ConfigData.Settings;
@@ -29,7 +30,7 @@ public class ParkourProvider implements IParkourProvider {
         int negativeMod = 0;
         for (int y = 1; y > -11; y--) {
             int heightBonus = negativeMod == 0 ? (int) Math.floor(Math.abs(y) / 2) : 0;
-            heightBonus = heightBonus > 4 ? 4 : heightBonus;
+            heightBonus = Math.min(heightBonus, 4);
             boolean cantDoMore = false;
             for (int i = 1; i < ((max - (y == 1 ? 1 : 0)) + heightBonus) - negativeMod; i++) {
                 int newXoffset = xOffset * i;
@@ -55,7 +56,7 @@ public class ParkourProvider implements IParkourProvider {
         if (diagonal && previous != null) {
             boolean checkX = CheckBlocked(new Pos(pos.x - (pos.x - previous.x), pos.y, pos.z), false, null);
             boolean checkZ = CheckBlocked(new Pos(pos.x, pos.y, pos.z - (pos.z - previous.z)), false, null);
-            if (checkX || checkZ) return true;
+            return checkX || checkZ;
         }
         return false;
     }

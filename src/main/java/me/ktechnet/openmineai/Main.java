@@ -1,22 +1,19 @@
 package me.ktechnet.openmineai;
 
+import me.ktechnet.openmineai.CommandModules.AlphaTest;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.versioning.VersionRange;
 import org.apache.logging.log4j.Logger;
-
-import java.awt.*;
-import java.awt.event.KeyEvent;
 
 @Mod(modid = Main.MODID, name = Main.NAME, version = Main.VERSION)
 public class Main
 {
-    public static final String NAME = "Open Mine AI";
-    public static final String VERSION = "@VERSION@";
-    public static final String MODID = "openmineai";
+    static final String NAME = "Open Mine AI";
+    static final String VERSION = "@VERSION@";
+    static final String MODID = "openmineai";
 
     public static Logger logger;
 
@@ -29,6 +26,7 @@ public class Main
     @EventHandler
     public void init(FMLInitializationEvent event)
     {
+        Commands.modules.put("test", new AlphaTest());
         ClientCommandHandler.instance.registerCommand(new Commands());
     }
 }

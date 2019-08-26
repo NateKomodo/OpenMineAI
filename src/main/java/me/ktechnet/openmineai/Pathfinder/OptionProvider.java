@@ -1,14 +1,14 @@
-package me.ktechnet.openmineai.Models.Classes;
+package me.ktechnet.openmineai.Pathfinder;
 
 import me.ktechnet.openmineai.Helpers.AdjacentBlocksHelper;
 import me.ktechnet.openmineai.Helpers.BrokenBlocksHelper;
 import me.ktechnet.openmineai.Helpers.NodeTypeRules;
 import me.ktechnet.openmineai.Helpers.PlacedBlocksHelper;
-import me.ktechnet.openmineai.Main;
+import me.ktechnet.openmineai.Models.Classes.Option;
+import me.ktechnet.openmineai.Models.Classes.Pos;
 import me.ktechnet.openmineai.Models.ConfigData.AvoidBlocks;
 import me.ktechnet.openmineai.Models.ConfigData.CostResolve;
 import me.ktechnet.openmineai.Models.ConfigData.PassableBlocks;
-import me.ktechnet.openmineai.Models.Enums.BackpropagateCondition;
 import me.ktechnet.openmineai.Models.Enums.NodeType;
 import me.ktechnet.openmineai.Models.Interfaces.*;
 import net.minecraft.block.Block;
@@ -21,11 +21,11 @@ import java.util.Collections;
 import java.util.Comparator;
 
 public class OptionProvider implements IOptionProvider {
-    private INode parent;
+    private final INode parent;
 
-    private NodeTypeRules r;
+    private final NodeTypeRules r;
 
-    private IRuleEvaluator rev;
+    private final IRuleEvaluator rev;
 
     private Pos parentPos;
 
@@ -35,7 +35,7 @@ public class OptionProvider implements IOptionProvider {
 
     private Pos entry;
 
-    private Pos dest;
+    private final Pos dest;
 
     public OptionProvider(INode parent) {
         this.parent = parent;
@@ -170,7 +170,7 @@ public class OptionProvider implements IOptionProvider {
                 }
                 ArrayList<IParkourOption> parkourOptions = new ParkourProvider().GetParkourLocations(pos, artificalParent, dest); //Note: Parkour nodes will always be in the air, and the executor starts executing them while on the previous solid block
                 if (parkourOptions.size() > 0) {
-                    Collections.sort(parkourOptions, Comparator.comparingDouble(IParkourOption::Cost));
+                    parkourOptions.sort(Comparator.comparingDouble(IParkourOption::Cost));
                     if (parkourOptions.get(0).Cost() > parkourOptions.get(parkourOptions.size() - 1).Cost()) Collections.reverse(parkourOptions);
                     IParkourOption prkO = parkourOptions.get(0);
                     candidates.add(new Option(CostResolve.Resolve(NodeType.PARKOUR, prkO.pos(), dest), NodeType.PARKOUR, pos, artificalParent));
@@ -178,7 +178,7 @@ public class OptionProvider implements IOptionProvider {
             }
         }
         if (candidates.size() > 0) {
-            Collections.sort(candidates, Comparator.comparingDouble(IOption::cost));
+            candidates.sort(Comparator.comparingDouble(IOption::cost));
             if (candidates.get(0).cost() > candidates.get(candidates.size() - 1).cost()) Collections.reverse(candidates);
             return candidates.get(0);
         } else {
@@ -207,7 +207,7 @@ public class OptionProvider implements IOptionProvider {
             Pos artParent = parent.artificialParent() != null ? parent.artificialParent() : parent.parent().pos();
             ArrayList<IParkourOption> parkourOptions = new ParkourProvider().GetParkourLocations(parent.pos(), artParent, dest);
             if (parkourOptions.size() > 0) {
-                Collections.sort(parkourOptions, Comparator.comparingDouble(IParkourOption::Cost));
+                parkourOptions.sort(Comparator.comparingDouble(IParkourOption::Cost));
                 if (parkourOptions.get(0).Cost() > parkourOptions.get(parkourOptions.size() - 1).Cost()) Collections.reverse(parkourOptions);
                 IParkourOption prkO = parkourOptions.get(0);
                 pos = new Pos(prkO.pos().x, prkO.pos().y, prkO.pos().z);

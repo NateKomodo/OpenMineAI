@@ -3,9 +3,9 @@ package me.ktechnet.openmineai.Models.Classes;
 import me.ktechnet.openmineai.Models.Interfaces.IParkourOption;
 
 public class ParkourOption implements IParkourOption {
-    private double cost;
+    private final double cost;
 
-    private Pos pos;
+    private final Pos pos;
 
     public ParkourOption(double cost, Pos pos) {
         this.cost = cost;

@@ -9,6 +9,6 @@ public class ChatMessageHandler {
     public static void SendMessage(String msg)
     {
         EntityPlayer player = Minecraft.getMinecraft().player;
-        player.sendMessage(new TextComponentString(TextFormatting.AQUA + "[OpenMineAI]" + TextFormatting.GRAY + " " + msg));
+        player.sendMessage(new TextComponentString(TextFormatting.AQUA + "[OpenMineAI]" + TextFormatting.WHITE + " " + msg));
     }
 }

@@ -1,50 +1,50 @@
-package me.ktechnet.openmineai.Models.Classes;
+package me.ktechnet.openmineai.Pathfinder;
 
 import me.ktechnet.openmineai.Helpers.ChatMessageHandler;
 import me.ktechnet.openmineai.Helpers.DistanceHelper;
-import me.ktechnet.openmineai.Helpers.NodeClass;
 import me.ktechnet.openmineai.Main;
+import me.ktechnet.openmineai.Models.Classes.NodeClass;
+import me.ktechnet.openmineai.Models.Classes.Pos;
 import me.ktechnet.openmineai.Models.Enums.BackpropagateCondition;
 import me.ktechnet.openmineai.Models.Enums.NodeType;
 import me.ktechnet.openmineai.Models.Interfaces.INode;
 import me.ktechnet.openmineai.Models.Interfaces.IOption;
 import me.ktechnet.openmineai.Models.Interfaces.IOptionProvider;
 import me.ktechnet.openmineai.Models.Interfaces.IPathingProvider;
-import net.minecraft.client.Minecraft;
-import net.minecraft.init.Blocks;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class Node implements INode {
 
-    private NodeType myType;
+    private final NodeType myType;
 
-    private IPathingProvider master;
+    private final IPathingProvider master;
 
     private INode parent;
 
-    private ArrayList<INode> children = new ArrayList<>();
+    private final ArrayList<INode> children = new ArrayList<>();
 
     private ArrayList<IOption> options = new ArrayList<>();
 
-    private double costToMe;
+    private final double costToMe;
 
-    private double myCost;
+    private final double myCost;
 
-    private int TTL;
+    private final int TTL;
 
-    private Pos destination;
+    private final Pos destination;
 
-    private Pos myPos;
+    private final Pos myPos;
 
-    private IOptionProvider optionProvider;
+    private final IOptionProvider optionProvider;
 
-    private Node me = this;
+    private final Node me = this;
 
-    private Pos artificalParent;
+    private final Pos artificalParent;
 
-    private int replicationCount;
+    private final int replicationCount;
 
     private boolean complete = false;
 
@@ -201,10 +201,11 @@ public class Node implements INode {
         }
         options = optionProvider.EvaluateOptions();
         if (options == null) {
+            Main.logger.info("OUT OF CHUNK");
             Backpropagate(BackpropagateCondition.OUT_OF_CHUNK, new ArrayList<>());
             return;
         }
-        Collections.sort(options, Comparator.comparingDouble(IOption::cost));
+        options.sort(Comparator.comparingDouble(IOption::cost));
         if (!(options.size() > 0)) {
             ChatMessageHandler.SendMessage("No options found.");
             master.RouteFound(BackpropagateCondition.FAILED, null);
@@ -244,8 +245,7 @@ public class Node implements INode {
             //Collision!
             INode collidedWith = ((PopulousBadStarSearch)master).nodes.get(myPos.toString());
             if (collidedWith.PartOfCompletedChain()) {
-                if (collidedWith.costToMe() <= costToMe) {
-                } else {
+                if (collidedWith.costToMe() > costToMe) {
                     if (collidedWith.children().size() > 0) {
                         INode child = collidedWith.children().get(0);
                         child.UpdateParent(me);

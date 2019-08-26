@@ -6,7 +6,7 @@ import net.minecraft.init.Blocks;
 import java.util.ArrayList;
 
 public class PassableBlocks {
-    public static ArrayList<Block> blocks = new ArrayList<Block>() {
+    public static final ArrayList<Block> blocks = new ArrayList<Block>() {
         {
             add(Blocks.AIR);
             add(Blocks.TALLGRASS);

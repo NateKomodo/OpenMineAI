@@ -1,11 +1,11 @@
-package me.ktechnet.openmineai.Helpers;
+package me.ktechnet.openmineai.Models.Classes;
 
 import me.ktechnet.openmineai.Models.Enums.NodeType;
 
 import java.util.ArrayList;
 
 public class NodeClass {
-    public static ArrayList<NodeType> gravityCheck = new ArrayList<NodeType>() {
+    public static final ArrayList<NodeType> gravityCheck = new ArrayList<NodeType>() {
         {
             add(NodeType.STEP_DOWN_AND_BREAK);
             add(NodeType.STEP_UP_AND_BREAK);
@@ -13,7 +13,7 @@ public class NodeClass {
         }
     };
 
-    public static ArrayList<NodeType> vertical = new ArrayList<NodeType>() {
+    public static final ArrayList<NodeType> vertical = new ArrayList<NodeType>() {
         {
             add(NodeType.DESCEND_MINE);
             add(NodeType.DESCEND);
@@ -28,7 +28,7 @@ public class NodeClass {
             add(NodeType.PARKOUR);
         }
     };
-    public static ArrayList<NodeType> horizontal = new ArrayList<NodeType>() {
+    public static final ArrayList<NodeType> horizontal = new ArrayList<NodeType>() {
         {
             add(NodeType.MOVE);
             add(NodeType.STEP_UP_AND_BREAK);
@@ -41,7 +41,7 @@ public class NodeClass {
             add(NodeType.SWIM);
         }
     };
-    public static ArrayList<NodeType> class1 = new ArrayList<NodeType>() {
+    public static final ArrayList<NodeType> class1 = new ArrayList<NodeType>() {
         {
             add(NodeType.MOVE);
             add(NodeType.STEP_UP);
@@ -55,14 +55,14 @@ public class NodeClass {
             add(NodeType.ASCEND_TOWER);
         }
     };
-    public static ArrayList<NodeType> class2 = new ArrayList<NodeType>() {
+    public static final ArrayList<NodeType> class2 = new ArrayList<NodeType>() {
         {
             add(NodeType.ASCEND_BREAK_AND_TOWER);
             add(NodeType.DESCEND_MINE);
             add(NodeType.SWIM);
         }
     };
-    public static ArrayList<NodeType> class3 = new ArrayList<NodeType>() {
+    public static final ArrayList<NodeType> class3 = new ArrayList<NodeType>() {
         {
             add(NodeType.BRIDGE);
             add(NodeType.STEP_UP_AND_BREAK);
@@ -74,7 +74,7 @@ public class NodeClass {
 
 
 
-    public static ArrayList<NodeType> strictclass1 = new ArrayList<NodeType>() {
+    private static final ArrayList<NodeType> strictclass1 = new ArrayList<NodeType>() {
         {
             add(NodeType.MOVE);
             add(NodeType.SWIM);
@@ -82,7 +82,7 @@ public class NodeClass {
             add(NodeType.DESCEND);
         }
     };
-    public static ArrayList<NodeType> strictclass2 = new ArrayList<NodeType>() {
+    private static final ArrayList<NodeType> strictclass2 = new ArrayList<NodeType>() {
         {
             add(NodeType.ASCEND_TOWER);
             add(NodeType.DROP);
@@ -91,7 +91,7 @@ public class NodeClass {
             add(NodeType.ASCEND_BREAK_AND_TOWER);
         }
     };
-    public static ArrayList<NodeType> strictclass3 = new ArrayList<NodeType>() {
+    private static final ArrayList<NodeType> strictclass3 = new ArrayList<NodeType>() {
         {
             add(NodeType.STEP_UP_AND_BREAK);
             add(NodeType.STEP_DOWN_AND_BREAK);
@@ -99,7 +99,7 @@ public class NodeClass {
             add(NodeType.BREAK_AND_MOVE);
         }
     };
-    public static ArrayList<NodeType> strictclass4 = new ArrayList<NodeType>() {
+    private static final ArrayList<NodeType> strictclass4 = new ArrayList<NodeType>() {
         {
 
             add(NodeType.DESCEND_MINE);

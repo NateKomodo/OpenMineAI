@@ -125,27 +125,27 @@ public class NodeTypeRules {
         rule.PushToStack(-1, Rules.WATER);
         return rule;
     }
-    public IRule GetDiagCheckSwim() {
+    private IRule GetDiagCheckSwim() {
         IRule rule = new Rule();
         rule.PushToStack(1, Rules.WATER_OR_PASSABLE);
         rule.PushToStack(0, Rules.WATER_OR_PASSABLE);
         rule.PushToStack(-1, Rules.WATER_OR_PASSABLE);
         return rule;
     }
-    public IRule GetDiagCheckMove() {
+    private IRule GetDiagCheckMove() {
         IRule rule = new Rule();
         rule.PushToStack(1, Rules.PASSABLE);
         rule.PushToStack(0, Rules.PASSABLE);
         return rule;
     }
-    public IRule GetDiagCheckStepUp() {
+    private IRule GetDiagCheckStepUp() {
         IRule rule = new Rule();
         rule.PushToStack(2, Rules.PASSABLE);
         rule.PushToStack(1, Rules.PASSABLE);
         rule.PushToStack(0, Rules.ANY);
         return rule;
     }
-    public IRule GetDiagCheckStepDown() {
+    private IRule GetDiagCheckStepDown() {
         IRule rule = new Rule();
         rule.PushToStack(1, Rules.PASSABLE);
         rule.PushToStack(0, Rules.PASSABLE);

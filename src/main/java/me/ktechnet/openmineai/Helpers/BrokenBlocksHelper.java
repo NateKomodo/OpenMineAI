@@ -22,7 +22,7 @@ public class BrokenBlocksHelper {
                 break;
             case STEP_DOWN_AND_BREAK:
                 list.add(new Pos(pos.x, pos.y + 1, pos.z));
-                list.add(new Pos(pos.x, pos.y + 0, pos.z));
+                list.add(new Pos(pos.x, pos.y, pos.z));
                 list.add(new Pos(pos.x, pos.y - 1, pos.z));
                 break;
             case DESCEND_MINE:

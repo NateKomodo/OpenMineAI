@@ -6,7 +6,6 @@ import me.ktechnet.openmineai.Models.Enums.BackpropagateCondition;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Queue;
 
 public interface IPathingProvider {
     HashMap<String, INode> nodeManifest(); //Holds a list of ref's to each node, excluding initial

@@ -7,9 +7,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Rule implements IRule {
-    private Map<Integer, Rules> stack = new HashMap<>();
+    private final Map<Integer, Rules> stack = new HashMap<>();
 
-    private RuleMeta meta = new RuleMeta();
+    private final RuleMeta meta = new RuleMeta();
 
     @Override
     public Map<Integer, Rules> ruleStack() {

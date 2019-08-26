@@ -1,4 +1,4 @@
-package me.ktechnet.openmineai.Models.Classes;
+package me.ktechnet.openmineai.Pathfinder;
 
 import me.ktechnet.openmineai.Models.Enums.BackpropagateCondition;
 import me.ktechnet.openmineai.Models.Interfaces.INode;
@@ -6,14 +6,13 @@ import me.ktechnet.openmineai.Models.Interfaces.IRoute;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.stream.Collectors;
 
 public class Route implements IRoute {
-    private ArrayList<INode> path;
+    private final ArrayList<INode> path;
 
-    private double cost;
+    private final double cost;
 
-    private BackpropagateCondition type;
+    private final BackpropagateCondition type;
 
 
     @Override
@@ -31,7 +30,7 @@ public class Route implements IRoute {
         return type;
     }
 
-    Route(ArrayList<INode> path, BackpropagateCondition condition) {
+    public Route(ArrayList<INode> path, BackpropagateCondition condition) {
         Collections.reverse(path);
         this.path = path;
         this.type = condition;

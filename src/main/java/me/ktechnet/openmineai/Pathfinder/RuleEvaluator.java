@@ -1,6 +1,7 @@
-package me.ktechnet.openmineai.Models.Classes;
+package me.ktechnet.openmineai.Pathfinder;
 
 import me.ktechnet.openmineai.Helpers.AdjacentLavaHelper;
+import me.ktechnet.openmineai.Models.Classes.Pos;
 import me.ktechnet.openmineai.Models.ConfigData.*;
 import me.ktechnet.openmineai.Models.Enums.Rules;
 import me.ktechnet.openmineai.Models.Interfaces.IRule;
@@ -13,10 +14,10 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class RuleEvaluator implements IRuleEvaluator {
-    private ArrayList<Pos> brokenBlocks;
-    private ArrayList<Pos> placedBlocks;
-    private Pos parent;
-    private Settings settings;
+    private final ArrayList<Pos> brokenBlocks;
+    private final ArrayList<Pos> placedBlocks;
+    private final Pos parent;
+    private final Settings settings;
 
     public RuleEvaluator(ArrayList<Pos> brokenBlocks, ArrayList<Pos> placedBlocks, Pos parent, Settings settings) {
         this.brokenBlocks = brokenBlocks;
