@@ -14,7 +14,7 @@ As of 0.4.1, the following is done:
 ## Todo
 
 Pathfinder:
-- Get to open areas or some high level selection system to route via (For highways or similar)
+- Get to open areas or some high level selection system to route via (For highways or similar) or segment into sections for improved accuracy
 
 Path executor:
 - Switch to alternate paths
