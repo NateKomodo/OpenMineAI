@@ -86,17 +86,14 @@ public class NodeClass {
         {
             add(NodeType.ASCEND_TOWER);
             add(NodeType.DROP);
-            add(NodeType.PARKOUR);
-            add(NodeType.BRIDGE);
             add(NodeType.ASCEND_BREAK_AND_TOWER);
         }
     };
     private static final ArrayList<NodeType> strictclass3 = new ArrayList<NodeType>() {
         {
-            add(NodeType.STEP_UP_AND_BREAK);
-            add(NodeType.STEP_DOWN_AND_BREAK);
             add(NodeType.BREAK);
             add(NodeType.BREAK_AND_MOVE);
+            add(NodeType.PARKOUR);
         }
     };
     private static final ArrayList<NodeType> strictclass4 = new ArrayList<NodeType>() {
@@ -105,6 +102,9 @@ public class NodeClass {
             add(NodeType.DESCEND_MINE);
             add(NodeType.STEP_UP);
             add(NodeType.STEP_DOWN);
+            add(NodeType.STEP_UP_AND_BREAK);
+            add(NodeType.STEP_DOWN_AND_BREAK);
+            add(NodeType.BRIDGE);
         }
     };
 

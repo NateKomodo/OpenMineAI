@@ -15,6 +15,7 @@ As of 0.4.1, the following is done:
 
 Pathfinder:
 - Get to open areas or some high level selection system to route via (For highways or similar) or segment into sections for improved accuracy
+- Make pathfind handle not entirely diagonal jumps
 
 Path executor:
 - Switch to alternate paths
