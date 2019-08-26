@@ -3,7 +3,9 @@ package me.ktechnet.openmineai.Models.ConfigData;
 public class Settings {
     public boolean allowBreak = true;
     public boolean allowPlace = true;
-    public final boolean hasWaterBucket = false;
-    public final int maxReplication = 1;
-    public final int TTLMultiplier = 3;
+    public boolean hasWaterBucket = false;
+    public boolean allowParkour = true;
+    public int maxReplication = 1;
+    public int TTLMultiplier = 3;
+    public int maxFall = 10;
 }

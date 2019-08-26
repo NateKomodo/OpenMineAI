@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 public class ParkourProvider implements IParkourProvider {
     @Override
-    public ArrayList<IParkourOption> GetParkourLocations(Pos pos, Pos parent, Pos dest) {
+    public ArrayList<IParkourOption> GetParkourLocations(Pos pos, Pos parent, Pos dest, int maxFall) {
         ArrayList<IParkourOption> parkourOptions = new ArrayList<>();
         int xOffset = pos.x - parent.x;
         int zOffset = pos.z - parent.z;
@@ -28,7 +28,7 @@ public class ParkourProvider implements IParkourProvider {
         boolean diagonal = (xOffset != 0 && zOffset != 0);
         int max = diagonal ? 3 : 4;
         int negativeMod = 0;
-        for (int y = 1; y > -11; y--) {
+        for (int y = 1; y > -(maxFall + 1); y--) {
             int heightBonus = negativeMod == 0 ? (int) Math.floor(Math.abs(y) / 2) : 0;
             heightBonus = Math.min(heightBonus, 4);
             boolean cantDoMore = false;

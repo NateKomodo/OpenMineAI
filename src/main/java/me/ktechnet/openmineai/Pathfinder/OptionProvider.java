@@ -164,16 +164,19 @@ public class OptionProvider implements IOptionProvider {
                     Pos bPos = new Pos(bottom.getX(), bottom.getY() + 1, bottom.getZ());
                     int dist = pos.y - bottom.getY();
                     Block b = Minecraft.getMinecraft().world.getBlockState(bottom).getBlock();
-                    if ((dist <= 10 || (b == Blocks.WATER || b == Blocks.FLOWING_WATER) || parent.master().settings().hasWaterBucket) && !AvoidBlocks.blocks.contains(b))
+                    if ((dist <= parent.master().settings().maxFall || (b == Blocks.WATER || b == Blocks.FLOWING_WATER) || parent.master().settings().hasWaterBucket) && !AvoidBlocks.blocks.contains(b))
                         if (!bPos.IsEqual(entry) && !bPos.IsEqual(this.parent.pos()) && !bPos.IsEqual(grandparent) && !bPos.IsEqual(greatgrandparent))
                             candidates.add(new Option(CostResolve.Resolve(NodeType.DROP, new Pos(bottom.getX(), bottom.getY() + 1, bottom.getZ()), dest), NodeType.DROP, pos, artificalParent));
                 }
-                ArrayList<IParkourOption> parkourOptions = new ParkourProvider().GetParkourLocations(pos, artificalParent, dest); //Note: Parkour nodes will always be in the air, and the executor starts executing them while on the previous solid block
-                if (parkourOptions.size() > 0) {
-                    parkourOptions.sort(Comparator.comparingDouble(IParkourOption::Cost));
-                    if (parkourOptions.get(0).Cost() > parkourOptions.get(parkourOptions.size() - 1).Cost()) Collections.reverse(parkourOptions);
-                    IParkourOption prkO = parkourOptions.get(0);
-                    candidates.add(new Option(CostResolve.Resolve(NodeType.PARKOUR, prkO.pos(), dest), NodeType.PARKOUR, pos, artificalParent));
+                if (parent.master().settings().allowParkour) {
+                    ArrayList<IParkourOption> parkourOptions = new ParkourProvider().GetParkourLocations(pos, artificalParent, dest, parent.master().settings().maxFall); //Note: Parkour nodes will always be in the air, and the executor starts executing them while on the previous solid block
+                    if (parkourOptions.size() > 0) {
+                        parkourOptions.sort(Comparator.comparingDouble(IParkourOption::Cost));
+                        if (parkourOptions.get(0).Cost() > parkourOptions.get(parkourOptions.size() - 1).Cost())
+                            Collections.reverse(parkourOptions);
+                        IParkourOption prkO = parkourOptions.get(0);
+                        candidates.add(new Option(CostResolve.Resolve(NodeType.PARKOUR, prkO.pos(), dest), NodeType.PARKOUR, pos, artificalParent));
+                    }
                 }
             }
         }
@@ -205,7 +208,7 @@ public class OptionProvider implements IOptionProvider {
             }
         } else if (parent.myType() == NodeType.PARKOUR) {
             Pos artParent = parent.artificialParent() != null ? parent.artificialParent() : parent.parent().pos();
-            ArrayList<IParkourOption> parkourOptions = new ParkourProvider().GetParkourLocations(parent.pos(), artParent, dest);
+            ArrayList<IParkourOption> parkourOptions = new ParkourProvider().GetParkourLocations(parent.pos(), artParent, dest, parent.master().settings().maxFall);
             if (parkourOptions.size() > 0) {
                 parkourOptions.sort(Comparator.comparingDouble(IParkourOption::Cost));
                 if (parkourOptions.get(0).Cost() > parkourOptions.get(parkourOptions.size() - 1).Cost()) Collections.reverse(parkourOptions);
