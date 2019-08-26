@@ -9,7 +9,7 @@ public class PathExecutor implements IPathExecutor {
     public void ExecutePath(IRoute route) {
         for (INode node : route.path());
     }
-    private void ExecuteNode() {
+    private void ExecuteNode() { //TODO execute nodes (move into/etc) and see if we can shortcut/save
 
     }
 }
