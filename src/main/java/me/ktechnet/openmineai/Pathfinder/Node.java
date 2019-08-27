@@ -62,7 +62,7 @@ public class Node implements INode {
         this.replicationCount = replication;
         ((PopulousBadStarSearch)master).nodes.put(myPos.toString(), me);
         optionProvider = new OptionProvider(this);
-        //Main.logger.info("Node, proxim to dest: " + DistanceHelper.CalcDistance(myPos, master.destination()) + " TTL: " + TTL + " myPos: " + myPos.x + "," + myPos.y + "," + myPos.z+ " dest: " + destination.x + "," + destination.y + "," + destination.z + " Type: " + myType);
+        if (master.settings().verbose) ChatMessageHandler.SendMessage("Node, proxim to dest: " + DistanceHelper.CalcDistance(myPos, master.destination()) + " TTL: " + TTL + " myPos: " + myPos.x + "," + myPos.y + "," + myPos.z+ " dest: " + destination.x + "," + destination.y + "," + destination.z + " Type: " + myType);
     }
 
 
@@ -195,23 +195,27 @@ public class Node implements INode {
             return;
         }
         if (TTL == 1) {
-            ChatMessageHandler.SendMessage("TTL exceeded.");
+            if (master.settings().verbose) ChatMessageHandler.SendMessage("TTL exceeded.");
             master.RouteFound(BackpropagateCondition.FAILED, null);
             return;
         }
         options = optionProvider.EvaluateOptions();
         if (options == null) {
-            Main.logger.info("OUT OF CHUNK");
+            if (master.settings().verbose) ChatMessageHandler.SendMessage("OUT OF CHUNK");
             Backpropagate(BackpropagateCondition.OUT_OF_CHUNK, new ArrayList<>());
             return;
         }
         options.sort(Comparator.comparingDouble(IOption::cost));
         if (!(options.size() > 0)) {
-            ChatMessageHandler.SendMessage("No options found.");
+            if (master.settings().verbose) ChatMessageHandler.SendMessage("No options found.");
             master.RouteFound(BackpropagateCondition.FAILED, null);
             return;
         }
         if (options.get(0).cost() > options.get(options.size() - 1).cost()) Collections.reverse(options);
+        if (master.settings().verbose) for (int i = 0; i < Math.min(options.size(), 3); i++) {
+            IOption o = options.get(i);
+            ChatMessageHandler.SendMessage("Option: " + o.typeCandidate() + " Cost: " + o.cost());
+        }
 
         IOption option1 = options.get(0);
         int PsClass = NodeClass.GetStrictClass(option1.typeCandidate());
@@ -247,7 +251,8 @@ public class Node implements INode {
             if (collidedWith.PartOfCompletedChain()) {
                 if (collidedWith.costToMe() > costToMe) {
                     if (collidedWith.children().size() > 0) {
-                        INode child = collidedWith.children().get(0);
+                        if (master.settings().verbose) ChatMessageHandler.SendMessage("Collision and was superior, stitching route");
+                            INode child = collidedWith.children().get(0);
                         child.UpdateParent(me);
                         child.ForwardPropagate();
                     }

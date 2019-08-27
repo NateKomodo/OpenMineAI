@@ -6,6 +6,7 @@ import me.ktechnet.openmineai.Models.Classes.Pos;
 import me.ktechnet.openmineai.Models.ConfigData.Settings;
 import me.ktechnet.openmineai.Models.Enums.NodeType;
 import me.ktechnet.openmineai.Models.Interfaces.*;
+import me.ktechnet.openmineai.PathExecutor.PathExecutor;
 import me.ktechnet.openmineai.Pathfinder.PopulousBadStarSearch;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -17,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class AlphaTest implements ICommandModule, IPathingCallback {
+public class AlphaTest implements ICommandModule, IPathingCallback, IPathExecutionCallback {
     private LocalDateTime pre;
 
     private final ArrayList<IRoute> routes = new ArrayList<>();
@@ -27,7 +28,6 @@ public class AlphaTest implements ICommandModule, IPathingCallback {
     @Override
     public void Run(String[] args) {
         if (args.length > 0) {
-            Main.logger.info(args[0] + ", " + args.length);
             if (args[0].equals("pathfind") && args.length == 6) {
                 ChatMessageHandler.SendMessage("Starting pathing");
                 IPathingProvider pathingProvider = new PopulousBadStarSearch();
@@ -46,11 +46,23 @@ public class AlphaTest implements ICommandModule, IPathingCallback {
                     ChatMessageHandler.SendMessage("Total routes: " + routes.size() + ", lowest cost: " + routes.get(0).cost() + " distance: " + routes.get(0).path().size());
                     ChatMessageHandler.SendMessage("IsInitial? " + routes.get(0).equals(initial));
                     SpawnRoute(routes.get(0));
-                    ChatMessageHandler.SendMessage("Route spawned");
-                    routes.clear();
+                    ChatMessageHandler.SendMessage("Route spawned, Make sure to use clear.");
                 } else {
                     ChatMessageHandler.SendMessage("Insufficient routes found. Please run pathfind first");
                 }
+            } else if (args[0].equals("follow") && args.length == 2) {
+                if (routes.size() > 0) {
+                    ChatMessageHandler.SendMessage("Executing path");
+                    routes.sort(Comparator.comparingDouble(IRoute::cost));
+                    if (routes.get(0).cost() > routes.get(routes.size() - 1).cost()) Collections.reverse(routes);
+                    IPathExecutor pathExecutor = new PathExecutor();
+                    pathExecutor.ExecutePath(routes.get(0), this, Boolean.parseBoolean(args[1]));
+                } else {
+                    ChatMessageHandler.SendMessage("Insufficient routes found. Please run pathfind first");
+                }
+            } else if (args[0].equals("clear")) {
+                routes.clear();
+                ChatMessageHandler.SendMessage("Cleared route list");
             } else {
                 ChatMessageHandler.SendMessage("Invalid command. Use: ;o help for help");
             }
@@ -139,5 +151,15 @@ public class AlphaTest implements ICommandModule, IPathingCallback {
                     break;
             }
         }
+    }
+
+    @Override
+    public void pathExecutionFailed() {
+
+    }
+
+    @Override
+    public void pathExecutionSuccess() {
+
     }
 }

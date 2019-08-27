@@ -82,7 +82,13 @@ public class OptionProvider implements IOptionProvider {
         ArrayList<IOption> candidates = new ArrayList<>();
 
         if (pos.IsEqual(this.parent.master().destination()) && !diagonal) {
-            return new Option(0, NodeType.DESTINATION, pos, null);
+            if (rev.Evaluate(pos, r.GetMove(false))) {
+                return new Option(0, NodeType.MOVE, pos, null);
+            } else if (rev.Evaluate(pos, r.GetBreakAndMove())) {
+                return new Option(0, NodeType.BREAK_AND_MOVE, pos, null);
+            } else {
+                return new Option(0, NodeType.DESTINATION, pos, null);
+            }
         }
 
         if (pos.y - parentPos.y == 1) {

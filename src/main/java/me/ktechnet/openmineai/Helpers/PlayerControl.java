@@ -197,11 +197,11 @@ public class PlayerControl {
             boolean doneRot = false;
             boolean donePitch = false;
             while (!flag) {
-                if (rotationOffset > 0) {
-                    Minecraft.getMinecraft().player.rotationYaw++;
-                    rotationOffset--;
-                } else if (rotationOffset < 0) {
+                if (rotationOffset > 1) {
                     Minecraft.getMinecraft().player.rotationYaw--;
+                    rotationOffset--;
+                } else if (rotationOffset < -1) {
+                    Minecraft.getMinecraft().player.rotationYaw++;
                     rotationOffset++;
                 } else {
                     doneRot = true;
@@ -223,7 +223,7 @@ public class PlayerControl {
         }
     }
     public void HardSetFacing(float rotation, float pitch) {
-        Minecraft.getMinecraft().player.rotationPitch = pitch;
+        if (pitch != -99) Minecraft.getMinecraft().player.rotationPitch = pitch;
         Minecraft.getMinecraft().player.rotationYaw = rotation;
     }
 }
