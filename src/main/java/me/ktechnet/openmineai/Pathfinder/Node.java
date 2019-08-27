@@ -49,7 +49,7 @@ public class Node implements INode {
     private boolean complete = false;
 
 
-    Node(NodeType type, IPathingProvider master, INode parent, double currentCost, double myCost, Pos myPos, Pos destination, int TTL, Pos artificalParent, int replication) {
+    public Node(NodeType type, IPathingProvider master, INode parent, double currentCost, double myCost, Pos myPos, Pos destination, int TTL, Pos artificalParent, int replication) {
         this.myType = type;
         this.master = master;
         this.parent = parent;
@@ -60,9 +60,9 @@ public class Node implements INode {
         this.TTL = TTL;
         this.artificalParent = artificalParent;
         this.replicationCount = replication;
-        ((PopulousBadStarSearch)master).nodes.put(myPos.toString(), me);
+        if (master != null) master.nodeManifest().put(myPos.toString(), me);
         optionProvider = new OptionProvider(this);
-        if (master.settings().verbose) ChatMessageHandler.SendMessage("Node, proxim to dest: " + DistanceHelper.CalcDistance(myPos, master.destination()) + " TTL: " + TTL + " myPos: " + myPos.x + "," + myPos.y + "," + myPos.z+ " dest: " + destination.x + "," + destination.y + "," + destination.z + " Type: " + myType);
+        if (master != null) if (master.settings().verbose) ChatMessageHandler.SendMessage("Node, proxim to dest: " + DistanceHelper.CalcDistance(myPos, master.destination()) + " TTL: " + TTL + " myPos: " + myPos.x + "," + myPos.y + "," + myPos.z+ " dest: " + destination.x + "," + destination.y + "," + destination.z + " Type: " + myType);
     }
 
 
@@ -247,7 +247,7 @@ public class Node implements INode {
     private boolean CheckForCollisions() {
         if (master.nodeManifest().containsKey(myPos.toString())) {
             //Collision!
-            INode collidedWith = ((PopulousBadStarSearch)master).nodes.get(myPos.toString());
+            INode collidedWith = master.nodeManifest().get(myPos.toString());
             if (collidedWith.PartOfCompletedChain()) {
                 if (collidedWith.costToMe() > costToMe) {
                     if (collidedWith.children().size() > 0) {

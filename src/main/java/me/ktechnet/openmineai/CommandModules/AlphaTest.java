@@ -1,6 +1,7 @@
 package me.ktechnet.openmineai.CommandModules;
 
 import me.ktechnet.openmineai.Helpers.ChatMessageHandler;
+import me.ktechnet.openmineai.Helpers.PlayerControl;
 import me.ktechnet.openmineai.Main;
 import me.ktechnet.openmineai.Models.Classes.Pos;
 import me.ktechnet.openmineai.Models.ConfigData.Settings;
@@ -63,6 +64,14 @@ public class AlphaTest implements ICommandModule, IPathingCallback, IPathExecuti
             } else if (args[0].equals("clear")) {
                 routes.clear();
                 ChatMessageHandler.SendMessage("Cleared route list");
+            } else if (args[0].equals("stop")) {
+                PlayerControl.MoveForward = false;
+                PlayerControl.StrafeRight = false;
+                PlayerControl.StrafeLeft = false;
+                PlayerControl.Sprint = false;
+                PlayerControl.Jump = false;
+                PlayerControl.MoveBack = false;
+                PlayerControl.Sneak = false;
             } else {
                 ChatMessageHandler.SendMessage("Invalid command. Use: ;o help for help");
             }

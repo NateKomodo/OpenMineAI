@@ -1,5 +1,7 @@
 package me.ktechnet.openmineai.Models.Interfaces;
 
+import me.ktechnet.openmineai.Models.Enums.ExecutionResult;
+
 public interface INodeTypeExecutor {
-    boolean Execute(INode next, INode current, boolean verbose) throws InterruptedException;
+    ExecutionResult Execute(INode next, INode current, boolean verbose) throws InterruptedException;
 }

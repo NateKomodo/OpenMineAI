@@ -21,11 +21,11 @@ import java.util.Collections;
 import java.util.Comparator;
 
 public class OptionProvider implements IOptionProvider {
-    private final INode parent;
+    private INode parent;
 
-    private final NodeTypeRules r;
+    private NodeTypeRules r;
 
-    private final IRuleEvaluator rev;
+    private IRuleEvaluator rev;
 
     private Pos parentPos;
 
@@ -35,9 +35,10 @@ public class OptionProvider implements IOptionProvider {
 
     private Pos entry;
 
-    private final Pos dest;
+    private Pos dest;
 
     public OptionProvider(INode parent) {
+        if (parent.master() == null) return;
         this.parent = parent;
         //Get data from 4 previous nodes as these are the most likely to effect us
         this.parentPos = this.parent.pos();
