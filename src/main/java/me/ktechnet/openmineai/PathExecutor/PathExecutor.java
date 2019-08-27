@@ -97,6 +97,10 @@ public class PathExecutor implements IPathExecutor {
         if (verbose) ChatMessageHandler.SendMessage("Returning to path: going to node at: " + returnTo.pos());
         Pos pos = new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ);
         Pos ret = returnTo.pos();
+        if (DistanceHelper.CalcDistance(pos, ret) > 10) {
+            if (verbose) ChatMessageHandler.SendMessage("Distance too great to return, abort");
+            return ExecutionResult.FAILED;
+        }
         int xOffset = ret.x - pos.x;
         int zOffset = ret.z - pos.z;
         final Node current = new Node(NodeType.PLAYER, null, null, 0, 0, pos, ret, 99, null, 99);
