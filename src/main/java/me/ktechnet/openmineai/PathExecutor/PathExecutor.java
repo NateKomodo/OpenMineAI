@@ -93,7 +93,7 @@ public class PathExecutor implements IPathExecutor {
         } catch (Exception ex) { return ExecutionResult.FAILED; }
         return ExecutionResult.FAILED;
     }
-    private ExecutionResult ReturnToRoute(INode returnTo, boolean verbose) { //TODO make this return to closest point on route instead of last
+    private ExecutionResult ReturnToRoute(INode returnTo, boolean verbose) {
         if (verbose) ChatMessageHandler.SendMessage("Returning to path: going to node at: " + returnTo.pos());
         Pos pos = new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ);
         Pos ret = returnTo.pos();
