@@ -4,13 +4,14 @@ OpenMineAI is a work-in-progress Minecraft pathfinder and automation tool, with 
 
 ## Current features
 
-As of 0.5.1, the following is done:
+As of 0.5.4, the following is done:
 
 - Movement
 - Breaking and placing
 - Pathfinding
 - Basic path execution
 - Forge integration for 1.12.2
+- Modular chat commands
 
 ## Todo
 
@@ -20,12 +21,11 @@ Pathfinder:
 
 Path executor:
 - Switch to alternate paths (May be do at a module level instead of executor level)
-- Following paths
+- Following paths (Rest of nodes)
 - Shortcuts
-- Return to path if off by a block
+- Fix RTP (Stop it doing a spin)
 
 Modules:
-- Chat commands
 - Combat
 - Recon
 - Mining
