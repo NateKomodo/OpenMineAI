@@ -12,6 +12,8 @@ import me.ktechnet.openmineai.Models.Interfaces.INodeTypeExecutor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 
+import java.util.TimerTask;
+
 public class StepDownNodeExecutor implements INodeTypeExecutor {
     private PlayerControl pc = new PlayerControl();
     private EntityPlayerSP player = Minecraft.getMinecraft().player;
@@ -28,7 +30,7 @@ public class StepDownNodeExecutor implements INodeTypeExecutor {
         if (verbose) ChatMessageHandler.SendMessage("Turning to face " + cardinal + " (" + rotation + ")");
         pc.HardSetFacing(rotation, -99);
         ex.Centre(cardinal);
-        new java.util.Timer().schedule(
+        new java.util.Timer(true).schedule(
                 new java.util.TimerTask() {
                     @Override
                     public void run() {
@@ -44,14 +46,32 @@ public class StepDownNodeExecutor implements INodeTypeExecutor {
             PlayerControl.Sprint = false;
             pc.HardSetFacing(rotation, -99);
             double dist = DistanceHelper.GetComponents(new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ), next.pos()).h;
-            if (new Pos((int)player.posX, (int)Math.ceil(player.posY) - 1, (int)player.posZ).IsEqual(next.pos())) PlayerControl.MoveForward = false;
+            if (new Pos((int)player.posX, (int)Math.ceil(player.posY) - 1, (int)player.posZ).IsEqual(next.pos())) {
+                new java.util.Timer(true).schedule(
+                        new java.util.TimerTask() {
+                            @Override
+                            public void run() {
+                                PlayerControl.MoveForward = false;
+                            }
+                        },
+                        100
+                );
+                new java.util.Timer(true).schedule(
+                        new java.util.TimerTask() {
+                            @Override
+                            public void run() {
+                                PlayerControl.MoveForward = true;
+                            }
+                        },
+                        200
+                );
+            }
             if (dist > maxDist && !RTP) {
                 PlayerControl.MoveForward = false;
                 if (verbose) ChatMessageHandler.SendMessage("No longer on route, node return abort. Dist " + dist + " Max:" + maxDist);
                 return ExecutionResult.OFF_PATH;
             }
         }
-        Thread.sleep(2);
         PlayerControl.MoveForward = false;
         return ExecutionResult.OK;
     }

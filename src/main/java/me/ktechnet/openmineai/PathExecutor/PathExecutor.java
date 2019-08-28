@@ -39,7 +39,7 @@ public class PathExecutor implements IPathExecutor {
         pc.TakeControl();
         this.route = route;
         if (route.path().size() - 1 != 0) {
-            new Thread(() -> {
+            Thread t = new Thread(() -> {
                 if (verbose) ChatMessageHandler.SendMessage("Starting execution");
                 boolean complete = false;
                 for (i = 0; i < route.path().size() - 1; i++) {
@@ -56,7 +56,9 @@ public class PathExecutor implements IPathExecutor {
                     if (verbose) ChatMessageHandler.SendMessage("Path execution failed");
                     callback.pathExecutionFailed();
                 }
-            }).start();
+            });
+            t.setDaemon(true);
+            t.start();
         }
         else {
             if (verbose) ChatMessageHandler.SendMessage("Insufficient nodes");

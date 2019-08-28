@@ -27,7 +27,7 @@ public class MoveNodeExecutor implements INodeTypeExecutor {
         if (verbose) ChatMessageHandler.SendMessage("Turning to face " + cardinal + " (" + rotation + ")");
         pc.HardSetFacing(rotation, -99);
         ex.Centre(cardinal);
-        new java.util.Timer().schedule(
+        new java.util.Timer(true).schedule(
                 new java.util.TimerTask() {
                     @Override
                     public void run() {
@@ -50,7 +50,6 @@ public class MoveNodeExecutor implements INodeTypeExecutor {
                 return ExecutionResult.OFF_PATH;
             }
         }
-        Thread.sleep(2);
         PlayerControl.Sprint = false;
         PlayerControl.MoveForward = false;
         return ExecutionResult.OK;

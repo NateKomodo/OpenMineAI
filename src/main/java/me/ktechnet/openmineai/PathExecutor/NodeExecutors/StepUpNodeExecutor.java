@@ -31,7 +31,7 @@ public class StepUpNodeExecutor implements INodeTypeExecutor {
         if (verbose) ChatMessageHandler.SendMessage("Turning to face " + cardinal + " (" + rotation + ")");
         pc.HardSetFacing(rotation, -99);
         ex.Centre(cardinal);
-        new java.util.Timer().schedule(
+        new java.util.Timer(true).schedule(
                 new java.util.TimerTask() {
                     @Override
                     public void run() {
@@ -40,7 +40,7 @@ public class StepUpNodeExecutor implements INodeTypeExecutor {
                 },
                 1000
         );
-        new Thread(() -> {
+        Thread t = new Thread(() -> {
             try {
                 PlayerControl.Jump = true;
                 Thread.sleep(200);
@@ -48,7 +48,9 @@ public class StepUpNodeExecutor implements INodeTypeExecutor {
             } catch (InterruptedException e) {
                 Main.logger.error(e.getMessage());
             }
-        }).start();
+        });
+        t.setDaemon(true);
+        t.start();
         PlayerControl.Sprint = false;
         PlayerControl.MoveForward = true;
         double maxDist = (Math.abs(xOffset)) > 0 && (Math.abs(zOffset) > 0)  ? 2.5 : 2;
@@ -63,7 +65,6 @@ public class StepUpNodeExecutor implements INodeTypeExecutor {
                 return ExecutionResult.OFF_PATH;
             }
         }
-        Thread.sleep(2);
         PlayerControl.MoveForward = false;
         return ExecutionResult.OK;
     }
