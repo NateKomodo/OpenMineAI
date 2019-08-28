@@ -91,7 +91,6 @@ public class ExecutionHelper {
     private void Move(boolean leftPositive, String toWatch) {
         EntityPlayerSP player = Minecraft.getMinecraft().player;
         if (toWatch.equals("X")) {
-            Main.logger.info(GetDecimal(player.posX));
             boolean flag = false;
             if (leftPositive) {
                 if (GetDecimal(player.posX) < 0.36) {
@@ -113,7 +112,6 @@ public class ExecutionHelper {
             PlayerControl.StrafeLeft = false;
             PlayerControl.StrafeRight = false;
         } else if (toWatch.equals("Z")) {
-            Main.logger.info(GetDecimal(player.posZ));
             boolean flag = false;
             if (leftPositive) {
                 if (GetDecimal(player.posZ) < 0.36) {
