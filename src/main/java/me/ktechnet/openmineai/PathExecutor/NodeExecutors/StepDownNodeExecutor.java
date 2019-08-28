@@ -44,19 +44,7 @@ public class StepDownNodeExecutor implements INodeTypeExecutor {
             PlayerControl.Sprint = false;
             pc.HardSetFacing(rotation, -99);
             double dist = DistanceHelper.GetComponents(new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ), next.pos()).h;
-            if (new Pos((int)player.posX, (int)Math.ceil(player.posY) + 1, (int)player.posZ).IsEqual(next.pos())) {
-                PlayerControl.MoveForward = false;
-                new Thread(() -> {
-                    try {
-                        PlayerControl.MoveBack = true;
-                        Thread.sleep(200);
-                    }
-                    catch (Exception e) {
-                        Main.logger.error(e.getMessage());
-                    }
-                    PlayerControl.MoveBack = false;
-                }).start();
-            }
+            if (new Pos((int)player.posX, (int)Math.ceil(player.posY) - 1, (int)player.posZ).IsEqual(next.pos())) PlayerControl.MoveForward = false;
             if (dist > maxDist && !RTP) {
                 PlayerControl.MoveForward = false;
                 if (verbose) ChatMessageHandler.SendMessage("No longer on route, node return abort. Dist " + dist + " Max:" + maxDist);

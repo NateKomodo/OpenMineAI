@@ -87,15 +87,15 @@ public class ExecutionHelper {
         if (toWatch.equals("X")) {
             boolean flag = false;
             if (leftPositive) {
-                if (GetDecimal(player.posX) < 0.35) {
+                if (GetDecimal(player.posX) < 0.36) {
                     PlayerControl.StrafeLeft = true;
-                } else if (GetDecimal(player.posX) > 0.65) {
+                } else if (GetDecimal(player.posX) > 0.64) {
                     PlayerControl.StrafeRight = true;
                 }
             } else {
-                if (GetDecimal(player.posX) < 0.35) {
+                if (GetDecimal(player.posX) < 0.36) {
                     PlayerControl.StrafeRight = true;
-                } else if (GetDecimal(player.posX) > 0.65) {
+                } else if (GetDecimal(player.posX) > 0.64) {
                     PlayerControl.StrafeLeft = true;
                 }
             }
@@ -108,15 +108,15 @@ public class ExecutionHelper {
         } else if (toWatch.equals("Z")) {
             boolean flag = false;
             if (leftPositive) {
-                if (GetDecimal(player.posZ) < 0.35) {
+                if (GetDecimal(player.posZ) < 0.36) {
                     PlayerControl.StrafeLeft = true;
-                } else if (GetDecimal(player.posZ) > 0.65) {
+                } else if (GetDecimal(player.posZ) > 0.64) {
                     PlayerControl.StrafeRight = true;
                 }
             } else {
-                if (GetDecimal(player.posZ) < 0.35) {
+                if (GetDecimal(player.posZ) < 0.36) {
                     PlayerControl.StrafeRight = true;
-                } else if (GetDecimal(player.posZ) > 0.65) {
+                } else if (GetDecimal(player.posZ) > 0.64) {
                     PlayerControl.StrafeLeft = true;
                 }
             }
