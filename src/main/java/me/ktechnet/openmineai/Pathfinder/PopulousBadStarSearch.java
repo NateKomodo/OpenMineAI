@@ -77,7 +77,7 @@ public class PopulousBadStarSearch implements IPathingProvider {
                         }
                     }
                 },
-                20000
+                2000
         );
         initial.SpawnChildren();
     }

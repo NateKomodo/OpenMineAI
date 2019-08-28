@@ -1,6 +1,7 @@
 package me.ktechnet.openmineai;
 
 import me.ktechnet.openmineai.CommandModules.AlphaTest;
+import me.ktechnet.openmineai.CommandModules.Go;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -27,6 +28,7 @@ public class Main
     public void init(FMLInitializationEvent event)
     {
         Commands.modules.put("test", new AlphaTest());
+        Commands.modules.put("go", new Go());
         ClientCommandHandler.instance.registerCommand(new Commands());
     }
 }
