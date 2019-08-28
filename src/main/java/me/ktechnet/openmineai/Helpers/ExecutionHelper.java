@@ -110,13 +110,13 @@ public class ExecutionHelper {
             if (leftPositive) {
                 if (GetDecimal(player.posZ) < 0.35) {
                     PlayerControl.StrafeLeft = true;
-                } else if (GetDecimal(player.posZ) < 0.65) {
+                } else if (GetDecimal(player.posZ) > 0.65) {
                     PlayerControl.StrafeRight = true;
                 }
             } else {
                 if (GetDecimal(player.posZ) < 0.35) {
                     PlayerControl.StrafeRight = true;
-                } else if (GetDecimal(player.posZ) < 0.65) {
+                } else if (GetDecimal(player.posZ) > 0.65) {
                     PlayerControl.StrafeLeft = true;
                 }
             }
