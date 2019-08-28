@@ -71,7 +71,7 @@ public class PathExecutor implements IPathExecutor {
         abort = true;
     }
 
-    private boolean ExecuteNode(INode next, INode current, boolean verbose) { //TODO execute nodes (move into/etc) and see if we can shortcut/save, also see if we can return to trail if we get off it
+    private boolean ExecuteNode(INode next, INode current, boolean verbose) { //TODO execute nodes (move into/etc) and see if we can shortcut/save
         Pos myPos = new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ);
         if (!current.pos().IsEqual(myPos)) { //Check we are indeed at current
             if (verbose) ChatMessageHandler.SendMessage("No longer on route, abort. Expected: " + current.pos().toString() + " Found: " + myPos.toString());

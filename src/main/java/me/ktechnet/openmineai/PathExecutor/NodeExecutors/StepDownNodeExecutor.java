@@ -47,24 +47,18 @@ public class StepDownNodeExecutor implements INodeTypeExecutor {
             pc.HardSetFacing(rotation, -99);
             double dist = DistanceHelper.GetComponents(new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ), next.pos()).h;
             if (new Pos((int)player.posX, (int)Math.ceil(player.posY) - 1, (int)player.posZ).IsEqual(next.pos())) {
-                new java.util.Timer(true).schedule(
-                        new java.util.TimerTask() {
-                            @Override
-                            public void run() {
-                                PlayerControl.MoveForward = false;
-                            }
-                        },
-                        100
-                );
-                new java.util.Timer(true).schedule(
-                        new java.util.TimerTask() {
-                            @Override
-                            public void run() {
-                                PlayerControl.MoveForward = true;
-                            }
-                        },
-                        200
-                );
+                //Thread t = new Thread(() -> {
+                //    try {
+                //        Thread.sleep(100);
+                //        PlayerControl.MoveForward = true;
+                //        Thread.sleep(100);
+                //        PlayerControl.MoveForward = false;
+                //    } catch (InterruptedException e) {
+                //        Main.logger.error(e.getMessage());
+                //    }
+                //});
+                //t.setDaemon(true);
+                //t.start();
             }
             if (dist > maxDist && !RTP) {
                 PlayerControl.MoveForward = false;
