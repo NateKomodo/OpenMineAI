@@ -4,6 +4,7 @@ import me.ktechnet.openmineai.Main;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.player.EntityPlayer;
+import scala.collection.parallel.ParIterableLike;
 
 import java.math.BigDecimal;
 
@@ -51,18 +52,23 @@ public class ExecutionHelper {
         return 0;
     }
     public void Centre(String cardinal) {
+        EntityPlayerSP player = Minecraft.getMinecraft().player;
         switch (cardinal) {
             case "N":
-                Move(false, "X");
+                boolean leftPositive = player.posX < 0;
+                Move(leftPositive, "X");
                 break;
             case "S":
-                Move(true, "X");
+                boolean leftPositive2 = player.posX > 0;
+                Move(leftPositive2, "X");
                 break;
             case "E":
-                Move(false, "Z");
+                boolean leftPositive3 = player.posX < 0;
+                Move(leftPositive3, "Z");
                 break;
             case "W":
-                Move(true, "Z");
+                boolean leftPositive4 = player.posX > 0;
+                Move(leftPositive4, "Z");
                 break;
             //case "SE":
             //    Move(true, "X");
@@ -85,6 +91,7 @@ public class ExecutionHelper {
     private void Move(boolean leftPositive, String toWatch) {
         EntityPlayerSP player = Minecraft.getMinecraft().player;
         if (toWatch.equals("X")) {
+            Main.logger.info(GetDecimal(player.posX));
             boolean flag = false;
             if (leftPositive) {
                 if (GetDecimal(player.posX) < 0.36) {
@@ -106,6 +113,7 @@ public class ExecutionHelper {
             PlayerControl.StrafeLeft = false;
             PlayerControl.StrafeRight = false;
         } else if (toWatch.equals("Z")) {
+            Main.logger.info(GetDecimal(player.posZ));
             boolean flag = false;
             if (leftPositive) {
                 if (GetDecimal(player.posZ) < 0.36) {

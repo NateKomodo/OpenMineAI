@@ -168,12 +168,12 @@ public class OptionProvider implements IOptionProvider {
                 if (!diagonal && this.parent.master().settings().allowPlace) candidates.add(new Option(CostResolve.Resolve(NodeType.BRIDGE, pos, dest), NodeType.BRIDGE, pos, null));
                 BlockPos bottom = GetBlockBeneath(pos);
                 if (bottom != null) {
-                    Pos bPos = new Pos(bottom.getX(), bottom.getY() + 1, bottom.getZ());
+                    Pos bPos = new Pos(bottom);
                     int dist = pos.y - bottom.getY();
                     Block b = Minecraft.getMinecraft().world.getBlockState(bottom).getBlock();
                     if ((dist <= parent.master().settings().maxFall || (b == Blocks.WATER || b == Blocks.FLOWING_WATER) || parent.master().settings().hasWaterBucket) && !AvoidBlocks.blocks.contains(b))
                         if (!bPos.IsEqual(entry) && !bPos.IsEqual(this.parent.pos()) && !bPos.IsEqual(grandparent) && !bPos.IsEqual(greatgrandparent))
-                            candidates.add(new Option(CostResolve.Resolve(NodeType.DROP, new Pos(bottom.getX(), bottom.getY() + 1, bottom.getZ()), dest), NodeType.DROP, pos, artificalParent));
+                            candidates.add(new Option(CostResolve.Resolve(NodeType.DROP, new Pos(bottom), dest), NodeType.DROP, pos, artificalParent));
                 }
                 if (parent.master().settings().allowParkour) {
                     ArrayList<IParkourOption> parkourOptions = new ParkourProvider().GetParkourLocations(pos, artificalParent, dest, parent.master().settings().maxFall); //Note: Parkour nodes will always be in the air, and the executor starts executing them while on the previous solid block
@@ -204,7 +204,7 @@ public class OptionProvider implements IOptionProvider {
         if (parent.myType() == NodeType.DROP) {
             BlockPos bPos = GetBlockBeneath(pos);
             if (bPos == null) return null;
-            pos = new Pos(bPos.getX(), bPos.getY() + 1, bPos.getZ());
+            pos = new Pos(bPos);
             if (pos.IsEqual(parent.master().destination())) {
                 Pos finalPos = pos;
                 return new ArrayList<IOption>() {
@@ -248,7 +248,7 @@ public class OptionProvider implements IOptionProvider {
     private BlockPos GetBlockBeneath(Pos start)
     {
         for (int i = start.y; i >= 0; i--) {
-            BlockPos bPos = new BlockPos(start.x, i, start.z);
+            BlockPos bPos = new Pos(start.x, i, start.z).ConvertToBlockPos();
             Block b = Minecraft.getMinecraft().world.getBlockState(bPos).getBlock();
             if (!PassableBlocks.blocks.contains(b)) return bPos;
         }

@@ -12,6 +12,7 @@ import me.ktechnet.openmineai.Pathfinder.PopulousBadStarSearch;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.init.Blocks;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -33,12 +34,14 @@ public class AlphaTest implements ICommandModule, IPathingCallback, IPathExecuti
                 ChatMessageHandler.SendMessage("Starting pathing");
                 IPathingProvider pathingProvider = new PopulousBadStarSearch();
                 EntityPlayerSP p = Minecraft.getMinecraft().player;
-                Pos pos = new Pos((int)p.posX, (int)p.posY, (int)p.posZ);
+                final Pos pos = new Pos((int)p.posX, (int)p.posY, (int)p.posZ);
+                ChatMessageHandler.SendMessage(pos.toString());
                 Pos dest = new Pos(Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]));
                 pre = LocalDateTime.now();
                 Settings settings = new Settings();
                 settings.allowBreak = Boolean.parseBoolean(args[4]);
                 settings.allowPlace = Boolean.parseBoolean(args[5]);
+                settings.verbose = true;
                 pathingProvider.StartPathfinding(dest, pos, this, settings);
             } else if (args[0].equals("plot")) {
                 if (routes.size() > 0) {
@@ -72,6 +75,10 @@ public class AlphaTest implements ICommandModule, IPathingCallback, IPathExecuti
                 PlayerControl.Jump = false;
                 PlayerControl.MoveBack = false;
                 PlayerControl.Sneak = false;
+            } else if (args[0].equals("cor")) {
+                EntityPlayerSP player = Minecraft.getMinecraft().player;
+                Pos myNewPos = new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ);
+                ChatMessageHandler.SendMessage(myNewPos.toString());
             } else {
                 ChatMessageHandler.SendMessage("Invalid command. Use: ;o help for help");
             }

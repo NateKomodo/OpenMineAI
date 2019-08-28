@@ -212,10 +212,10 @@ public class Node implements INode {
             return;
         }
         if (options.get(0).cost() > options.get(options.size() - 1).cost()) Collections.reverse(options);
-        if (master.settings().verbose) for (int i = 0; i < Math.min(options.size(), 3); i++) {
-            IOption o = options.get(i);
-            ChatMessageHandler.SendMessage("Option: " + o.typeCandidate() + " Cost: " + o.cost());
-        }
+        //if (master.settings().verbose) for (int i = 0; i < Math.min(options.size(), 3); i++) {
+        //    IOption o = options.get(i);
+        //    ChatMessageHandler.SendMessage("Option: " + o.typeCandidate() + " Cost: " + o.cost());
+        //}
 
         IOption option1 = options.get(0);
         int PsClass = NodeClass.GetStrictClass(option1.typeCandidate());

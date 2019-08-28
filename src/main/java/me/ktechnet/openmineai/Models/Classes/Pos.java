@@ -14,8 +14,14 @@ public class Pos {
         this.z = z;
     }
 
+    public Pos(BlockPos from) {
+        this.x = from.getX() < 0 ? (from.getX() + 1) : from.getX();
+        this.y = from.getY();
+        this.z = from.getZ() < 0 ? (from.getZ() + 1) : from.getZ();
+    }
+
     public BlockPos ConvertToBlockPos() {
-        return new BlockPos(x, y, z);
+        return new BlockPos(x < 0 ? (x - 1) : x, y, z < 0 ? (z - 1) : z);
     }
 
     public boolean IsEqual(Pos pos) {
