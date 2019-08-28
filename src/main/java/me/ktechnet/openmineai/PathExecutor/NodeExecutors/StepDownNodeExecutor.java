@@ -38,7 +38,7 @@ public class StepDownNodeExecutor implements INodeTypeExecutor {
         );
         PlayerControl.Sprint = false;
         PlayerControl.MoveForward = true;
-        double maxDist = (Math.abs(xOffset)) > 0 && (Math.abs(zOffset) > 0)  ? 2 : 1.5;
+        double maxDist = (Math.abs(xOffset)) > 0 && (Math.abs(zOffset) > 0)  ? 2.5 : 2;
         while (!next.pos().IsEqual(new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ)) && !timedOut) {
             PlayerControl.Sprint = false;
             pc.HardSetFacing(rotation, -99);
