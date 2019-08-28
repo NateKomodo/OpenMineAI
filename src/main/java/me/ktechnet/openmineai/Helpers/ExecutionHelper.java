@@ -84,7 +84,6 @@ public class ExecutionHelper {
     }
     private void Move(boolean leftPositive, String toWatch) {
         EntityPlayerSP player = Minecraft.getMinecraft().player;
-        Main.logger.info("Centering on " + toWatch);
         if (toWatch.equals("X")) {
             boolean flag = false;
             if (leftPositive) {
@@ -100,13 +99,10 @@ public class ExecutionHelper {
                     PlayerControl.StrafeLeft = true;
                 }
             }
-            Main.logger.info("Starting loop");
             while (!flag) {
                 Double decimal = GetDecimal(player.posX);
-                Main.logger.info(decimal);
                 if (decimal > 0.35 && decimal < 0.65) flag = true;
             }
-            Main.logger.info("Loop done reset");
             PlayerControl.StrafeLeft = false;
             PlayerControl.StrafeRight = false;
         } else if (toWatch.equals("Z")) {
@@ -124,13 +120,10 @@ public class ExecutionHelper {
                     PlayerControl.StrafeLeft = true;
                 }
             }
-            Main.logger.info("Starting loop");
             while (!flag) {
                 Double decimal = GetDecimal(player.posZ);
-                Main.logger.info(decimal);
                 if (decimal > 0.35 && decimal < 0.65) flag = true;
             }
-            Main.logger.info("Loop done reset");
             PlayerControl.StrafeLeft = false;
             PlayerControl.StrafeRight = false;
         }
