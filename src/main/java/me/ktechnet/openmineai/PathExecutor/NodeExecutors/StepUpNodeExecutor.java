@@ -22,7 +22,7 @@ public class StepUpNodeExecutor implements INodeTypeExecutor {
     private boolean timedOut;
 
     @Override
-    public ExecutionResult Execute(INode next, INode current, boolean verbose, boolean RTP) {
+    public ExecutionResult Execute(INode next, INode current, boolean verbose, boolean RTP) throws InterruptedException {
         int xOffset = next.pos().x - current.pos().x;
         int zOffset = next.pos().z - current.pos().z;
         ExecutionHelper ex = new ExecutionHelper();
@@ -51,18 +51,19 @@ public class StepUpNodeExecutor implements INodeTypeExecutor {
         }).start();
         PlayerControl.Sprint = false;
         PlayerControl.MoveForward = true;
-        double maxDist = (Math.abs(xOffset)) > 0 && (Math.abs(zOffset) > 0)  ? 1.5 : 1;
+        double maxDist = (Math.abs(xOffset)) > 0 && (Math.abs(zOffset) > 0)  ? 2 : 1.5;
         while (!next.pos().IsEqual(new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ)) && !timedOut) {
             pc.HardSetFacing(rotation, -99);
             PlayerControl.Sprint = false;
-            if (DistanceHelper.GetComponents(new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ), next.pos()).h > maxDist && !RTP) {
+            double dist = DistanceHelper.GetComponents(new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ), next.pos()).h;
+            if (dist > maxDist && !RTP) {
                 PlayerControl.MoveForward = false;
                 PlayerControl.Jump = false;
-                if (verbose) ChatMessageHandler.SendMessage("No longer on route, node return abort");
+                if (verbose) ChatMessageHandler.SendMessage("No longer on route, node return abort. Dist: " + dist + " Max: " + maxDist);
                 return ExecutionResult.OFF_PATH;
             }
         }
-        PlayerControl.Jump = false;
+        Thread.sleep(2);
         PlayerControl.MoveForward = false;
         return ExecutionResult.OK;
     }

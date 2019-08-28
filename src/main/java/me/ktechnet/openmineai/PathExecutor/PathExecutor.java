@@ -48,10 +48,8 @@ public class PathExecutor implements IPathExecutor {
                         return;
                     }
                     if (!ExecuteNode(route.path().get(i + 1), route.path().get(i), verbose)) break;
-                    int max = route.path().size() > 3 ? route.path().size() - 3 : 0;
-                    if (i == (max)) complete = true;
                 }
-                if (complete) {
+                if (route.path().get(route.path().size() - 1).pos().IsEqual(new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ))) { //Check we are now at end
                     if (verbose) ChatMessageHandler.SendMessage("Path execution complete");
                     callback.pathExecutionSuccess();
                 } else {
@@ -71,10 +69,10 @@ public class PathExecutor implements IPathExecutor {
         abort = true;
     }
 
-    //TODO abort system
     private boolean ExecuteNode(INode next, INode current, boolean verbose) { //TODO execute nodes (move into/etc) and see if we can shortcut/save, also see if we can return to trail if we get off it
-        if (!current.pos().IsEqual(new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ))) { //Check we are indeed at current
-            if (verbose) ChatMessageHandler.SendMessage("No longer on route, abort");
+        Pos myPos = new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ);
+        if (!current.pos().IsEqual(myPos)) { //Check we are indeed at current
+            if (verbose) ChatMessageHandler.SendMessage("No longer on route, abort. Expected: " + current.pos().toString() + " Found: " + myPos.toString());
             ExecutionResult returnSuccess = ReturnToRoute(GetClosest(), verbose);
             return returnSuccess != ExecutionResult.FAILED && returnSuccess != ExecutionResult.OFF_PATH;
         }
@@ -85,8 +83,9 @@ public class PathExecutor implements IPathExecutor {
             ExecutionResult returnSuccess = ReturnToRoute(GetClosest(), verbose);
             return returnSuccess != ExecutionResult.FAILED && returnSuccess != ExecutionResult.OFF_PATH;
         }
-        if (!next.pos().IsEqual(new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ))) { //Check we are now at end
-            if (verbose) ChatMessageHandler.SendMessage("No longer on route, abort");
+        Pos myNewPos = new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ);
+        if (!next.pos().IsEqual(myNewPos)) { //Check we are now at end
+            if (verbose) ChatMessageHandler.SendMessage("No longer on route, abort. Expected: " + next.pos() + " Found: " + myNewPos.toString());
             ExecutionResult returnSuccess = ReturnToRoute(GetClosest(), verbose);
             return returnSuccess != ExecutionResult.FAILED && returnSuccess != ExecutionResult.OFF_PATH;
         }
@@ -107,52 +106,57 @@ public class PathExecutor implements IPathExecutor {
         return ExecutionResult.FAILED;
     }
     private ExecutionResult ReturnToRoute(INode returnTo, boolean verbose) {
-        if (verbose) ChatMessageHandler.SendMessage("Returning to path: going to node at: " + returnTo.pos());
-        Pos pos = new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ);
-        Pos ret = returnTo.pos();
-        if (DistanceHelper.CalcDistance(pos, ret) > 10) {
-            if (verbose) ChatMessageHandler.SendMessage("Distance too great to return, abort");
+        try {
+            if (verbose) ChatMessageHandler.SendMessage("Returning to path: going to node at: " + returnTo.pos());
+            Pos pos = new Pos((int) player.posX, (int) Math.ceil(player.posY), (int) player.posZ);
+            Pos ret = returnTo.pos();
+            if (DistanceHelper.CalcDistance(pos, ret) > 10) {
+                if (verbose) ChatMessageHandler.SendMessage("Distance too great to return, abort");
+                return ExecutionResult.FAILED;
+            }
+            int xOffset = ret.x - pos.x;
+            int zOffset = ret.z - pos.z;
+            final Node current = new Node(NodeType.PLAYER, null, null, 0, 0, pos, ret, 99, null, 99);
+            final boolean diagonal = (Math.abs(xOffset) > 0) && (Math.abs(zOffset) > 0);
+            if (!(Math.abs(xOffset) > 1) && !(Math.abs(zOffset) > 1)) {
+                //Right next to node, no need to do much
+                RuleEvaluator rev = new RuleEvaluator(new ArrayList<>(), new ArrayList<>(), pos, new Settings());
+                NodeTypeRules r = new NodeTypeRules();
+                if (rev.Evaluate(ret, r.GetMove(diagonal))) {
+                    return new MoveNodeExecutor().Execute(new Node(NodeType.MOVE, null, null, 0, 0, ret, ret, 99, null, 99), current, verbose, true);
+                } else if (rev.Evaluate(ret, r.GetStepUp(diagonal))) {
+                    pos.y++;
+                    return new StepUpNodeExecutor().Execute(new Node(NodeType.STEP_UP, null, null, 0, 0, ret, ret, 99, null, 99), current, verbose, true);
+                } else if (rev.Evaluate(ret, r.GetStepDown(diagonal))) {
+                    pos.y--;
+                    return new StepDownNodeExecutor().Execute(new Node(NodeType.STEP_DOWN, null, null, 0, 0, ret, ret, 99, null, 99), current, verbose, true);
+                } else {
+                    if (verbose) ChatMessageHandler.SendMessage("Close ranged rule checks for return fell out");
+                    return ExecutionResult.FAILED;
+                }
+            } else {
+                int newXoffset = Integer.compare(xOffset, 0);
+                int newZoffset = Integer.compare(zOffset, 0);
+                Pos intermediate = new Pos(pos.x + newXoffset, pos.y, pos.z + newZoffset);
+                RuleEvaluator rev = new RuleEvaluator(new ArrayList<>(), new ArrayList<>(), pos, new Settings());
+                NodeTypeRules r = new NodeTypeRules();
+                if (rev.Evaluate(intermediate, r.GetMove(diagonal))) {
+                    new MoveNodeExecutor().Execute(new Node(NodeType.MOVE, null, null, 0, 0, intermediate, ret, 99, null, 99), current, verbose, true);
+                } else if (rev.Evaluate(intermediate, r.GetStepUp(diagonal))) {
+                    pos.y++;
+                    new StepUpNodeExecutor().Execute(new Node(NodeType.STEP_UP, null, null, 0, 0, intermediate, ret, 99, null, 99), current, verbose, true);
+                } else if (rev.Evaluate(intermediate, r.GetStepDown(diagonal))) {
+                    pos.y--;
+                    new StepDownNodeExecutor().Execute(new Node(NodeType.STEP_DOWN, null, null, 0, 0, intermediate, ret, 99, null, 99), current, verbose, true);
+                } else {
+                    if (verbose) ChatMessageHandler.SendMessage("Intermediate ranged rule checks for return fell out");
+                    return ExecutionResult.FAILED;
+                }
+                return ReturnToRoute(returnTo, verbose);
+            }
+        } catch (Exception ex) {
+            Main.logger.error(ex.getMessage());
             return ExecutionResult.FAILED;
-        }
-        int xOffset = ret.x - pos.x;
-        int zOffset = ret.z - pos.z;
-        final Node current = new Node(NodeType.PLAYER, null, null, 0, 0, pos, ret, 99, null, 99);
-        final boolean diagonal = (Math.abs(xOffset) > 0) && (Math.abs(zOffset) > 0);
-        if (!(Math.abs(xOffset) > 1) && !(Math.abs(zOffset) > 1)) {
-            //Right next to node, no need to do much
-            RuleEvaluator rev = new RuleEvaluator(new ArrayList<>(), new ArrayList<>(), pos, new Settings());
-            NodeTypeRules r = new NodeTypeRules();
-            if (rev.Evaluate(ret, r.GetMove(diagonal))) {
-                return new MoveNodeExecutor().Execute(new Node(NodeType.MOVE, null, null, 0, 0, ret, ret, 99, null, 99), current, verbose, true);
-            } else if (rev.Evaluate(ret, r.GetStepUp(diagonal))) {
-                pos.y++;
-                return new StepUpNodeExecutor().Execute(new Node(NodeType.STEP_UP, null, null, 0, 0, ret, ret, 99, null, 99), current, verbose, true);
-            } else if (rev.Evaluate(ret, r.GetStepDown(diagonal))) {
-                pos.y--;
-                return new StepDownNodeExecutor().Execute(new Node(NodeType.STEP_DOWN, null, null, 0, 0, ret, ret, 99, null, 99), current, verbose, true);
-            } else {
-                if (verbose) ChatMessageHandler.SendMessage("Close ranged rule checks for return fell out");
-                return ExecutionResult.FAILED;
-            }
-        } else {
-            int newXoffset = Integer.compare(xOffset, 0);
-            int newZoffset = Integer.compare(zOffset, 0);
-            Pos intermediate = new Pos(pos.x + newXoffset, pos.y, pos.z + newZoffset);
-            RuleEvaluator rev = new RuleEvaluator(new ArrayList<>(), new ArrayList<>(), pos, new Settings());
-            NodeTypeRules r = new NodeTypeRules();
-            if (rev.Evaluate(intermediate, r.GetMove(diagonal))) {
-                new MoveNodeExecutor().Execute(new Node(NodeType.MOVE, null, null, 0, 0, intermediate, ret, 99, null, 99), current, verbose, true);
-            } else if (rev.Evaluate(intermediate, r.GetStepUp(diagonal))) {
-                pos.y++;
-                new StepUpNodeExecutor().Execute(new Node(NodeType.STEP_UP, null, null, 0, 0, intermediate, ret, 99, null, 99), current, verbose, true);
-            } else if (rev.Evaluate(intermediate, r.GetStepDown(diagonal))) {
-                pos.y--;
-                new StepDownNodeExecutor().Execute(new Node(NodeType.STEP_DOWN, null, null, 0, 0, intermediate, ret, 99, null, 99), current, verbose, true);
-            } else {
-                if (verbose) ChatMessageHandler.SendMessage("Intermediate ranged rule checks for return fell out");
-                return ExecutionResult.FAILED;
-            }
-            return ReturnToRoute(returnTo, verbose);
         }
     }
     private INode GetClosest() {
