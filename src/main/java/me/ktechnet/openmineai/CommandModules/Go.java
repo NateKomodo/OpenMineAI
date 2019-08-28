@@ -19,6 +19,8 @@ public class Go implements ICommandModule, IPathingCallback, IPathExecutionCallb
     private IPathExecutionCallback executionCallback = this;
     private IPathingCallback pathingCallback = this;
 
+    private boolean ready = false;
+
     @Override
     public void Run(String[] args) {
         if (args.length == 4) {
@@ -34,17 +36,26 @@ public class Go implements ICommandModule, IPathingCallback, IPathExecutionCallb
             settings.allowBreak = false;
             settings.allowParkour = false;
             pathingProvider.StartPathfinding(dest, pos, pathingCallback, settings);
-            new java.util.Timer().schedule(new TimerTask() { //Due to the speed of the algo, we are just going to wait instead of starting and potentially needing to turn around
-                @Override
-                public void run() {
-                    ChatMessageHandler.SendMessage("Executing most favourable path...");
-                    IPathExecutor pathExecutor = new PathExecutor();
-                    pathExecutor.ExecutePath(favouring, executionCallback, verbose);
-                }
-            }, 1000);
+            CheckFound();
         } else {
             ChatMessageHandler.SendMessage("Insufficient args");
         }
+    }
+
+    private void CheckFound() {
+        new java.util.Timer().schedule(new TimerTask() { //Due to the speed of the algo, we are just going to wait instead of starting and potentially needing to turn around
+            @Override
+            public void run() {
+                if (ready) {
+                    ChatMessageHandler.SendMessage("Executing most favourable path...");
+                    IPathExecutor pathExecutor = new PathExecutor();
+                    pathExecutor.ExecutePath(favouring, executionCallback, verbose);
+                } else {
+                    ready = true;
+                    CheckFound();
+                }
+            }
+        }, 100);
     }
 
     @Override
@@ -56,6 +67,7 @@ public class Go implements ICommandModule, IPathingCallback, IPathExecutionCallb
     public void completeRouteFound(IRoute route) {
         favouring = route;
         if (verbose) ChatMessageHandler.SendMessage("Found complete route");
+        ready = false;
     }
 
     @Override
@@ -66,6 +78,7 @@ public class Go implements ICommandModule, IPathingCallback, IPathExecutionCallb
     public void alternateRouteFound(IRoute route) {
         if (verbose) ChatMessageHandler.SendMessage("Found alternate route");
         favouring = route.cost() < favouring.cost() ? route : favouring;
+        ready = false;
     }
 
     @Override
