@@ -123,14 +123,18 @@ public class PathExecutor implements IPathExecutor {
                 //Right next to node, no need to do much
                 RuleEvaluator rev = new RuleEvaluator(new ArrayList<>(), new ArrayList<>(), pos, new Settings());
                 NodeTypeRules r = new NodeTypeRules();
-                if (rev.Evaluate(ret, r.GetMove(diagonal))) {
-                    return new MoveNodeExecutor().Execute(new Node(NodeType.MOVE, null, null, 0, 0, ret, ret, 99, null, 99), current, verbose, true);
-                } else if (rev.Evaluate(ret, r.GetStepUp(diagonal))) {
+                Pos close = new Pos(ret.x, pos.y, ret.z); //Ensure y is the same in order to prevent move being triggered instead of step up
+                if (rev.Evaluate(close, r.GetMove(diagonal))) {
+                    if (verbose) ChatMessageHandler.SendMessage("RTP start exec of node move in close mode");
+                    return new MoveNodeExecutor().Execute(new Node(NodeType.MOVE, null, null, 0, 0, close, ret, 99, null, 99), current, verbose, true);
+                } else if (rev.Evaluate(close, r.GetStepUp(diagonal))) {
+                    if (verbose) ChatMessageHandler.SendMessage("RTP start exec of node step up in close mode");
                     pos.y++;
-                    return new StepUpNodeExecutor().Execute(new Node(NodeType.STEP_UP, null, null, 0, 0, ret, ret, 99, null, 99), current, verbose, true);
-                } else if (rev.Evaluate(ret, r.GetStepDown(diagonal))) {
+                    return new StepUpNodeExecutor().Execute(new Node(NodeType.STEP_UP, null, null, 0, 0, close, ret, 99, null, 99), current, verbose, true);
+                } else if (rev.Evaluate(close, r.GetStepDown(diagonal))) {
+                    if (verbose) ChatMessageHandler.SendMessage("RTP start exec of node step down in close mode");
                     pos.y--;
-                    return new StepDownNodeExecutor().Execute(new Node(NodeType.STEP_DOWN, null, null, 0, 0, ret, ret, 99, null, 99), current, verbose, true);
+                    return new StepDownNodeExecutor().Execute(new Node(NodeType.STEP_DOWN, null, null, 0, 0, close, ret, 99, null, 99), current, verbose, true);
                 } else {
                     if (verbose) ChatMessageHandler.SendMessage("Close ranged rule checks for return fell out");
                     return ExecutionResult.FAILED;
@@ -142,11 +146,14 @@ public class PathExecutor implements IPathExecutor {
                 RuleEvaluator rev = new RuleEvaluator(new ArrayList<>(), new ArrayList<>(), pos, new Settings());
                 NodeTypeRules r = new NodeTypeRules();
                 if (rev.Evaluate(intermediate, r.GetMove(diagonal))) {
+                    if (verbose) ChatMessageHandler.SendMessage("RTP start exec of node move in intermediate mode");
                     new MoveNodeExecutor().Execute(new Node(NodeType.MOVE, null, null, 0, 0, intermediate, ret, 99, null, 99), current, verbose, true);
                 } else if (rev.Evaluate(intermediate, r.GetStepUp(diagonal))) {
+                    if (verbose) ChatMessageHandler.SendMessage("RTP start exec of node step up in intermediate mode");
                     pos.y++;
                     new StepUpNodeExecutor().Execute(new Node(NodeType.STEP_UP, null, null, 0, 0, intermediate, ret, 99, null, 99), current, verbose, true);
                 } else if (rev.Evaluate(intermediate, r.GetStepDown(diagonal))) {
+                    if (verbose) ChatMessageHandler.SendMessage("RTP start exec of node step down in intermediate mode");
                     pos.y--;
                     new StepDownNodeExecutor().Execute(new Node(NodeType.STEP_DOWN, null, null, 0, 0, intermediate, ret, 99, null, 99), current, verbose, true);
                 } else {

@@ -63,11 +63,11 @@ public class ExecutionHelper {
                 Move(leftPositive2, "X");
                 break;
             case "E":
-                boolean leftPositive3 = player.posX < 0;
+                boolean leftPositive3 = player.posZ < 0;
                 Move(leftPositive3, "Z");
                 break;
             case "W":
-                boolean leftPositive4 = player.posX > 0;
+                boolean leftPositive4 = player.posZ > 0;
                 Move(leftPositive4, "Z");
                 break;
             //case "SE":
