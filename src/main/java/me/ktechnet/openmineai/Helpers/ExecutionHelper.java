@@ -1,6 +1,7 @@
 package me.ktechnet.openmineai.Helpers;
 
 import me.ktechnet.openmineai.Main;
+import me.ktechnet.openmineai.Models.Enums.MoveDirection;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.player.EntityPlayer;
@@ -138,5 +139,51 @@ public class ExecutionHelper {
         BigDecimal bigDecimal = new BigDecimal(in);
         int intValue = bigDecimal.intValue();
         return Math.abs(bigDecimal.subtract(new BigDecimal(intValue)).doubleValue());
+    }
+    public void PushMovementState(boolean value, MoveDirection direction, boolean ShouldTurnEnabled) {
+        if (!ShouldTurnEnabled) {
+            if (direction != null) {
+                switch (direction) {
+                    case BACK:
+                        PlayerControl.MoveBack = value;
+                        break;
+                    case LEFT:
+                        PlayerControl.StrafeLeft = value;
+                        break;
+                    case RIGHT:
+                        PlayerControl.StrafeRight = value;
+                        break;
+                    case FORWARD:
+                        PlayerControl.MoveForward = value;
+                        break;
+                }
+            } else {
+                PlayerControl.MoveForward = value;
+            }
+        } else {
+            PlayerControl.MoveForward = value;
+        }
+    }
+    public String GetCardinalFromFacing() {
+        int rotation = (int) Minecraft.getMinecraft().player.rotationYaw;
+        if (rotation < -170 || rotation > 170) {
+            return "N"; //180
+        } else if (rotation < -125 && rotation > -145) {
+            return "NE"; //-135
+        } else if (rotation < -80 && rotation > -100) {
+            return "E"; //-90
+        } else if (rotation < -35 && rotation > -55) {
+            return  "SE"; //-45
+        } else if (rotation < 10 && rotation > -10) {
+            return "S"; //0
+        } else if (rotation < 55 && rotation > 35) {
+            return "SW"; //45
+        } else if (rotation < 100 && rotation > 80) {
+            return "W"; //90
+        } else if (rotation < 145 && rotation > 125) {
+            return "NW"; //135
+        } else {
+            return "";
+        }
     }
 }
