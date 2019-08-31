@@ -2,7 +2,6 @@ package me.ktechnet.openmineai.Pathfinder;
 
 import me.ktechnet.openmineai.Helpers.ChatMessageHandler;
 import me.ktechnet.openmineai.Helpers.DistanceHelper;
-import me.ktechnet.openmineai.Main;
 import me.ktechnet.openmineai.Models.Classes.NodeClass;
 import me.ktechnet.openmineai.Models.Classes.Pos;
 import me.ktechnet.openmineai.Models.Enums.BackpropagateCondition;

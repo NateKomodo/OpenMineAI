@@ -24,8 +24,8 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 
 public class PathExecutor implements IPathExecutor {
-    private PlayerControl pc = new PlayerControl();
-    private EntityPlayerSP player = Minecraft.getMinecraft().player;
+    private final PlayerControl pc = new PlayerControl();
+    private final EntityPlayerSP player = Minecraft.getMinecraft().player;
 
     private int i = 0;
 
@@ -124,6 +124,7 @@ public class PathExecutor implements IPathExecutor {
     }
     private ExecutionResult ReturnToRoute(INode returnTo, boolean verbose) { //TODO swimming, fix stability issue or add retry
         try {
+            GenerateRandomMovement(); //Generate some random movement to dislodge the player and centre them, in case they are on the edge of a block
             if (verbose) ChatMessageHandler.SendMessage("Returning to path: going to node at: " + returnTo.pos());
             Pos pos = new Pos((int) player.posX, (int) Math.ceil(player.posY), (int) player.posZ);
             Pos ret = returnTo.pos();
@@ -179,7 +180,13 @@ public class PathExecutor implements IPathExecutor {
                 return ReturnToRoute(returnTo, verbose);
             }
         } catch (Exception ex) {
-            Main.logger.error(ex.getMessage());
+            StringWriter writer = new StringWriter();
+            PrintWriter printWriter = new PrintWriter(writer);
+            ex.printStackTrace(printWriter);
+            printWriter.flush();
+            String stackTrace = writer.toString();
+            Main.logger.error(stackTrace);
+            if (verbose) ChatMessageHandler.SendMessage("An error occurred during execution");
             return ExecutionResult.FAILED;
         }
     }
@@ -194,7 +201,7 @@ public class PathExecutor implements IPathExecutor {
                 if (myClosest < currentClosest) {
                     closest = node;
                     loc = j;
-                };
+                }
             } else {
                 closest = node;
             }
@@ -210,21 +217,16 @@ public class PathExecutor implements IPathExecutor {
     private String DetermineProposedDirection(Pos next, Pos current, boolean RTP) {
         int xOffset = Integer.compare(next.x - current.x, 0);
         int zOffset = Integer.compare(next.z - current.z, 0);
-        Main.logger.info("Offset x: " + xOffset + ", Offset z: " + zOffset);
         String facing = new ExecutionHelper().GetCardinalFromFacing();
         String proposed = new ExecutionHelper().GetCardinal(xOffset, zOffset); //This is becoming null
         if (facing.equals(proposed)) {
-            Main.logger.info("Returning " + proposed);
             return proposed;
         } else {
             if (RTP) {
-                Main.logger.info("Returning " + proposed);
                 return proposed;
             } else if (!facing.equals("")) {
-                Main.logger.info("Returning " + facing);
                 return facing;
             } else {
-                Main.logger.info("Returning " + proposed);
                 return proposed;
             }
         }
@@ -236,12 +238,8 @@ public class PathExecutor implements IPathExecutor {
             int zOffset = Integer.compare(next.z - current.z, 0);
             if (Math.abs(xOffset) > 0 && Math.abs(zOffset) > 0) return true; //Always turn if diagonal
             int score = 0;
-            score += CheckArrayPos(i + 2, i + 1);
             score += CheckArrayPos(i + 3, i + 2);
-            score += CheckArrayPos(i + 4, i + 3); //If this one is the same,
-            //score += CheckArrayPos(i + 3, i, proposedDirection);
-            //score += CheckArrayPos(i + 4, i, proposedDirection);
-            Main.logger.info("Should turn reports score " + score);
+            score += CheckArrayPos(i + 4, i + 3); //If these are the same we are going to strafe instead
             return score >= 0;
         }
         return true;
@@ -253,26 +251,21 @@ public class PathExecutor implements IPathExecutor {
             int xOffset = Integer.compare(next.pos().x - current.pos().x, 0);
             int zOffset = Integer.compare(next.pos().z - current.pos().z, 0);
             if (Math.abs(xOffset) > 0 && Math.abs(zOffset) > 0) {
-                Main.logger.info("Offset diagonal");
                 return 1; //Should turn as diagonal
             }
             if (cur > 0) {
                 if (new ExecutionHelper().GetCardinalFromFacing().length() == 2) {
-                    Main.logger.info("Diagonal");
                     return 1; //Should turn as diagonal
                 }
                 String cCardinal = new ExecutionHelper().GetCardinalFromFacing(); //The current facing
                 String nCardinal = new ExecutionHelper().GetCardinal(xOffset, zOffset); //The one of the node in question
                 if (cCardinal.length() == 2) cCardinal = cCardinal.substring(0, 1); //We only want significant direction and diagonal has already been ruled out
                 if (nCardinal.length() == 2) nCardinal = nCardinal.substring(0, 1);
-                Main.logger.info("Current: " + cCardinal + ", Next: " + nCardinal);
                 if (cCardinal.equals(nCardinal)) return -1; //No need to turn as significant direction is the same
             } else {
-                Main.logger.info("Current not greater than 0");
                 return 1; //Should turn as we are at start and current facing is unknown
             }
         } else {
-            Main.logger.info("Out of bounds");
             return 0; //Out of bounds of array so we have no say
         }
         return 0;
@@ -284,7 +277,6 @@ public class PathExecutor implements IPathExecutor {
             String nextCardinal = new ExecutionHelper().GetCardinal(XOffset, ZOffset);
             if (currentCardinal.length() == 2) currentCardinal = currentCardinal.substring(0, 1);
             if (nextCardinal.length() == 2) nextCardinal = nextCardinal.substring(0, 1);
-            Main.logger.info("Call to direction: current cardinal: " + currentCardinal + " next cardinal " + nextCardinal);
             switch (currentCardinal) {
                 case "N":
                     switch (nextCardinal) {
@@ -336,5 +328,18 @@ public class PathExecutor implements IPathExecutor {
                     break;
         }
         return null;
+    }
+    private void GenerateRandomMovement() throws InterruptedException {
+        PlayerControl.MoveForward = true;
+        PlayerControl.StrafeRight = true;
+        Thread.sleep(5);
+        PlayerControl.MoveForward = false;
+        PlayerControl.StrafeRight = false;
+        PlayerControl.MoveBack = true;
+        PlayerControl.StrafeLeft = true;
+        Thread.sleep(10);
+        PlayerControl.MoveBack = false;
+        PlayerControl.StrafeLeft = false;
+        Thread.sleep(100);
     }
 }

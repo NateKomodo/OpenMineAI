@@ -25,6 +25,7 @@ public class RuleEvaluator implements IRuleEvaluator {
         this.parent = parent;
         this.settings = settings;
     }
+    @SuppressWarnings("UnnecessaryContinue")
     @Override
     public boolean Evaluate(Pos pos, IRule rule) {
         ArrayList<Block> pBlocks = PassableBlocks.blocks;

@@ -15,7 +15,7 @@ import java.util.HashMap;
 public class PopulousBadStarSearch implements IPathingProvider {
 
     //MEGA NOTE: Seeing as java HATES my Pos class, we are going to be using string instead, as x,y,z
-    public final HashMap<String, INode> nodes = new HashMap<>(); //Holds a list of ref's to each node, excluding initial
+    private final HashMap<String, INode> nodes = new HashMap<>(); //Holds a list of ref's to each node, excluding initial
 
     private final ArrayList<INode> queue = new ArrayList<>();
 

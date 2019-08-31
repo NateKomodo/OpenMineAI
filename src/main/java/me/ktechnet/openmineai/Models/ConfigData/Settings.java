@@ -1,5 +1,6 @@
 package me.ktechnet.openmineai.Models.ConfigData;
 
+@SuppressWarnings("CanBeFinal")
 public class Settings {
     public boolean allowBreak = true;
     public boolean allowPlace = true;

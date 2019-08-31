@@ -16,8 +16,8 @@ public class Go implements ICommandModule, IPathingCallback, IPathExecutionCallb
 
     private IRoute favouring;
 
-    private IPathExecutionCallback executionCallback = this;
-    private IPathingCallback pathingCallback = this;
+    private final IPathExecutionCallback executionCallback = this;
+    private final IPathingCallback pathingCallback = this;
 
     private boolean ready = false;
 

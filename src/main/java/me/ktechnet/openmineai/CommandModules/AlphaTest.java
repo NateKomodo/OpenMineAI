@@ -2,7 +2,6 @@ package me.ktechnet.openmineai.CommandModules;
 
 import me.ktechnet.openmineai.Helpers.ChatMessageHandler;
 import me.ktechnet.openmineai.Helpers.PlayerControl;
-import me.ktechnet.openmineai.Main;
 import me.ktechnet.openmineai.Models.Classes.Pos;
 import me.ktechnet.openmineai.Models.ConfigData.Settings;
 import me.ktechnet.openmineai.Models.Enums.NodeType;
@@ -12,7 +11,6 @@ import me.ktechnet.openmineai.Pathfinder.PopulousBadStarSearch;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.init.Blocks;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;

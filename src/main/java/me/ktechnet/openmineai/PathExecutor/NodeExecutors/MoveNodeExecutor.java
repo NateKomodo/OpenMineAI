@@ -11,21 +11,20 @@ import me.ktechnet.openmineai.Models.Interfaces.INode;
 import me.ktechnet.openmineai.Models.Interfaces.INodeTypeExecutor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
-import scala.Int;
 
 public class MoveNodeExecutor implements INodeTypeExecutor {
-    private PlayerControl pc = new PlayerControl();
-    private EntityPlayerSP player = Minecraft.getMinecraft().player;
+    private final PlayerControl pc = new PlayerControl();
+    private final EntityPlayerSP player = Minecraft.getMinecraft().player;
 
     private boolean timedOut = false;
 
     @Override
-    public ExecutionResult Execute(INode next, INode current, boolean verbose, boolean RTP, boolean shouldTurn, MoveDirection direction) throws InterruptedException { //TODO if previous is swim handle surfacing
+    public ExecutionResult Execute(INode next, INode current, boolean verbose, boolean RTP, boolean shouldTurn, MoveDirection direction) { //TODO if previous is swim handle surfacing
         int xOffset = Integer.compare(next.pos().x - current.pos().x, 0);
         int zOffset = Integer.compare(next.pos().z - current.pos().z, 0);
         ExecutionHelper ex = new ExecutionHelper();
         String cardinal = shouldTurn ? ex.GetCardinal(xOffset, zOffset) : ex.GetCardinalFromFacing();
-        int rotation = shouldTurn ? ex.GetRotation(cardinal) : (int) Minecraft.getMinecraft().player.rotationYaw;
+        int rotation = ex.GetRotation(cardinal);
         if (verbose) {
             if (shouldTurn) {
                 ChatMessageHandler.SendMessage("Turning to face " + cardinal + " (" + rotation + ")");

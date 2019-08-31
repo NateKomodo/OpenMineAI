@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+@SuppressWarnings("ConstantConditions")
 public class OptionProvider implements IOptionProvider {
     private INode parent;
 

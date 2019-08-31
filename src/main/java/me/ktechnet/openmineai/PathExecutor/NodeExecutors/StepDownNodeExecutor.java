@@ -4,7 +4,6 @@ import me.ktechnet.openmineai.Helpers.ChatMessageHandler;
 import me.ktechnet.openmineai.Helpers.DistanceHelper;
 import me.ktechnet.openmineai.Helpers.ExecutionHelper;
 import me.ktechnet.openmineai.Helpers.PlayerControl;
-import me.ktechnet.openmineai.Main;
 import me.ktechnet.openmineai.Models.Classes.Pos;
 import me.ktechnet.openmineai.Models.Enums.ExecutionResult;
 import me.ktechnet.openmineai.Models.Enums.MoveDirection;
@@ -14,8 +13,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 
 public class StepDownNodeExecutor implements INodeTypeExecutor {
-    private PlayerControl pc = new PlayerControl();
-    private EntityPlayerSP player = Minecraft.getMinecraft().player;
+    private final PlayerControl pc = new PlayerControl();
+    private final EntityPlayerSP player = Minecraft.getMinecraft().player;
 
     private boolean timedOut = false;
 
@@ -25,7 +24,7 @@ public class StepDownNodeExecutor implements INodeTypeExecutor {
         int zOffset = Integer.compare(next.pos().z - current.pos().z, 0);
         ExecutionHelper ex = new ExecutionHelper();
         String cardinal = shouldTurn ? ex.GetCardinal(xOffset, zOffset) : ex.GetCardinalFromFacing();
-        int rotation = shouldTurn ? ex.GetRotation(cardinal) : (int) Minecraft.getMinecraft().player.rotationYaw;
+        int rotation = ex.GetRotation(cardinal);
         if (verbose) {
             if (shouldTurn) {
                 ChatMessageHandler.SendMessage("Turning to face " + cardinal + " (" + rotation + ")");

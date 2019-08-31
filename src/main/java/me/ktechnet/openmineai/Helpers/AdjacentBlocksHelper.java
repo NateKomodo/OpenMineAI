@@ -6,9 +6,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
 
 public class AdjacentBlocksHelper {
-    public static Block Above(Pos pos) {
-        return Minecraft.getMinecraft().world.getBlockState(new Pos(pos.x, pos.y + 1, pos.z).ConvertToBlockPos()).getBlock();
-    }
+// --Commented out by Inspection START (31/08/2019 18:51):
+//    public static Block Above(Pos pos) {
+//        return Minecraft.getMinecraft().world.getBlockState(new Pos(pos.x, pos.y + 1, pos.z).ConvertToBlockPos()).getBlock();
+//    }
+// --Commented out by Inspection STOP (31/08/2019 18:51)
     public static Block Below(Pos pos) {
         return Minecraft.getMinecraft().world.getBlockState(new Pos(pos.x, pos.y - 1, pos.z).ConvertToBlockPos()).getBlock();
     }
@@ -32,7 +34,6 @@ public class AdjacentBlocksHelper {
         if (!Minecraft.getMinecraft().world.getChunkFromBlockCoords(new Pos(pos.x + 1, pos.y, pos.z + 1).ConvertToBlockPos()).isLoaded()) return true;
         if (!Minecraft.getMinecraft().world.getChunkFromBlockCoords(new Pos(pos.x + 1, pos.y, pos.z - 1).ConvertToBlockPos()).isLoaded()) return true;
         if (!Minecraft.getMinecraft().world.getChunkFromBlockCoords(new Pos(pos.x - 1, pos.y, pos.z + 1).ConvertToBlockPos()).isLoaded()) return true;
-        if (!Minecraft.getMinecraft().world.getChunkFromBlockCoords(new Pos(pos.x - 1, pos.y, pos.z - 1).ConvertToBlockPos()).isLoaded()) return true;
-        return false;
+        return !Minecraft.getMinecraft().world.getChunkFromBlockCoords(new Pos(pos.x - 1, pos.y, pos.z - 1).ConvertToBlockPos()).isLoaded();
     }
 }

@@ -1,11 +1,8 @@
 package me.ktechnet.openmineai.Helpers;
 
-import me.ktechnet.openmineai.Main;
 import me.ktechnet.openmineai.Models.Enums.MoveDirection;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.entity.player.EntityPlayer;
-import scala.collection.parallel.ParIterableLike;
 
 import java.math.BigDecimal;
 
@@ -128,7 +125,7 @@ public class ExecutionHelper {
                 }
             }
             while (!flag) {
-                Double decimal = GetDecimal(player.posZ);
+                double decimal = GetDecimal(player.posZ);
                 if (decimal > 0.35 && decimal < 0.65) flag = true;
             }
             PlayerControl.StrafeLeft = false;
