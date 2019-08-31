@@ -142,15 +142,15 @@ public class PathExecutor implements IPathExecutor {
                 Pos close = new Pos(ret.x, pos.y, ret.z); //Ensure y is the same in order to prevent move being triggered instead of step up
                 if (rev.Evaluate(close, r.GetMove(diagonal))) {
                     if (verbose) ChatMessageHandler.SendMessage("RTP start exec of node move in close mode");
-                    return new MoveNodeExecutor().Execute(new Node(NodeType.MOVE, null, null, 0, 0, close, ret, 99, null, 99), current, verbose, false, ShouldTurn(current.pos(), close), Direction(DetermineProposedDirection(close, current.pos(), true), current.pos(), close));
+                    return new MoveNodeExecutor().Execute(new Node(NodeType.MOVE, null, null, 0, 0, close, ret, 99, null, 99), current, verbose, true, ShouldTurn(current.pos(), close), Direction(DetermineProposedDirection(close, current.pos(), true), current.pos(), close));
                 } else if (rev.Evaluate(close, r.GetStepUp(diagonal))) {
                     if (verbose) ChatMessageHandler.SendMessage("RTP start exec of node step up in close mode");
                     pos.y++;
-                    return new StepUpNodeExecutor().Execute(new Node(NodeType.STEP_UP, null, null, 0, 0, close, ret, 99, null, 99), current, verbose, false, ShouldTurn(current.pos(), close), Direction(DetermineProposedDirection(close, current.pos(), true), current.pos(), close));
+                    return new StepUpNodeExecutor().Execute(new Node(NodeType.STEP_UP, null, null, 0, 0, close, ret, 99, null, 99), current, verbose, true, ShouldTurn(current.pos(), close), Direction(DetermineProposedDirection(close, current.pos(), true), current.pos(), close));
                 } else if (rev.Evaluate(close, r.GetStepDown(diagonal))) {
                     if (verbose) ChatMessageHandler.SendMessage("RTP start exec of node step down in close mode");
                     pos.y--;
-                    return new StepDownNodeExecutor().Execute(new Node(NodeType.STEP_DOWN, null, null, 0, 0, close, ret, 99, null, 99), current, verbose, false, ShouldTurn(current.pos(), close), Direction(DetermineProposedDirection(close, current.pos(), true), current.pos(), close));
+                    return new StepDownNodeExecutor().Execute(new Node(NodeType.STEP_DOWN, null, null, 0, 0, close, ret, 99, null, 99), current, verbose, true, ShouldTurn(current.pos(), close), Direction(DetermineProposedDirection(close, current.pos(), true), current.pos(), close));
                 } else {
                     if (verbose) ChatMessageHandler.SendMessage("Close ranged rule checks for return fell out");
                     return ExecutionResult.FAILED;
@@ -163,15 +163,15 @@ public class PathExecutor implements IPathExecutor {
                 NodeTypeRules r = new NodeTypeRules();
                 if (rev.Evaluate(intermediate, r.GetMove(diagonal))) {
                     if (verbose) ChatMessageHandler.SendMessage("RTP start exec of node move in intermediate mode");
-                    new MoveNodeExecutor().Execute(new Node(NodeType.MOVE, null, null, 0, 0, intermediate, ret, 99, null, 99), current, verbose, false, ShouldTurn(current.pos(), intermediate), Direction(DetermineProposedDirection(intermediate, current.pos(), true), current.pos(), intermediate));
+                    new MoveNodeExecutor().Execute(new Node(NodeType.MOVE, null, null, 0, 0, intermediate, ret, 99, null, 99), current, verbose, true, ShouldTurn(current.pos(), intermediate), Direction(DetermineProposedDirection(intermediate, current.pos(), true), current.pos(), intermediate));
                 } else if (rev.Evaluate(intermediate, r.GetStepUp(diagonal))) {
                     if (verbose) ChatMessageHandler.SendMessage("RTP start exec of node step up in intermediate mode");
                     pos.y++;
-                    new StepUpNodeExecutor().Execute(new Node(NodeType.STEP_UP, null, null, 0, 0, intermediate, ret, 99, null, 99), current, verbose, false, ShouldTurn(current.pos(), intermediate), Direction(DetermineProposedDirection(intermediate, current.pos(), true), current.pos(), intermediate));
+                    new StepUpNodeExecutor().Execute(new Node(NodeType.STEP_UP, null, null, 0, 0, intermediate, ret, 99, null, 99), current, verbose, true, ShouldTurn(current.pos(), intermediate), Direction(DetermineProposedDirection(intermediate, current.pos(), true), current.pos(), intermediate));
                 } else if (rev.Evaluate(intermediate, r.GetStepDown(diagonal))) {
                     if (verbose) ChatMessageHandler.SendMessage("RTP start exec of node step down in intermediate mode");
                     pos.y--;
-                    new StepDownNodeExecutor().Execute(new Node(NodeType.STEP_DOWN, null, null, 0, 0, intermediate, ret, 99, null, 99), current, verbose, false, ShouldTurn(current.pos(), intermediate), Direction(DetermineProposedDirection(intermediate, current.pos(), true), current.pos(), intermediate));
+                    new StepDownNodeExecutor().Execute(new Node(NodeType.STEP_DOWN, null, null, 0, 0, intermediate, ret, 99, null, 99), current, verbose, true, ShouldTurn(current.pos(), intermediate), Direction(DetermineProposedDirection(intermediate, current.pos(), true), current.pos(), intermediate));
                 } else {
                     if (verbose) ChatMessageHandler.SendMessage("Intermediate ranged rule checks for return fell out");
                     return ExecutionResult.FAILED;
@@ -201,7 +201,7 @@ public class PathExecutor implements IPathExecutor {
         }
         if (closest != null) {
             //In order to better improve overall flow, we are going to bump loc up by 1 then get the result to try and move forward
-            loc++;
+            //loc++;
             closest = route.path().get(loc);
             this.i = (loc - 1);
         }
@@ -280,7 +280,7 @@ public class PathExecutor implements IPathExecutor {
     private MoveDirection Direction(String proposedDirection, Pos current, Pos next) {
             int XOffset = Integer.compare(next.x - current.x, 0);
             int ZOffset = Integer.compare(next.z - current.z, 0);
-            String currentCardinal = proposedDirection; //We only need the axial part of the cardinal as diagonals are disallowed
+            String currentCardinal = new ExecutionHelper().GetCardinalFromFacing(); //We only need the axial part of the cardinal as diagonals are disallowed
             String nextCardinal = new ExecutionHelper().GetCardinal(XOffset, ZOffset);
             if (currentCardinal.length() == 2) currentCardinal = currentCardinal.substring(0, 1);
             if (nextCardinal.length() == 2) nextCardinal = nextCardinal.substring(0, 1);
