@@ -14,6 +14,7 @@ import me.ktechnet.openmineai.Models.Interfaces.IRoute;
 import me.ktechnet.openmineai.PathExecutor.NodeExecutors.MoveNodeExecutor;
 import me.ktechnet.openmineai.PathExecutor.NodeExecutors.StepDownNodeExecutor;
 import me.ktechnet.openmineai.PathExecutor.NodeExecutors.StepUpNodeExecutor;
+import me.ktechnet.openmineai.PathExecutor.NodeExecutors.SwimNodeExecutor;
 import me.ktechnet.openmineai.Pathfinder.Node;
 import me.ktechnet.openmineai.Pathfinder.RuleEvaluator;
 import net.minecraft.client.Minecraft;
@@ -74,7 +75,7 @@ public class PathExecutor implements IPathExecutor {
     }
 
     private boolean ExecuteNode(INode next, INode current, boolean verbose) { //TODO execute nodes (move into/etc) and see if we can shortcut/save
-        Pos myPos = new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ);
+        Pos myPos = current.myType() == NodeType.SWIM ? new Pos((int)player.posX, current.pos().y, (int)player.posZ) : new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ);
         if (!current.pos().IsEqual(myPos)) { //Check we are indeed at current
             if (verbose) ChatMessageHandler.SendMessage("No longer on route, abort. Expected: " + current.pos().toString() + " Found: " + myPos.toString());
             ExecutionResult returnSuccess = ReturnToRoute(GetClosest(), verbose);
@@ -89,7 +90,7 @@ public class PathExecutor implements IPathExecutor {
             if (verbose) ChatMessageHandler.SendMessage("Execution offpath call finished renav: " + (returnSuccess != ExecutionResult.FAILED && returnSuccess != ExecutionResult.OFF_PATH));
             return returnSuccess != ExecutionResult.FAILED && returnSuccess != ExecutionResult.OFF_PATH;
         }
-        Pos myNewPos = new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ);
+        Pos myNewPos = current.myType() == NodeType.SWIM ? new Pos((int)player.posX, next.pos().y, (int)player.posZ) : new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ);
         if (!next.pos().IsEqual(myNewPos)) { //Check we are now at end
             if (verbose) ChatMessageHandler.SendMessage("No longer on route, abort. Expected: " + next.pos() + " Found: " + myNewPos.toString());
             ExecutionResult returnSuccess = ReturnToRoute(GetClosest(), verbose);
@@ -102,12 +103,14 @@ public class PathExecutor implements IPathExecutor {
         try {
             if (verbose) ChatMessageHandler.SendMessage("Starting node execution: " + next.myType() + " at " + next.pos().toString());
             switch (next.myType()) { //NOTE destination node is only spawned if both move and break_and_move cannot reach it and therefore needs a special use case, or just idle adjacent
-                case MOVE: //TODO make these use strafe and backwards, not just force setting view
+                case MOVE:
                     return new MoveNodeExecutor().Execute(next, current, verbose, false, ShouldTurn(current.pos(), next.pos()), Direction(DetermineProposedDirection(next.pos(), current.pos(), false), current.pos(), next.pos()));
                 case STEP_UP:
                     return new StepUpNodeExecutor().Execute(next, current, verbose, false, ShouldTurn(current.pos(), next.pos()), Direction(DetermineProposedDirection(next.pos(), current.pos(), false), current.pos(), next.pos()));
                 case STEP_DOWN:
                     return new StepDownNodeExecutor().Execute(next, current, verbose, false, ShouldTurn(current.pos(), next.pos()), Direction(DetermineProposedDirection(next.pos(), current.pos(), false), current.pos(), next.pos()));
+                case SWIM:
+                    return new SwimNodeExecutor().Execute(next, current, verbose, false, ShouldTurn(current.pos(), next.pos()), Direction(DetermineProposedDirection(next.pos(), current.pos(), false), current.pos(), next.pos()));
             }
         } catch (Exception ex) {
             StringWriter writer = new StringWriter();

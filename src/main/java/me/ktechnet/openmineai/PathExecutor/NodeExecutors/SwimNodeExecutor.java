@@ -13,14 +13,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.init.Blocks;
 
-public class MoveNodeExecutor implements INodeTypeExecutor {
+public class SwimNodeExecutor implements INodeTypeExecutor {
     private final PlayerControl pc = new PlayerControl();
     private final EntityPlayerSP player = Minecraft.getMinecraft().player;
 
     private boolean timedOut = false;
 
     @Override
-    public ExecutionResult Execute(INode next, INode current, boolean verbose, boolean RTP, boolean shouldTurn, MoveDirection direction) throws InterruptedException { //TODO if previous is swim handle surfacing
+    public ExecutionResult Execute(INode next, INode current, boolean verbose, boolean RTP, boolean shouldTurn, MoveDirection direction) throws InterruptedException {
         int xOffset = Integer.compare(next.pos().x - current.pos().x, 0);
         int zOffset = Integer.compare(next.pos().z - current.pos().z, 0);
         ExecutionHelper ex = new ExecutionHelper();
@@ -44,11 +44,12 @@ public class MoveNodeExecutor implements INodeTypeExecutor {
                 },
                 1000
         );
-        if (Minecraft.getMinecraft().world.getBlockState(new Pos(current.pos().x, current.pos().y -1, current.pos().z).ConvertToBlockPos()).getBlock() == Blocks.WATER) PlayerControl.Jump = true;
         ex.PushMovementState(true, direction, shouldTurn);
         PlayerControl.Sprint = true;
+        Thread.sleep(100);
+        if (Minecraft.getMinecraft().world.getBlockState(new Pos(current.pos().x, current.pos().y - 1, current.pos().z).ConvertToBlockPos()).getBlock() == Blocks.WATER) PlayerControl.Jump = true;
         double maxDist = (Math.abs(xOffset)) > 0 && (Math.abs(zOffset) > 0)  ? 1.6 : 1.1;
-        while (!next.pos().IsEqual(new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ)) && !timedOut) {
+        while (!next.pos().IsEqual(new Pos((int)player.posX, next.pos().y, (int)player.posZ)) && !timedOut) {
             pc.HardSetFacing(rotation, -99);
             PlayerControl.Sprint = true;
             double dist = DistanceHelper.GetComponents(new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ), next.pos()).h;
@@ -59,10 +60,8 @@ public class MoveNodeExecutor implements INodeTypeExecutor {
                 return ExecutionResult.OFF_PATH;
             }
         }
-        boolean wasSwim = PlayerControl.Jump;
-        PlayerControl.Jump = false;
+        //PlayerControl.Jump = false;
         PlayerControl.Sprint = false;
-        if (wasSwim) Thread.sleep(100);
         ex.PushMovementState(false, direction, shouldTurn);
         return ExecutionResult.OK;
     }

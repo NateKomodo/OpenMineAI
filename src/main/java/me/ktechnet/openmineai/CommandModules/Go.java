@@ -55,7 +55,7 @@ public class Go implements ICommandModule, IPathingCallback, IPathExecutionCallb
                     CheckFound();
                 }
             }
-        }, 100);
+        }, 250);
     }
 
     @Override
