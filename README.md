@@ -4,7 +4,7 @@ OpenMineAI is a work-in-progress Minecraft pathfinder and automation tool, with 
 
 ## Current features
 
-As of 0.5.7, the following is done:
+As of 0.6.4, the following is done:
 
 - Movement
 - Breaking and placing
@@ -23,7 +23,6 @@ Path executor:
 - Switch to alternate paths (May be do at a module level instead of executor level)
 - Following paths (Rest of nodes)
 - Shortcuts
-- Strafing
 - Diagonal centering?
 
 Modules:
