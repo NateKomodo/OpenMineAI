@@ -83,11 +83,14 @@ public class PathExecutor implements IPathExecutor {
 
     private boolean ExecuteNode(INode next, INode current, boolean verbose) { //TODO execute nodes (move into/etc) and see if we can shortcut/save
         boolean yIndescrim = current.myType() == NodeType.SWIM || current.myType() == NodeType.DROP || next.myType() == NodeType.DROP;
-        Pos myPos = yIndescrim ? new Pos((int)player.posX, current.pos().y, (int)player.posZ) : new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ);
+        Pos myPos = new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ);
         if (!current.pos().IsEqual(myPos)) { //Check we are indeed at current
-            if (verbose) ChatMessageHandler.SendMessage("No longer on route, abort. Expected: " + current.pos().toString() + " Found: " + myPos.toString());
-            ExecutionResult returnSuccess = ReturnToRoute(GetClosest(), verbose);
-            return returnSuccess != ExecutionResult.FAILED && returnSuccess != ExecutionResult.OFF_PATH;
+            if (!(yIndescrim && current.pos().IsEqualYIndescrim(myPos))) {
+                if (verbose)
+                    ChatMessageHandler.SendMessage("Pre ex: No longer on route, abort. Expected: " + current.pos().toString() + " Found: " + myPos.toString());
+                ExecutionResult returnSuccess = ReturnToRoute(GetClosest(), verbose);
+                return returnSuccess != ExecutionResult.FAILED && returnSuccess != ExecutionResult.OFF_PATH;
+            }
         }
         ExecutionResult result = ExecutionManager(next, current, verbose);
         if (result == ExecutionResult.FAILED) {
@@ -99,12 +102,16 @@ public class PathExecutor implements IPathExecutor {
             return returnSuccess != ExecutionResult.FAILED && returnSuccess != ExecutionResult.OFF_PATH;
         }
         Pos beneath = GetBlockBeneath(next.pos());
-        Pos myNewPos = yIndescrim ? next.myType() == NodeType.DROP ? new Pos(beneath.x, beneath.y + 1, beneath.z) : new Pos((int)player.posX, next.pos().y, (int)player.posZ) : new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ);
-        if (!next.pos().IsEqual(myNewPos)) { //Check we are now at end
-            if (verbose) ChatMessageHandler.SendMessage("No longer on route, abort. Expected: " + next.pos() + " Found: " + myNewPos.toString() + " yIndescrim: " + yIndescrim);
-            ExecutionResult returnSuccess = ReturnToRoute(GetClosest(), verbose);
-            if (verbose) ChatMessageHandler.SendMessage("Execution offpath call finished renav: " + (returnSuccess != ExecutionResult.FAILED && returnSuccess != ExecutionResult.OFF_PATH));
-            return returnSuccess != ExecutionResult.FAILED && returnSuccess != ExecutionResult.OFF_PATH;
+        Pos myNewPos = new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ);
+        if ((!next.pos().IsEqual(myNewPos))) { //Check we are now at end
+            if (!(yIndescrim && next.pos().IsEqualYIndescrim(myNewPos))) {
+                if (verbose)
+                    ChatMessageHandler.SendMessage("Post ex: No longer on route, abort. Expected: " + next.pos() + " Found: " + myNewPos.toString() + " yIndescrim: " + yIndescrim);
+                ExecutionResult returnSuccess = ReturnToRoute(GetClosest(), verbose);
+                if (verbose)
+                    ChatMessageHandler.SendMessage("Execution offpath call finished renav: " + (returnSuccess != ExecutionResult.FAILED && returnSuccess != ExecutionResult.OFF_PATH));
+                return returnSuccess != ExecutionResult.FAILED && returnSuccess != ExecutionResult.OFF_PATH;
+            }
         }
         return true; //Execution good and checks passed
     }
@@ -124,6 +131,10 @@ public class PathExecutor implements IPathExecutor {
                     return new DropNodeExecutor().Execute(next, current, verbose, false, ShouldTurn(current.pos(), next.pos()), Direction(DetermineProposedDirection(next.pos(), current.pos(), false), current.pos(), next.pos()));
                 case BREAK_AND_MOVE:
                     return new BreakAndMoveNodeExecutor().Execute(next, current, verbose, false, ShouldTurn(current.pos(), next.pos()), Direction(DetermineProposedDirection(next.pos(), current.pos(), false), current.pos(), next.pos()));
+                case DESCEND_MINE:
+                    return new DescendMineNodeExecutor().Execute(next, current, verbose, false, ShouldTurn(current.pos(), next.pos()), Direction(DetermineProposedDirection(next.pos(), current.pos(), false), current.pos(), next.pos()));
+                case BREAK:
+                    return new BreakNodeExecutor().Execute(next, current, verbose, false, ShouldTurn(current.pos(), next.pos()), Direction(DetermineProposedDirection(next.pos(), current.pos(), false), current.pos(), next.pos()));
             }
         } catch (Exception ex) {
             StringWriter writer = new StringWriter();

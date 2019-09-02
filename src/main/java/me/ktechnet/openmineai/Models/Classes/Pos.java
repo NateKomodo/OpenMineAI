@@ -28,6 +28,10 @@ public class Pos {
         return ((x == pos.x) && (y == pos.y) && (z == pos.z));
     }
 
+    public boolean IsEqualYIndescrim(Pos pos ) {
+        return ((x == pos.x) && (z == pos.z));
+    }
+
     public String toString() {
         return x + "," + y + "," + z;
     }

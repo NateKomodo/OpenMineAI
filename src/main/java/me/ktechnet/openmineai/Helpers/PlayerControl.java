@@ -91,67 +91,9 @@ public class PlayerControl {
         Vec3d vec3d2 = vec3d.addVector(vec3d1.x * maxDist, vec3d1.y * maxDist, vec3d1.z * maxDist);
         return player.world.rayTraceBlocks(vec3d, vec3d2, false, false, true);
     }
-
-    private void MoveMouseRight() {
-        try {
-            Robot KeyPresser = new Robot();
-            Point startLocation = MouseInfo.getPointerInfo().getLocation();
-
-            int startX = startLocation.x;
-            int startY = startLocation.y;
-            int endX = startX + 1;
-
-            KeyPresser.mouseMove(endX, startY);
-        } catch (AWTException ex) {
-            Main.logger.info(ex.getMessage());
-        }
-    }
-    private void MoveMouseLeft() {
-        try {
-            Robot KeyPresser = new Robot();
-            Point startLocation = MouseInfo.getPointerInfo().getLocation();
-
-            int startX = startLocation.x;
-            int startY = startLocation.y;
-            int endX = startX - 1;
-
-            KeyPresser.mouseMove(endX, startY);
-        } catch (AWTException ex) {
-            Main.logger.info(ex.getMessage());
-        }
-    }
-    private void MoveMouseUp() {
-        try {
-            Robot KeyPresser = new Robot();
-            Point startLocation = MouseInfo.getPointerInfo().getLocation();
-
-            int startX = startLocation.x;
-            int startY = startLocation.y;
-            int endY = startY + 1;
-
-            KeyPresser.mouseMove(startX, endY);
-        } catch (AWTException ex) {
-            Main.logger.info(ex.getMessage());
-        }
-    }
-    private void MoveMouseDown() {
-        try {
-            Robot KeyPresser = new Robot();
-            Point startLocation = MouseInfo.getPointerInfo().getLocation();
-
-            int startX = startLocation.x;
-            int startY = startLocation.y;
-            int endY = startY - 1;
-
-            KeyPresser.mouseMove(startX, endY);
-        } catch (AWTException ex) {
-            Main.logger.info(ex.getMessage());
-        }
-    }
+    @Deprecated
     public void SetFacing(double rotation, double pitch, int force) {
         try {
-            //Minecraft.getMinecraft().player.rotationPitch = 0;
-            //Minecraft.getMinecraft().player.rotationYaw = 180;
             boolean flag = false;
             boolean rot = false;
             boolean pit = false;
@@ -194,6 +136,7 @@ public class PlayerControl {
 
         }
     }
+    @Deprecated
     public void PushFacing(double rotationOffset, double pitchOffset) {
         try {
             boolean flag = false;
@@ -227,6 +170,6 @@ public class PlayerControl {
     }
     public void HardSetFacing(float rotation, float pitch) {
         if (pitch != -99) Minecraft.getMinecraft().player.rotationPitch = pitch;
-        Minecraft.getMinecraft().player.rotationYaw = rotation;
+        if (rotation != -999)Minecraft.getMinecraft().player.rotationYaw = rotation;
     }
 }
