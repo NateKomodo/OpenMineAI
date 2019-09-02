@@ -20,7 +20,7 @@ public class BreakAndMoveNodeExecutor implements INodeTypeExecutor {
     private boolean timedOut = false;
 
     @Override
-    public ExecutionResult Execute(INode next, INode current, boolean verbose, boolean RTP, boolean shouldTurn, MoveDirection direction) throws InterruptedException { //TODO pick appropriate tool
+    public ExecutionResult Execute(INode next, INode current, boolean verbose, boolean RTP, boolean shouldTurn, MoveDirection direction) throws InterruptedException {
         int xOffset = Integer.compare(next.pos().x - current.pos().x, 0);
         int zOffset = Integer.compare(next.pos().z - current.pos().z, 0);
         ExecutionHelper ex = new ExecutionHelper();
@@ -51,6 +51,7 @@ public class BreakAndMoveNodeExecutor implements INodeTypeExecutor {
         pc.HardSetFacing(rotation, 70);
         Pos bPos = new Pos(pc.rayTrace(1).getBlockPos());
         while (!(world.getBlockState(bPos.ConvertToBlockPos()).getBlock() == Blocks.AIR)) {
+            new ToolHelper().SelectTool(world.getBlockState(bPos.ConvertToBlockPos()).getBlock());
             pc.HardSetFacing(rotation, 70);
             pc.BreakBlockSync(true);
             if (AdjacentBlocksHelper.GravityBlocksAbove(bPos) > 0) Thread.sleep(400); //Gives gravity blocks a chance to fall
@@ -59,6 +60,7 @@ public class BreakAndMoveNodeExecutor implements INodeTypeExecutor {
         pc.HardSetFacing(rotation, 0);
         Pos bPos2 = new Pos(pc.rayTrace(1).getBlockPos());
         while (!(world.getBlockState(bPos2.ConvertToBlockPos()).getBlock() == Blocks.AIR)) {
+            new ToolHelper().SelectTool(world.getBlockState(bPos2.ConvertToBlockPos()).getBlock());
             pc.HardSetFacing(rotation, 0);
             pc.BreakBlockSync(true);
             if (AdjacentBlocksHelper.GravityBlocksAbove(bPos2) > 0) Thread.sleep(400); //Gives gravity blocks a chance to fall
