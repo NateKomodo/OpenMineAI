@@ -115,8 +115,9 @@ public class PathExecutor implements IPathExecutor {
         }
         return true; //Execution good and checks passed
     }
-    private ExecutionResult ExecutionManager(INode next, INode current, boolean verbose) {
+    private ExecutionResult ExecutionManager(INode next, INode current, boolean verbose) { //TODO confirm node is still possible (Pos, required disposables/tools)
         try {
+            new PlayerControl().TakeControl();
             if (verbose) ChatMessageHandler.SendMessage("Starting node execution: " + next.myType() + " at " + next.pos().toString());
             switch (next.myType()) { //NOTE destination node is only spawned if both move and break_and_move cannot reach it and therefore needs a special use case, or just idle adjacent
                 case MOVE:
@@ -135,6 +136,10 @@ public class PathExecutor implements IPathExecutor {
                     return new DescendMineNodeExecutor().Execute(next, current, verbose, false, ShouldTurn(current.pos(), next.pos()), Direction(DetermineProposedDirection(next.pos(), current.pos(), false), current.pos(), next.pos()));
                 case BREAK:
                     return new BreakNodeExecutor().Execute(next, current, verbose, false, ShouldTurn(current.pos(), next.pos()), Direction(DetermineProposedDirection(next.pos(), current.pos(), false), current.pos(), next.pos()));
+                case ASCEND_TOWER:
+                    return new AscendTowerNodeExecutor().Execute(next, current, verbose, false, ShouldTurn(current.pos(), next.pos()), Direction(DetermineProposedDirection(next.pos(), current.pos(), false), current.pos(), next.pos()));
+                case ASCEND_BREAK_AND_TOWER:
+                    return new AscendBreakAndTowerNodeExecutor().Execute(next, current, verbose, false, ShouldTurn(current.pos(), next.pos()), Direction(DetermineProposedDirection(next.pos(), current.pos(), false), current.pos(), next.pos()));
             }
         } catch (Exception ex) {
             StringWriter writer = new StringWriter();
@@ -149,8 +154,9 @@ public class PathExecutor implements IPathExecutor {
         if (verbose) ChatMessageHandler.SendMessage("Fell out of switch case!");
         return ExecutionResult.FAILED;
     }
-    private ExecutionResult ReturnToRoute(INode returnTo, boolean verbose) { //TODO swimming, fix stability issue or add retry
+    private ExecutionResult ReturnToRoute(INode returnTo, boolean verbose) {
         try {
+            new PlayerControl().TakeControl();
             GenerateRandomMovement(); //Generate some random movement to dislodge the player and centre them, in case they are on the edge of a block
             if (verbose) ChatMessageHandler.SendMessage("Returning to path: going to node at: " + returnTo.pos());
             Pos pos = new Pos((int) player.posX, (int) Math.ceil(player.posY), (int) player.posZ);
@@ -179,6 +185,9 @@ public class PathExecutor implements IPathExecutor {
                     if (verbose) ChatMessageHandler.SendMessage("RTP start exec of node step down in close mode");
                     pos.y--;
                     return new StepDownNodeExecutor().Execute(new Node(NodeType.STEP_DOWN, null, null, 0, 0, close, ret, 99, null, 99), current, verbose, true, ShouldTurn(current.pos(), close), Direction(DetermineProposedDirection(close, current.pos(), true), current.pos(), close));
+                } else if (rev.Evaluate(close, r.GetSwim(diagonal))) {
+                    if (verbose) ChatMessageHandler.SendMessage("RTP start exec of node move in close mode");
+                    return new MoveNodeExecutor().Execute(new Node(NodeType.SWIM, null, null, 0, 0, close, ret, 99, null, 99), current, verbose, true, ShouldTurn(current.pos(), close), Direction(DetermineProposedDirection(close, current.pos(), true), current.pos(), close));
                 } else {
                     if (verbose) ChatMessageHandler.SendMessage("Close ranged rule checks for return fell out");
                     return ExecutionResult.FAILED;
@@ -200,6 +209,9 @@ public class PathExecutor implements IPathExecutor {
                     if (verbose) ChatMessageHandler.SendMessage("RTP start exec of node step down in intermediate mode");
                     pos.y--;
                     new StepDownNodeExecutor().Execute(new Node(NodeType.STEP_DOWN, null, null, 0, 0, intermediate, ret, 99, null, 99), current, verbose, true, ShouldTurn(current.pos(), intermediate), Direction(DetermineProposedDirection(intermediate, current.pos(), true), current.pos(), intermediate));
+                } else if (rev.Evaluate(intermediate, r.GetSwim(diagonal))) {
+                    if (verbose) ChatMessageHandler.SendMessage("RTP start exec of node move in close mode");
+                    return new MoveNodeExecutor().Execute(new Node(NodeType.SWIM, null, null, 0, 0, intermediate, ret, 99, null, 99), current, verbose, true, ShouldTurn(current.pos(), intermediate), Direction(DetermineProposedDirection(intermediate, current.pos(), true), current.pos(), intermediate));
                 } else {
                     if (verbose) ChatMessageHandler.SendMessage("Intermediate ranged rule checks for return fell out");
                     return ExecutionResult.FAILED;

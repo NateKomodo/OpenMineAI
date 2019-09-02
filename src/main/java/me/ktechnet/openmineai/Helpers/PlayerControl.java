@@ -28,31 +28,7 @@ public class PlayerControl {
         Minecraft.getMinecraft().player.movementInput = new PlayerMovement();
     }
 
-    public void BreakBlockConcurrent()
-    {
-        Minecraft mc = Minecraft.getMinecraft();
-        RayTraceResult result = rayTrace(5);
-        Runnable runnable = () -> {
-            try {
-                int elapsed = 0;
-                while (mc.world.getBlockState(result.getBlockPos()).getMaterial() != Material.AIR && elapsed < 15000) {
-                    if (mc.playerController.onPlayerDamageBlock(result.getBlockPos(), result.sideHit))
-                        mc.player.swingArm(EnumHand.MAIN_HAND);
-                    Thread.sleep(50);
-                    elapsed += 50;
-                }
-                mc.playerController.resetBlockRemoving();
-            }
-            catch (Exception ex)
-            {
-                Main.logger.error(ex.getMessage());
-            }
-        };
-        Thread t = new Thread(runnable);
-        t.start();
-    }
-
-    public void BreakBlockSync(boolean enforceRotation)
+    public void BreakBlock(boolean enforceRotation)
     {
         Minecraft mc = Minecraft.getMinecraft();
         RayTraceResult result = rayTrace(5);
@@ -74,13 +50,19 @@ public class PlayerControl {
         }
     }
 
-
     public void PlaceBlock()
     {
         Minecraft mc = Minecraft.getMinecraft();
         RayTraceResult result = rayTrace(5);
         BlockPos blockpos = result.getBlockPos().offset(result.sideHit);
         if (mc.playerController.processRightClickBlock(mc.player, mc.world, blockpos, result.sideHit, result.hitVec, EnumHand.MAIN_HAND) == EnumActionResult.SUCCESS) mc.player.swingArm(EnumHand.MAIN_HAND);
+    }
+
+    public void Interact()
+    {
+        Minecraft mc = Minecraft.getMinecraft();
+        RayTraceResult result = rayTrace(5);
+        if (mc.playerController.processRightClickBlock(mc.player, mc.world, result.getBlockPos(), result.sideHit, result.hitVec, EnumHand.MAIN_HAND) == EnumActionResult.SUCCESS) mc.player.swingArm(EnumHand.MAIN_HAND);
     }
 
     public RayTraceResult rayTrace(int maxDist)

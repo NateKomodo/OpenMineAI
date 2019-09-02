@@ -9,7 +9,6 @@ import me.ktechnet.openmineai.Models.Interfaces.INodeTypeExecutor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class BreakAndMoveNodeExecutor implements INodeTypeExecutor {
@@ -53,7 +52,7 @@ public class BreakAndMoveNodeExecutor implements INodeTypeExecutor {
         while (!(world.getBlockState(bPos.ConvertToBlockPos()).getBlock() == Blocks.AIR)) {
             new ToolHelper().SelectTool(world.getBlockState(bPos.ConvertToBlockPos()).getBlock());
             pc.HardSetFacing(rotation, 70);
-            pc.BreakBlockSync(true);
+            pc.BreakBlock(true);
             if (AdjacentBlocksHelper.GravityBlocksAbove(bPos) > 0) Thread.sleep(400); //Gives gravity blocks a chance to fall
         }
         //Break top block
@@ -62,7 +61,7 @@ public class BreakAndMoveNodeExecutor implements INodeTypeExecutor {
         while (!(world.getBlockState(bPos2.ConvertToBlockPos()).getBlock() == Blocks.AIR)) {
             new ToolHelper().SelectTool(world.getBlockState(bPos2.ConvertToBlockPos()).getBlock());
             pc.HardSetFacing(rotation, 0);
-            pc.BreakBlockSync(true);
+            pc.BreakBlock(true);
             if (AdjacentBlocksHelper.GravityBlocksAbove(bPos2) > 0) Thread.sleep(400); //Gives gravity blocks a chance to fall
         }
         ex.PushMovementState(true, direction, shouldTurn);

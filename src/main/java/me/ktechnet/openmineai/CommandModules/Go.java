@@ -32,9 +32,10 @@ public class Go implements ICommandModule, IPathingCallback, IPathExecutionCallb
             Pos dest = new Pos(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
             Settings settings = new Settings();
             settings.verbose = verbose;
-            settings.allowPlace = false;
+            settings.allowPlace = true;
             settings.allowBreak = true;
             settings.allowParkour = false;
+            settings.hasWaterBucket = true;
             pathingProvider.StartPathfinding(dest, pos, pathingCallback, settings);
             CheckFound();
         } else {

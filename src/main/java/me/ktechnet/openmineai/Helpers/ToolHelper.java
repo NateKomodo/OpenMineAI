@@ -7,6 +7,7 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 
 import java.util.ArrayList;
 
@@ -18,10 +19,8 @@ public class ToolHelper {
         Item bestItem = Items.AIR;
         for (int i = 0; i < 10; i++) {
             Item item = player.inventory.getStackInSlot(i).getItem();
-            Main.logger.info(item.getUnlocalizedName());
-            if (spaderequired.contains(toBreak)) {
+            if (spadeRequired.contains(toBreak)) {
                 if (spades.contains(item)) {
-                    Main.logger.info(spades.indexOf(bestItem) + " < " + spades.indexOf(item) + " ?");
                     if (spades.indexOf(bestItem) < spades.indexOf(item)) {
                         bestSlot = i;
                         bestItem = item;
@@ -29,7 +28,6 @@ public class ToolHelper {
                 }
             } else if (axeRequired.contains(toBreak)) {
                 if (axe.contains(item)) {
-                    Main.logger.info(axe.indexOf(bestItem) + " < " + axe.indexOf(item) + " ?");
                     if (axe.indexOf(bestItem) < axe.indexOf(item)) {
                         bestSlot = i;
                         bestItem = item;
@@ -37,7 +35,6 @@ public class ToolHelper {
                 }
             } else {
                 if (pickaxes.contains(item)) {
-                    Main.logger.info(pickaxes.indexOf(bestItem) + " < " + pickaxes.indexOf(item) + " ?");
                     if (pickaxes.indexOf(bestItem) < pickaxes.indexOf(item)) {
                         bestSlot = i;
                         bestItem = item;
@@ -48,7 +45,40 @@ public class ToolHelper {
         Main.logger.info("Set current item to " + bestSlot);
         player.inventory.currentItem = bestSlot;
     }
-    private ArrayList<Block> spaderequired = new ArrayList<Block>() {
+
+    public void SelectDisposable() {
+        for (int i = 0; i < 10; i++) {
+            Item item = player.inventory.getStackInSlot(i).getItem();
+            if (item instanceof ItemBlock) {
+                if (disposable.contains(((ItemBlock) item).getBlock())) {
+                    player.inventory.currentItem = i;
+                    break;
+                }
+            }
+        }
+    }
+
+    public void SelectWaterbucket() {
+        for (int i = 0; i < 10; i++) {
+            Item item = player.inventory.getStackInSlot(i).getItem();
+            if (item == Items.WATER_BUCKET) {
+                player.inventory.currentItem = i;
+                break;
+            }
+        }
+    }
+
+    private ArrayList<Block> disposable = new ArrayList<Block>() {
+        {
+            add(Blocks.DIRT);
+            add(Blocks.SANDSTONE);
+            add(Blocks.COBBLESTONE);
+            add(Blocks.NETHERRACK);
+            add(Blocks.STONE);
+            add(Blocks.END_STONE);
+        }
+    };
+    private ArrayList<Block> spadeRequired = new ArrayList<Block>() {
         {
             add(Blocks.DIRT);
             add(Blocks.GRASS);

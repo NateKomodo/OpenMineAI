@@ -52,7 +52,7 @@ public class BreakNodeExecutor implements INodeTypeExecutor {
         while (!(world.getBlockState(bPos.ConvertToBlockPos()).getBlock() == Blocks.AIR)) {
             new ToolHelper().SelectTool(world.getBlockState(bPos.ConvertToBlockPos()).getBlock());
             pc.HardSetFacing(rotation, 70);
-            pc.BreakBlockSync(true);
+            pc.BreakBlock(true);
             if (AdjacentBlocksHelper.GravityBlocksAbove(bPos) > 0) Thread.sleep(400); //Gives gravity blocks a chance to fall
         }
         return ExecutionResult.OK;

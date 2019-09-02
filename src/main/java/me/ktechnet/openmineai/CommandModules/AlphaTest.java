@@ -2,6 +2,7 @@ package me.ktechnet.openmineai.CommandModules;
 
 import me.ktechnet.openmineai.Helpers.ChatMessageHandler;
 import me.ktechnet.openmineai.Helpers.PlayerControl;
+import me.ktechnet.openmineai.Helpers.ToolHelper;
 import me.ktechnet.openmineai.Models.Classes.Pos;
 import me.ktechnet.openmineai.Models.ConfigData.Settings;
 import me.ktechnet.openmineai.Models.Enums.NodeType;
@@ -12,6 +13,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.init.Blocks;
 
+import java.awt.*;
+import java.awt.event.InputEvent;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -73,10 +76,17 @@ public class AlphaTest implements ICommandModule, IPathingCallback, IPathExecuti
                 PlayerControl.Jump = false;
                 PlayerControl.MoveBack = false;
                 PlayerControl.Sneak = false;
-            } else if (args[0].equals("cor")) {
-                EntityPlayerSP player = Minecraft.getMinecraft().player;
-                Pos myNewPos = new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ);
-                ChatMessageHandler.SendMessage(myNewPos.toString());
+            } else if (args[0].equals("r")) {
+                try {
+                    new PlayerControl().HardSetFacing(-999, 90);
+                    new ToolHelper().SelectWaterbucket();
+                    Robot robot = new Robot();
+                    robot.mousePress(InputEvent.BUTTON3_MASK);
+                    Thread.sleep(10);
+                    robot.mouseRelease(InputEvent.BUTTON3_MASK);
+                } catch (Exception ignored) {
+
+                }
             } else {
                 ChatMessageHandler.SendMessage("Invalid command. Use: ;o help for help");
             }

@@ -1,6 +1,8 @@
 package me.ktechnet.openmineai.PathExecutor.NodeExecutors;
 
-import me.ktechnet.openmineai.Helpers.*;
+import me.ktechnet.openmineai.Helpers.ChatMessageHandler;
+import me.ktechnet.openmineai.Helpers.PlayerControl;
+import me.ktechnet.openmineai.Helpers.ToolHelper;
 import me.ktechnet.openmineai.Models.Classes.Pos;
 import me.ktechnet.openmineai.Models.Enums.ExecutionResult;
 import me.ktechnet.openmineai.Models.Enums.MoveDirection;
@@ -11,7 +13,7 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 
-public class DescendMineNodeExecutor implements INodeTypeExecutor {
+public class AscendTowerNodeExecutor implements INodeTypeExecutor {
     private final PlayerControl pc = new PlayerControl();
     private final EntityPlayerSP player = Minecraft.getMinecraft().player;
     private final World world = Minecraft.getMinecraft().world;
@@ -32,16 +34,12 @@ public class DescendMineNodeExecutor implements INodeTypeExecutor {
                 5000
         );
         pc.HardSetFacing(-999, 90);
-        Pos bPos = new Pos(pc.rayTrace(2).getBlockPos());
-        while (!(world.getBlockState(bPos.ConvertToBlockPos()).getBlock() == Blocks.AIR)) {
-            new ToolHelper().SelectTool(world.getBlockState(bPos.ConvertToBlockPos()).getBlock());
-            pc.HardSetFacing(-999, 90);
-            pc.BreakBlock(true);
-        }
-        while (!next.pos().IsEqual(new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ)) && !timedOut) {
-            pc.HardSetFacing(-999, 90);
-        }
-        Thread.sleep(100); //Stop playing swinging
+        PlayerControl.Jump = true;
+        Thread.sleep(300);
+        new ToolHelper().SelectDisposable();
+        pc.PlaceBlock();
+        PlayerControl.Jump = false;
+        Thread.sleep(200);
         return ExecutionResult.OK;
     }
 }

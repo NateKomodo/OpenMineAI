@@ -5,10 +5,14 @@ import me.ktechnet.openmineai.Helpers.DistanceHelper;
 import me.ktechnet.openmineai.Helpers.ExecutionHelper;
 import me.ktechnet.openmineai.Helpers.PlayerControl;
 import me.ktechnet.openmineai.Models.Classes.Pos;
+import me.ktechnet.openmineai.Models.ConfigData.PassableBlocks;
 import me.ktechnet.openmineai.Models.Enums.ExecutionResult;
 import me.ktechnet.openmineai.Models.Enums.MoveDirection;
 import me.ktechnet.openmineai.Models.Interfaces.INode;
 import me.ktechnet.openmineai.Models.Interfaces.INodeTypeExecutor;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockDoor;
+import net.minecraft.block.BlockFenceGate;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.init.Blocks;
@@ -20,7 +24,7 @@ public class MoveNodeExecutor implements INodeTypeExecutor {
     private boolean timedOut = false;
 
     @Override
-    public ExecutionResult Execute(INode next, INode current, boolean verbose, boolean RTP, boolean shouldTurn, MoveDirection direction) throws InterruptedException { //TODO interaction
+    public ExecutionResult Execute(INode next, INode current, boolean verbose, boolean RTP, boolean shouldTurn, MoveDirection direction) throws InterruptedException {
         int xOffset = Integer.compare(next.pos().x - current.pos().x, 0);
         int zOffset = Integer.compare(next.pos().z - current.pos().z, 0);
         ExecutionHelper ex = new ExecutionHelper();
@@ -47,6 +51,20 @@ public class MoveNodeExecutor implements INodeTypeExecutor {
         if (Minecraft.getMinecraft().world.getBlockState(new Pos(current.pos().x, current.pos().y -1, current.pos().z).ConvertToBlockPos()).getBlock() == Blocks.WATER) PlayerControl.Jump = true;
         ex.PushMovementState(true, direction, shouldTurn);
         PlayerControl.Sprint = true;
+        Block b = Minecraft.getMinecraft().world.getBlockState(next.pos().ConvertToBlockPos()).getBlock();
+        if (PassableBlocks.interactable.contains(b)) {
+            if (PassableBlocks.doors.contains(b)) {
+                if (!Minecraft.getMinecraft().world.getBlockState(next.pos().ConvertToBlockPos()).getValue(BlockDoor.OPEN)) {
+                    pc.HardSetFacing(rotation, 50);
+                    pc.Interact();
+                }
+            } else if (PassableBlocks.fencegates.contains(b)) {
+                if (!Minecraft.getMinecraft().world.getBlockState(next.pos().ConvertToBlockPos()).getValue(BlockFenceGate.OPEN)) {
+                    pc.HardSetFacing(rotation, 50);
+                    pc.Interact();
+                }
+            }
+        }
         double maxDist = (Math.abs(xOffset)) > 0 && (Math.abs(zOffset) > 0)  ? 1.6 : 1.1;
         while (!next.pos().IsEqual(new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ)) && !timedOut) {
             pc.HardSetFacing(rotation, -99);

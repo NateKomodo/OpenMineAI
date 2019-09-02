@@ -46,4 +46,41 @@ public class PassableBlocks {
             add(Blocks.LIGHT_WEIGHTED_PRESSURE_PLATE);
         }
     };
+    public static final ArrayList<Block> interactable = new ArrayList<Block>() {
+        {
+            add(Blocks.ACACIA_DOOR);
+            add(Blocks.DARK_OAK_DOOR);
+            add(Blocks.BIRCH_DOOR);
+            add(Blocks.JUNGLE_DOOR);
+            add(Blocks.OAK_DOOR);
+            add(Blocks.SPRUCE_DOOR);
+            add(Blocks.TRAPDOOR);
+            add(Blocks.ACACIA_FENCE_GATE);
+            add(Blocks.BIRCH_FENCE_GATE);
+            add(Blocks.JUNGLE_FENCE_GATE);
+            add(Blocks.OAK_FENCE_GATE);
+            add(Blocks.SPRUCE_FENCE_GATE);
+            add(Blocks.DARK_OAK_FENCE_GATE);
+        }
+    };
+    public static final ArrayList<Block> doors = new ArrayList<Block>() {
+        {
+            add(Blocks.ACACIA_DOOR);
+            add(Blocks.DARK_OAK_DOOR);
+            add(Blocks.BIRCH_DOOR);
+            add(Blocks.JUNGLE_DOOR);
+            add(Blocks.OAK_DOOR);
+            add(Blocks.SPRUCE_DOOR);
+        }
+    };
+    public static final ArrayList<Block> fencegates = new ArrayList<Block>() {
+        {
+            add(Blocks.ACACIA_FENCE_GATE);
+            add(Blocks.BIRCH_FENCE_GATE);
+            add(Blocks.JUNGLE_FENCE_GATE);
+            add(Blocks.OAK_FENCE_GATE);
+            add(Blocks.SPRUCE_FENCE_GATE);
+            add(Blocks.DARK_OAK_FENCE_GATE);
+        }
+    };
 }
