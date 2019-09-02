@@ -23,7 +23,7 @@ public class DropNodeExecutor implements INodeTypeExecutor {
     private boolean timedOut = false;
 
     @Override
-    public ExecutionResult Execute(INode next, INode current, boolean verbose, boolean RTP, boolean shouldTurn, MoveDirection direction) throws Exception { //TODO Water bucket drop
+    public ExecutionResult Execute(INode next, INode current, boolean verbose, boolean RTP, boolean shouldTurn, MoveDirection direction) throws Exception {
         int xOffset = Integer.compare(next.pos().x - current.pos().x, 0);
         int zOffset = Integer.compare(next.pos().z - current.pos().z, 0);
         ExecutionHelper ex = new ExecutionHelper();
