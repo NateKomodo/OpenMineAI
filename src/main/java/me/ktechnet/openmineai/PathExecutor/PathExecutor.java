@@ -3,6 +3,7 @@ package me.ktechnet.openmineai.PathExecutor;
 import me.ktechnet.openmineai.Helpers.*;
 import me.ktechnet.openmineai.Main;
 import me.ktechnet.openmineai.Models.Classes.Pos;
+import me.ktechnet.openmineai.Models.ConfigData.PassableBlocks;
 import me.ktechnet.openmineai.Models.ConfigData.Settings;
 import me.ktechnet.openmineai.Models.Enums.ExecutionResult;
 import me.ktechnet.openmineai.Models.Enums.MoveDirection;
@@ -11,14 +12,13 @@ import me.ktechnet.openmineai.Models.Interfaces.INode;
 import me.ktechnet.openmineai.Models.Interfaces.IPathExecutionCallback;
 import me.ktechnet.openmineai.Models.Interfaces.IPathExecutor;
 import me.ktechnet.openmineai.Models.Interfaces.IRoute;
-import me.ktechnet.openmineai.PathExecutor.NodeExecutors.MoveNodeExecutor;
-import me.ktechnet.openmineai.PathExecutor.NodeExecutors.StepDownNodeExecutor;
-import me.ktechnet.openmineai.PathExecutor.NodeExecutors.StepUpNodeExecutor;
-import me.ktechnet.openmineai.PathExecutor.NodeExecutors.SwimNodeExecutor;
+import me.ktechnet.openmineai.PathExecutor.NodeExecutors.*;
 import me.ktechnet.openmineai.Pathfinder.Node;
 import me.ktechnet.openmineai.Pathfinder.RuleEvaluator;
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.util.math.BlockPos;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -59,6 +59,13 @@ public class PathExecutor implements IPathExecutor {
                     if (verbose) ChatMessageHandler.SendMessage("Reached end: Path execution failed");
                     callback.pathExecutionFailed();
                 }
+                PlayerControl.Jump = false;
+                PlayerControl.StrafeLeft = false;
+                PlayerControl.StrafeRight = false;
+                PlayerControl.MoveBack = false;
+                PlayerControl.MoveForward = false;
+                PlayerControl.Sprint = false;
+                PlayerControl.Sneak = false;
             });
             t.setDaemon(true);
             t.start();
@@ -75,7 +82,8 @@ public class PathExecutor implements IPathExecutor {
     }
 
     private boolean ExecuteNode(INode next, INode current, boolean verbose) { //TODO execute nodes (move into/etc) and see if we can shortcut/save
-        Pos myPos = current.myType() == NodeType.SWIM ? new Pos((int)player.posX, current.pos().y, (int)player.posZ) : new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ);
+        boolean yIndescrim = current.myType() == NodeType.SWIM || current.myType() == NodeType.DROP || next.myType() == NodeType.DROP;
+        Pos myPos = yIndescrim ? new Pos((int)player.posX, current.pos().y, (int)player.posZ) : new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ);
         if (!current.pos().IsEqual(myPos)) { //Check we are indeed at current
             if (verbose) ChatMessageHandler.SendMessage("No longer on route, abort. Expected: " + current.pos().toString() + " Found: " + myPos.toString());
             ExecutionResult returnSuccess = ReturnToRoute(GetClosest(), verbose);
@@ -90,9 +98,10 @@ public class PathExecutor implements IPathExecutor {
             if (verbose) ChatMessageHandler.SendMessage("Execution offpath call finished renav: " + (returnSuccess != ExecutionResult.FAILED && returnSuccess != ExecutionResult.OFF_PATH));
             return returnSuccess != ExecutionResult.FAILED && returnSuccess != ExecutionResult.OFF_PATH;
         }
-        Pos myNewPos = current.myType() == NodeType.SWIM ? new Pos((int)player.posX, next.pos().y, (int)player.posZ) : new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ);
+        Pos beneath = GetBlockBeneath(next.pos());
+        Pos myNewPos = yIndescrim ? next.myType() == NodeType.DROP ? new Pos(beneath.x, beneath.y + 1, beneath.z) : new Pos((int)player.posX, next.pos().y, (int)player.posZ) : new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ);
         if (!next.pos().IsEqual(myNewPos)) { //Check we are now at end
-            if (verbose) ChatMessageHandler.SendMessage("No longer on route, abort. Expected: " + next.pos() + " Found: " + myNewPos.toString());
+            if (verbose) ChatMessageHandler.SendMessage("No longer on route, abort. Expected: " + next.pos() + " Found: " + myNewPos.toString() + " yIndescrim: " + yIndescrim);
             ExecutionResult returnSuccess = ReturnToRoute(GetClosest(), verbose);
             if (verbose) ChatMessageHandler.SendMessage("Execution offpath call finished renav: " + (returnSuccess != ExecutionResult.FAILED && returnSuccess != ExecutionResult.OFF_PATH));
             return returnSuccess != ExecutionResult.FAILED && returnSuccess != ExecutionResult.OFF_PATH;
@@ -111,6 +120,10 @@ public class PathExecutor implements IPathExecutor {
                     return new StepDownNodeExecutor().Execute(next, current, verbose, false, ShouldTurn(current.pos(), next.pos()), Direction(DetermineProposedDirection(next.pos(), current.pos(), false), current.pos(), next.pos()));
                 case SWIM:
                     return new SwimNodeExecutor().Execute(next, current, verbose, false, ShouldTurn(current.pos(), next.pos()), Direction(DetermineProposedDirection(next.pos(), current.pos(), false), current.pos(), next.pos()));
+                case DROP:
+                    return new DropNodeExecutor().Execute(next, current, verbose, false, ShouldTurn(current.pos(), next.pos()), Direction(DetermineProposedDirection(next.pos(), current.pos(), false), current.pos(), next.pos()));
+                case BREAK_AND_MOVE:
+                    return new BreakAndMoveNodeExecutor().Execute(next, current, verbose, false, ShouldTurn(current.pos(), next.pos()), Direction(DetermineProposedDirection(next.pos(), current.pos(), false), current.pos(), next.pos()));
             }
         } catch (Exception ex) {
             StringWriter writer = new StringWriter();
@@ -344,5 +357,14 @@ public class PathExecutor implements IPathExecutor {
         PlayerControl.MoveBack = false;
         PlayerControl.StrafeLeft = false;
         Thread.sleep(100);
+    }
+    private Pos GetBlockBeneath(Pos start)
+    {
+        for (int i = start.y; i >= 0; i--) {
+            BlockPos bPos = new Pos(start.x, i, start.z).ConvertToBlockPos();
+            Block b = Minecraft.getMinecraft().world.getBlockState(bPos).getBlock();
+            if (!PassableBlocks.blocks.contains(b)) return new Pos(bPos);
+        }
+        return null;
     }
 }

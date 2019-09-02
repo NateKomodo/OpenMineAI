@@ -5,22 +5,24 @@ import me.ktechnet.openmineai.Helpers.DistanceHelper;
 import me.ktechnet.openmineai.Helpers.ExecutionHelper;
 import me.ktechnet.openmineai.Helpers.PlayerControl;
 import me.ktechnet.openmineai.Models.Classes.Pos;
+import me.ktechnet.openmineai.Models.ConfigData.PassableBlocks;
 import me.ktechnet.openmineai.Models.Enums.ExecutionResult;
 import me.ktechnet.openmineai.Models.Enums.MoveDirection;
 import me.ktechnet.openmineai.Models.Interfaces.INode;
 import me.ktechnet.openmineai.Models.Interfaces.INodeTypeExecutor;
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.init.Blocks;
+import net.minecraft.util.math.BlockPos;
 
-public class MoveNodeExecutor implements INodeTypeExecutor {
+public class DropNodeExecutor implements INodeTypeExecutor {
     private final PlayerControl pc = new PlayerControl();
     private final EntityPlayerSP player = Minecraft.getMinecraft().player;
 
     private boolean timedOut = false;
 
     @Override
-    public ExecutionResult Execute(INode next, INode current, boolean verbose, boolean RTP, boolean shouldTurn, MoveDirection direction) throws InterruptedException { //TODO interaction
+    public ExecutionResult Execute(INode next, INode current, boolean verbose, boolean RTP, boolean shouldTurn, MoveDirection direction) throws InterruptedException { //TODO Water bucket drop
         int xOffset = Integer.compare(next.pos().x - current.pos().x, 0);
         int zOffset = Integer.compare(next.pos().z - current.pos().z, 0);
         ExecutionHelper ex = new ExecutionHelper();
@@ -44,26 +46,35 @@ public class MoveNodeExecutor implements INodeTypeExecutor {
                 },
                 1000
         );
-        if (Minecraft.getMinecraft().world.getBlockState(new Pos(current.pos().x, current.pos().y -1, current.pos().z).ConvertToBlockPos()).getBlock() == Blocks.WATER) PlayerControl.Jump = true;
+        PlayerControl.Sprint = false;
         ex.PushMovementState(true, direction, shouldTurn);
-        PlayerControl.Sprint = true;
         double maxDist = (Math.abs(xOffset)) > 0 && (Math.abs(zOffset) > 0)  ? 1.6 : 1.1;
-        while (!next.pos().IsEqual(new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ)) && !timedOut) {
+        Pos expected = GetBlockBeneath(next.pos());
+        expected = new Pos(expected.x, expected.y + 1, expected.z);
+        while (!expected.IsEqual(new Pos((int)player.posX, (int)player.posY, (int)player.posZ)) && !timedOut) {
+            PlayerControl.Sprint = false;
             pc.HardSetFacing(rotation, -99);
-            PlayerControl.Sprint = true;
-            double dist = DistanceHelper.GetComponents(new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ), next.pos()).h;
+            double dist = DistanceHelper.GetComponents(new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ), expected).h;
+            if (new Pos((int)player.posX, expected.y, (int)player.posZ).IsEqual(expected)) {
+                    Thread.sleep(100);
+                    ex.PushMovementState(false, direction, shouldTurn);
+            }
             if (dist > maxDist && !RTP) {
                 ex.PushMovementState(false, direction, shouldTurn);
-                PlayerControl.Sprint = false;
-                if (verbose) ChatMessageHandler.SendMessage("No longer on route, node return abort. Dist: " + dist + " Max: " + maxDist);
+                if (verbose) ChatMessageHandler.SendMessage("No longer on route, node return abort. Dist " + dist + " Max:" + maxDist);
                 return ExecutionResult.OFF_PATH;
             }
         }
-        boolean wasSwim = PlayerControl.Jump;
-        PlayerControl.Jump = false;
-        PlayerControl.Sprint = false;
-        if (wasSwim) Thread.sleep(100);
         ex.PushMovementState(false, direction, shouldTurn);
         return ExecutionResult.OK;
+    }
+    private Pos GetBlockBeneath(Pos start)
+    {
+        for (int i = start.y; i >= 0; i--) {
+            BlockPos bPos = new Pos(start.x, i, start.z).ConvertToBlockPos();
+            Block b = Minecraft.getMinecraft().world.getBlockState(bPos).getBlock();
+            if (!PassableBlocks.blocks.contains(b)) return new Pos(bPos);
+        }
+        return null;
     }
 }

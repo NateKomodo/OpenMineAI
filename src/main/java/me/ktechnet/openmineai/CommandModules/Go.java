@@ -33,7 +33,7 @@ public class Go implements ICommandModule, IPathingCallback, IPathExecutionCallb
             Settings settings = new Settings();
             settings.verbose = verbose;
             settings.allowPlace = false;
-            settings.allowBreak = false;
+            settings.allowBreak = true;
             settings.allowParkour = false;
             pathingProvider.StartPathfinding(dest, pos, pathingCallback, settings);
             CheckFound();

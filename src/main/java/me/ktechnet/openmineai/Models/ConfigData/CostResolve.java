@@ -43,7 +43,7 @@ public class CostResolve {
         double nClass = ClassResolve(type);
         double percentageVertical = GetPercent(comp.v, comp.n);
         double percentageHorizontal = GetPercent(comp.h, comp.n);
-        int gravityBlocks = AdjacentBlocksHelper.GravityBlocksAbove(pos);
+        int gravityBlocks = AdjacentBlocksHelper.GravityBlocksAbove(new Pos(pos.x, pos.y + 1, pos.z));
         boolean tooClose = false;
         if (Math.abs(percentageHorizontal - percentageVertical) <= 0.05 || comp.n < 10) tooClose = true;
         if (NodeClass.gravityCheck.contains(type)) nClass = nClass + (gravityBlocks);

@@ -31,7 +31,7 @@ public class PlayerControl {
     public void BreakBlockConcurrent()
     {
         Minecraft mc = Minecraft.getMinecraft();
-        RayTraceResult result = rayTrace();
+        RayTraceResult result = rayTrace(5);
         Runnable runnable = () -> {
             try {
                 int elapsed = 0;
@@ -52,13 +52,16 @@ public class PlayerControl {
         t.start();
     }
 
-    public void BreakBlockSync()
+    public void BreakBlockSync(boolean enforceRotation)
     {
         Minecraft mc = Minecraft.getMinecraft();
-        RayTraceResult result = rayTrace();
+        RayTraceResult result = rayTrace(5);
+        int rotation = (int)mc.player.rotationYaw;
+        int pitch  = (int)mc.player.rotationPitch;
         try {
             int elapsed = 0;
             while (mc.world.getBlockState(result.getBlockPos()).getMaterial() != Material.AIR && elapsed < 15000) {
+                if (enforceRotation) HardSetFacing(rotation, pitch);
                 if (mc.playerController.onPlayerDamageBlock(result.getBlockPos(), result.sideHit)) mc.player.swingArm(EnumHand.MAIN_HAND);
                 Thread.sleep(50);
                 elapsed += 50;
@@ -75,17 +78,17 @@ public class PlayerControl {
     public void PlaceBlock()
     {
         Minecraft mc = Minecraft.getMinecraft();
-        RayTraceResult result = rayTrace();
+        RayTraceResult result = rayTrace(5);
         BlockPos blockpos = result.getBlockPos().offset(result.sideHit);
         if (mc.playerController.processRightClickBlock(mc.player, mc.world, blockpos, result.sideHit, result.hitVec, EnumHand.MAIN_HAND) == EnumActionResult.SUCCESS) mc.player.swingArm(EnumHand.MAIN_HAND);
     }
 
-    private RayTraceResult rayTrace()
+    public RayTraceResult rayTrace(int maxDist)
     {
         EntityPlayer player = Minecraft.getMinecraft().player;
         Vec3d vec3d = player.getPositionEyes(1f);
         Vec3d vec3d1 = player.getLook(1f);
-        Vec3d vec3d2 = vec3d.addVector(vec3d1.x * 5, vec3d1.y * 5, vec3d1.z * 5);
+        Vec3d vec3d2 = vec3d.addVector(vec3d1.x * maxDist, vec3d1.y * maxDist, vec3d1.z * maxDist);
         return player.world.rayTraceBlocks(vec3d, vec3d2, false, false, true);
     }
 

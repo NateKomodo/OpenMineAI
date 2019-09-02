@@ -16,7 +16,7 @@ public class AdjacentBlocksHelper {
     }
     public static Integer GravityBlocksAbove(Pos pos) {
         int amount = 0;
-        for (int i = 2; i < 7; i++) {
+        for (int i = 1; i < 7; i++) {
             Block block = Minecraft.getMinecraft().world.getBlockState(new Pos(pos.x, pos.y + i, pos.z).ConvertToBlockPos()).getBlock();
             if (block == Blocks.GRAVEL || block == Blocks.SAND) {
                 amount++;
