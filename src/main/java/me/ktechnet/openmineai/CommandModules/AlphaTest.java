@@ -76,14 +76,10 @@ public class AlphaTest implements ICommandModule, IPathingCallback, IPathExecuti
                 PlayerControl.Jump = false;
                 PlayerControl.MoveBack = false;
                 PlayerControl.Sneak = false;
-            } else if (args[0].equals("r")) {
+            } else if (args[0].equals("bpos")) {
                 try {
-                    new PlayerControl().HardSetFacing(-999, 90);
-                    new ToolHelper().SelectWaterbucket();
-                    Robot robot = new Robot();
-                    robot.mousePress(InputEvent.BUTTON3_MASK);
-                    Thread.sleep(10);
-                    robot.mouseRelease(InputEvent.BUTTON3_MASK);
+                    EntityPlayerSP p = Minecraft.getMinecraft().player;
+                    ChatMessageHandler.SendMessage(new Pos((int)p.posX, (int)p.posY, (int)p.posZ).toString());
                 } catch (Exception ignored) {
 
                 }

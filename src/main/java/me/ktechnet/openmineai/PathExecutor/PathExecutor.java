@@ -140,6 +140,8 @@ public class PathExecutor implements IPathExecutor {
                     return new AscendTowerNodeExecutor().Execute(next, current, verbose, false, ShouldTurn(current.pos(), next.pos()), Direction(DetermineProposedDirection(next.pos(), current.pos(), false), current.pos(), next.pos()));
                 case ASCEND_BREAK_AND_TOWER:
                     return new AscendBreakAndTowerNodeExecutor().Execute(next, current, verbose, false, ShouldTurn(current.pos(), next.pos()), Direction(DetermineProposedDirection(next.pos(), current.pos(), false), current.pos(), next.pos()));
+                case BRIDGE:
+                    return new BridgeNodeExecutor().Execute(next, current, verbose, false, ShouldTurn(current.pos(), next.pos()), Direction(DetermineProposedDirection(next.pos(), current.pos(), false), current.pos(), next.pos()));
             }
         } catch (Exception ex) {
             StringWriter writer = new StringWriter();

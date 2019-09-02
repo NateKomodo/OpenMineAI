@@ -132,7 +132,7 @@ public class ExecutionHelper {
             PlayerControl.StrafeRight = false;
         }
     }
-    private double GetDecimal(double in) {
+    public double GetDecimal(double in) {
         BigDecimal bigDecimal = new BigDecimal(in);
         int intValue = bigDecimal.intValue();
         return Math.abs(bigDecimal.subtract(new BigDecimal(intValue)).doubleValue());
@@ -182,5 +182,18 @@ public class ExecutionHelper {
         } else {
             return "";
         }
+    }
+    public String InvertCardinal(String original) {
+        switch (original) {
+            case "N":
+                return "S";
+            case "S":
+                return "N";
+            case "E":
+                return "W";
+            case "W":
+                return "E";
+        }
+        return "";
     }
 }
