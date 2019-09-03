@@ -34,6 +34,8 @@ public class PathExecutor implements IPathExecutor {
 
     private boolean abort = false;
 
+    private Pos dest;
+
     @Override
     public void ExecutePath(IRoute route, IPathExecutionCallback callback, boolean verbose) {
         pc.TakeControl();
@@ -42,6 +44,7 @@ public class PathExecutor implements IPathExecutor {
             Thread t = new Thread(() -> {
                 if (verbose) ChatMessageHandler.SendMessage("Starting execution");
                 boolean complete = false;
+                dest = route.path().get(route.path().size() - 1).pos();
                 for (i = 0; i < route.path().size() - 1; i++) {
                     if (abort) {
                         if (verbose) ChatMessageHandler.SendMessage("Abort");
@@ -84,7 +87,7 @@ public class PathExecutor implements IPathExecutor {
     private boolean ExecuteNode(INode next, INode current, boolean verbose) { //TODO execute nodes (move into/etc) and see if we can shortcut/save
         boolean yIndescrim = current.myType() == NodeType.SWIM || current.myType() == NodeType.DROP || next.myType() == NodeType.DROP;
         Pos myPos = new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ);
-        if (!current.pos().IsEqual(myPos)) { //Check we are indeed at current
+        if (!current.pos().IsEqual(myPos) && !(current.myType() == NodeType.PARKOUR)) { //Check we are indeed at current
             if (!(yIndescrim && current.pos().IsEqualYIndescrim(myPos))) {
                 if (verbose)
                     ChatMessageHandler.SendMessage("Pre ex: No longer on route, abort. Expected: " + current.pos().toString() + " Found: " + myPos.toString());
@@ -103,7 +106,7 @@ public class PathExecutor implements IPathExecutor {
         }
         Pos beneath = GetBlockBeneath(next.pos());
         Pos myNewPos = new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ);
-        if ((!next.pos().IsEqual(myNewPos))) { //Check we are now at end
+        if ((!next.pos().IsEqual(myNewPos)) && !(next.myType() == NodeType.PARKOUR)) { //Check we are now at end
             if (!(yIndescrim && next.pos().IsEqualYIndescrim(myNewPos))) {
                 if (verbose)
                     ChatMessageHandler.SendMessage("Post ex: No longer on route, abort. Expected: " + next.pos() + " Found: " + myNewPos.toString() + " yIndescrim: " + yIndescrim);
@@ -144,6 +147,12 @@ public class PathExecutor implements IPathExecutor {
                     return new BridgeNodeExecutor().Execute(next, current, verbose, false, ShouldTurn(current.pos(), next.pos()), Direction(DetermineProposedDirection(next.pos(), current.pos(), false), current.pos(), next.pos()));
                 case STEP_UP_AND_BREAK:
                     return new StepUpAndBreakNodeExecutor().Execute(next, current, verbose, false, ShouldTurn(current.pos(), next.pos()), Direction(DetermineProposedDirection(next.pos(), current.pos(), false), current.pos(), next.pos()));
+                case STEP_DOWN_AND_BREAK:
+                    return new StepDownAndBreakNodeExecutor().Execute(next, current, verbose, false, ShouldTurn(current.pos(), next.pos()), Direction(DetermineProposedDirection(next.pos(), current.pos(), false), current.pos(), next.pos()));
+                case PARKOUR:
+                    return new ParkourNodeExecutor(dest).Execute(next, current, verbose, false, ShouldTurn(current.pos(), next.pos()), Direction(DetermineProposedDirection(next.pos(), current.pos(), false), current.pos(), next.pos()));
+                case DESTINATION:
+                    return ExecutionResult.OK;
             }
         } catch (Exception ex) {
             StringWriter writer = new StringWriter();

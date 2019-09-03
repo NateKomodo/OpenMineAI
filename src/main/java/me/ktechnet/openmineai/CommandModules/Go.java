@@ -34,7 +34,7 @@ public class Go implements ICommandModule, IPathingCallback, IPathExecutionCallb
             settings.verbose = verbose;
             settings.allowPlace = true;
             settings.allowBreak = true;
-            settings.allowParkour = false;
+            settings.allowParkour = true;
             settings.hasWaterBucket = true;
             pathingProvider.StartPathfinding(dest, pos, pathingCallback, settings);
             CheckFound();
