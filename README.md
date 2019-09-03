@@ -18,6 +18,7 @@ As of 0.6.6, the following is done:
 Pathfinder:
 - Get to open areas or some high level selection system to route via (For highways or similar) or segment into sections for improved accuracy or some waypoint system
 - Make pathfinder handle not entirely diagonal parkour jumps
+- Ant path with bias
 
 Path executor:
 - Switch to alternate paths (May be do at a module level instead of executor level)
