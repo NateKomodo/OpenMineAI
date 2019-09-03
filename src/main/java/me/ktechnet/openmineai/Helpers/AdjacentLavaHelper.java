@@ -25,7 +25,10 @@ public class AdjacentLavaHelper {
                 add(world.getBlockState(Get(p, -1, 0, 0)).getBlock());
             }
         };
-        return blocks.contains(Blocks.LAVA) || blocks.contains(Blocks.FLOWING_LAVA);
+        for (Block b : blocks) {
+            if (b == Blocks.LAVA || b == Blocks.FLOWING_LAVA) return true;
+        }
+        return false;
     }
     private static BlockPos Get(Pos inital, int xOffset, int yOffset, int zOffset) {
         return new Pos(inital.x + xOffset, inital.y + yOffset, inital.z + zOffset).ConvertToBlockPos();

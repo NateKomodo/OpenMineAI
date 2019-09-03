@@ -20,11 +20,12 @@ Pathfinder:
 - Make pathfinder handle not entirely diagonal parkour jumps
 - Ant path with bias
 - Descend mine falling into pit/lava
+- Fix adj lava not triggering correctly
 
 Path executor:
 - Shortcuts
 - Diagonal centering?
-- Descend mine centering issues
+- Descend mine and strafing centering issues
 - Ascend mine triggering instead of ascend break tower / other confirm possible issues
 - RTP fall out issues (Move instead of descend mine, etc)
 
