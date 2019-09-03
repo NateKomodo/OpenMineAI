@@ -42,7 +42,6 @@ public class PlayerControl {
                 Thread.sleep(40);
                 elapsed += 40;
             }
-            //mc.playerController.resetBlockRemoving();
         }
         catch (Exception ex)
         {

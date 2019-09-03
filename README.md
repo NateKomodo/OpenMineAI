@@ -26,8 +26,12 @@ Path executor:
 - Shortcuts
 - Diagonal centering?
 - Descend mine and strafing centering issues
-- Ascend mine triggering instead of ascend break tower / other confirm possible issues
+- Fix crash from multi-threading
+- Confirm still possible
 - RTP fall out issues (Move instead of descend mine, etc)
+
+Mining:
+- Make available to all ores and wider search area
 
 Modules:
 - Combat

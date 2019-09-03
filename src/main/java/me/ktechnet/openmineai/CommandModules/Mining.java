@@ -29,6 +29,8 @@ public class Mining implements ICommandModule, IPathingCallback, IPathExecutionC
 
     private boolean ready = false;
 
+    private boolean canPathfind = true;
+
     private boolean doMine = false;
 
     private Pos currentTarget;
@@ -71,6 +73,7 @@ public class Mining implements ICommandModule, IPathingCallback, IPathExecutionC
                         pathExecutor = new PathExecutor();
                         pathExecutor.ExecutePath(favouring, executionCallback, verbose);
                         isExecuting = true;
+                        canPathfind = true;
                     }
                 } else {
                     ready = true;
@@ -123,8 +126,12 @@ public class Mining implements ICommandModule, IPathingCallback, IPathExecutionC
             StopMining();
             return;
         }
-        pathingProvider.StartPathfinding(dest, pos, pathingCallback, settings);
-        CheckFound();
+        if (canPathfind) {
+            pathingProvider.StartPathfinding(dest, pos, pathingCallback, settings);
+            CheckFound();
+        } else {
+            ChatMessageHandler.SendMessage("Could not start pathfinding!");
+        }
     }
 
     private Pos Find(Block b) {
@@ -195,9 +202,10 @@ public class Mining implements ICommandModule, IPathingCallback, IPathExecutionC
         if (!isExecuting) {
             ChatMessageHandler.SendMessage("Failed to find path!");
             ChatMessageHandler.SendMessage("Please use start again to retry, target marked as unreachable");
-            unreachable.add(currentTarget);
+            if (currentTarget != null) unreachable.add(new Pos(currentTarget.x, currentTarget.y, currentTarget.z));
             doMine = false;
             StopMining();
+            canPathfind = false;
         }
     }
 

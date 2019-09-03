@@ -84,7 +84,7 @@ public class PathExecutor implements IPathExecutor {
         abort = true;
     }
 
-    private boolean ExecuteNode(INode next, INode current, boolean verbose) { //TODO execute nodes (move into/etc) and see if we can shortcut/save
+    private boolean ExecuteNode(INode next, INode current, boolean verbose) { //TODO See if we can shortcut/save
         boolean yIndescrim = current.myType() == NodeType.SWIM || current.myType() == NodeType.DROP || next.myType() == NodeType.DROP;
         Pos myPos = new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ);
         if (!current.pos().IsEqual(myPos) && !(current.myType() == NodeType.PARKOUR)) { //Check we are indeed at current

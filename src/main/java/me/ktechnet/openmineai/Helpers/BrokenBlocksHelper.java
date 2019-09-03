@@ -17,13 +17,13 @@ public class BrokenBlocksHelper {
                 list.add(new Pos(pos.x, pos.y + 1, pos.z));
                 break;
             case STEP_UP_AND_BREAK:
+                list.add(new Pos(pos.x, pos.y, pos.z));
                 list.add(new Pos(pos.x, pos.y + 1, pos.z));
-                list.add(new Pos(pos.x, pos.y + 2, pos.z));
                 break;
             case STEP_DOWN_AND_BREAK:
+                list.add(new Pos(pos.x, pos.y + 2, pos.z));
                 list.add(new Pos(pos.x, pos.y + 1, pos.z));
                 list.add(new Pos(pos.x, pos.y, pos.z));
-                list.add(new Pos(pos.x, pos.y - 1, pos.z));
                 break;
             case DESCEND_MINE:
                 list.add(pos);
