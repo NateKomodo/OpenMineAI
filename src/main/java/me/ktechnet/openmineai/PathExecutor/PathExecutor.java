@@ -152,7 +152,12 @@ public class PathExecutor implements IPathExecutor {
                 case PARKOUR:
                     return new ParkourNodeExecutor(dest).Execute(next, current, verbose, false, ShouldTurn(current.pos(), next.pos()), Direction(DetermineProposedDirection(next.pos(), current.pos(), false), current.pos(), next.pos()));
                 case DESTINATION:
+                case PLAYER:
                     return ExecutionResult.OK;
+                case ASCEND:
+                case DESCEND:
+                    return ExecutionResult.FAILED; //Unless someone legitimately opens an issue because they legitimately encountered these nodes, i wont add them due to the rarity
+
             }
         } catch (Exception ex) {
             StringWriter writer = new StringWriter();
