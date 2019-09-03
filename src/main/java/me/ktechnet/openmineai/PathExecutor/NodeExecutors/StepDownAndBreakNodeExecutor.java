@@ -11,7 +11,7 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 
-public class BreakAndMoveNodeExecutor implements INodeTypeExecutor {
+public class StepDownAndBreakNodeExecutor implements INodeTypeExecutor {
     private final PlayerControl pc = new PlayerControl();
     private final EntityPlayerSP player = Minecraft.getMinecraft().player;
     private final World world = Minecraft.getMinecraft().world;
@@ -46,39 +46,50 @@ public class BreakAndMoveNodeExecutor implements INodeTypeExecutor {
         ex.PushMovementState(true, direction, shouldTurn);
         Thread.sleep(200);
         ex.PushMovementState(false, direction, shouldTurn);
-        //Break top block
+        //Break block ahead
         pc.HardSetFacing(rotation, 0);
-        Pos bPos2 = new Pos(pc.rayTrace(1).getBlockPos());
-        while (!(world.getBlockState(bPos2.ConvertToBlockPos()).getBlock() == Blocks.AIR)) {
-            new ToolHelper().SelectTool(world.getBlockState(bPos2.ConvertToBlockPos()).getBlock());
-            pc.HardSetFacing(rotation, 0);
-            pc.BreakBlock(true);
-            if (AdjacentBlocksHelper.GravityBlocksAbove(bPos2) > 0) Thread.sleep(400); //Gives gravity blocks a chance to fall
-        }
-        //Break bottom block
-        pc.HardSetFacing(rotation, 70);
         Pos bPos = new Pos(pc.rayTrace(1).getBlockPos());
         while (!(world.getBlockState(bPos.ConvertToBlockPos()).getBlock() == Blocks.AIR)) {
             new ToolHelper().SelectTool(world.getBlockState(bPos.ConvertToBlockPos()).getBlock());
-            pc.HardSetFacing(rotation, 70);
+            pc.HardSetFacing(rotation, 0);
             pc.BreakBlock(true);
             if (AdjacentBlocksHelper.GravityBlocksAbove(bPos) > 0) Thread.sleep(400); //Gives gravity blocks a chance to fall
         }
+        //Break block diagonal down
+        pc.HardSetFacing(rotation, 70);
+        Pos bPos3 = new Pos(pc.rayTrace(1).getBlockPos());
+        while (!(world.getBlockState(bPos3.ConvertToBlockPos()).getBlock() == Blocks.AIR)) {
+            new ToolHelper().SelectTool(world.getBlockState(bPos3.ConvertToBlockPos()).getBlock());
+            pc.HardSetFacing(rotation, 70);
+            pc.BreakBlock(true);
+            if (AdjacentBlocksHelper.GravityBlocksAbove(bPos3) > 0) Thread.sleep(400); //Gives gravity blocks a chance to fall
+        }
+        //Break block in down again
+        pc.HardSetFacing(rotation, 70);
+        Pos bPos2 = new Pos(pc.rayTrace(2).getBlockPos());
+        while (!(world.getBlockState(bPos2.ConvertToBlockPos()).getBlock() == Blocks.AIR)) {
+            new ToolHelper().SelectTool(world.getBlockState(bPos2.ConvertToBlockPos()).getBlock());
+            pc.HardSetFacing(rotation, 70);
+            pc.BreakBlock(true);
+            if (AdjacentBlocksHelper.GravityBlocksAbove(bPos2) > 0) Thread.sleep(400); //Gives gravity blocks a chance to fall
+        }
+        //Enter new space
+        PlayerControl.Sprint = false;
         ex.PushMovementState(true, direction, shouldTurn);
-        PlayerControl.Sprint = true;
         double maxDist = (Math.abs(xOffset)) > 0 && (Math.abs(zOffset) > 0)  ? 1.6 : 1.1;
         while (!next.pos().IsEqual(new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ)) && !timedOut) {
             pc.HardSetFacing(rotation, -99);
-            PlayerControl.Sprint = true;
+            if (new Pos((int)player.posX, (int)Math.ceil(player.posY) - 1, (int)player.posZ).IsEqual(next.pos())) {
+                Thread.sleep(100);
+                ex.PushMovementState(false, direction, shouldTurn);
+            }
             double dist = DistanceHelper.GetComponents(new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ), next.pos()).h;
             if (dist > maxDist && !RTP) {
                 ex.PushMovementState(false, direction, shouldTurn);
-                PlayerControl.Sprint = false;
                 if (verbose) ChatMessageHandler.SendMessage("No longer on route, node return abort. Dist: " + dist + " Max: " + maxDist);
                 return ExecutionResult.OFF_PATH;
             }
         }
-        PlayerControl.Sprint = false;
         ex.PushMovementState(false, direction, shouldTurn);
         return ExecutionResult.OK;
     }
