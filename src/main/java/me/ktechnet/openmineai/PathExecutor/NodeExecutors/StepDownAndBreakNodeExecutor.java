@@ -20,10 +20,11 @@ public class StepDownAndBreakNodeExecutor implements INodeTypeExecutor {
 
     @Override
     public ExecutionResult Execute(INode next, INode current, boolean verbose, boolean RTP, boolean shouldTurn, MoveDirection direction) throws InterruptedException {
+        shouldTurn = true;
         int xOffset = Integer.compare(next.pos().x - current.pos().x, 0);
         int zOffset = Integer.compare(next.pos().z - current.pos().z, 0);
         ExecutionHelper ex = new ExecutionHelper();
-        String cardinal = shouldTurn ? ex.GetCardinal(xOffset, zOffset) : ex.GetCardinalFromFacing();
+        String cardinal = ex.GetCardinal(xOffset, zOffset);
         int rotation = ex.GetRotation(cardinal);
         if (verbose) {
             if (shouldTurn) {
@@ -55,6 +56,7 @@ public class StepDownAndBreakNodeExecutor implements INodeTypeExecutor {
             pc.BreakBlock(true);
             if (AdjacentBlocksHelper.GravityBlocksAbove(bPos) > 0) Thread.sleep(400); //Gives gravity blocks a chance to fall
         }
+        Thread.sleep(200);
         //Break block diagonal down
         pc.HardSetFacing(rotation, 70);
         Pos bPos3 = new Pos(pc.rayTrace(1).getBlockPos());
@@ -64,6 +66,7 @@ public class StepDownAndBreakNodeExecutor implements INodeTypeExecutor {
             pc.BreakBlock(true);
             if (AdjacentBlocksHelper.GravityBlocksAbove(bPos3) > 0) Thread.sleep(400); //Gives gravity blocks a chance to fall
         }
+        Thread.sleep(200);
         //Break block in down again
         pc.HardSetFacing(rotation, 70);
         Pos bPos2 = new Pos(pc.rayTrace(2).getBlockPos());

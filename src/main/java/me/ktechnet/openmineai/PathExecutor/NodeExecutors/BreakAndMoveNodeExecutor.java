@@ -23,7 +23,7 @@ public class BreakAndMoveNodeExecutor implements INodeTypeExecutor {
         int xOffset = Integer.compare(next.pos().x - current.pos().x, 0);
         int zOffset = Integer.compare(next.pos().z - current.pos().z, 0);
         ExecutionHelper ex = new ExecutionHelper();
-        String cardinal = shouldTurn ? ex.GetCardinal(xOffset, zOffset) : ex.GetCardinalFromFacing();
+        String cardinal = ex.GetCardinal(xOffset, zOffset);
         int rotation = ex.GetRotation(cardinal);
         if (verbose) {
             if (shouldTurn) {
@@ -43,9 +43,9 @@ public class BreakAndMoveNodeExecutor implements INodeTypeExecutor {
                 },
                 5000
         );
-        ex.PushMovementState(true, direction, shouldTurn);
+        ex.PushMovementState(true, direction, true);
         Thread.sleep(200);
-        ex.PushMovementState(false, direction, shouldTurn);
+        ex.PushMovementState(false, direction, true);
         //Break top block
         pc.HardSetFacing(rotation, 0);
         Pos bPos2 = new Pos(pc.rayTrace(1).getBlockPos());
@@ -55,6 +55,7 @@ public class BreakAndMoveNodeExecutor implements INodeTypeExecutor {
             pc.BreakBlock(true);
             if (AdjacentBlocksHelper.GravityBlocksAbove(bPos2) > 0) Thread.sleep(400); //Gives gravity blocks a chance to fall
         }
+        Thread.sleep(200);
         //Break bottom block
         pc.HardSetFacing(rotation, 70);
         Pos bPos = new Pos(pc.rayTrace(1).getBlockPos());
@@ -64,7 +65,7 @@ public class BreakAndMoveNodeExecutor implements INodeTypeExecutor {
             pc.BreakBlock(true);
             if (AdjacentBlocksHelper.GravityBlocksAbove(bPos) > 0) Thread.sleep(400); //Gives gravity blocks a chance to fall
         }
-        ex.PushMovementState(true, direction, shouldTurn);
+        ex.PushMovementState(true, direction, true);
         PlayerControl.Sprint = true;
         double maxDist = (Math.abs(xOffset)) > 0 && (Math.abs(zOffset) > 0)  ? 1.6 : 1.1;
         while (!next.pos().IsEqual(new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ)) && !timedOut) {
@@ -72,14 +73,17 @@ public class BreakAndMoveNodeExecutor implements INodeTypeExecutor {
             PlayerControl.Sprint = true;
             double dist = DistanceHelper.GetComponents(new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ), next.pos()).h;
             if (dist > maxDist && !RTP) {
-                ex.PushMovementState(false, direction, shouldTurn);
+                ex.PushMovementState(false, direction, true);
                 PlayerControl.Sprint = false;
                 if (verbose) ChatMessageHandler.SendMessage("No longer on route, node return abort. Dist: " + dist + " Max: " + maxDist);
                 return ExecutionResult.OFF_PATH;
             }
         }
+        ex.PushMovementState(true, direction, true);
+        Thread.sleep(100);
+        ex.PushMovementState(false, direction, true);
         PlayerControl.Sprint = false;
-        ex.PushMovementState(false, direction, shouldTurn);
+        ex.PushMovementState(false, direction, true);
         return ExecutionResult.OK;
     }
 }

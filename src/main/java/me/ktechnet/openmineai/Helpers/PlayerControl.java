@@ -39,10 +39,10 @@ public class PlayerControl {
             while (mc.world.getBlockState(result.getBlockPos()).getMaterial() != Material.AIR && elapsed < 15000) {
                 if (enforceRotation) HardSetFacing(rotation, pitch);
                 if (mc.playerController.onPlayerDamageBlock(result.getBlockPos(), result.sideHit)) mc.player.swingArm(EnumHand.MAIN_HAND);
-                Thread.sleep(50);
-                elapsed += 50;
+                Thread.sleep(40);
+                elapsed += 40;
             }
-            mc.playerController.resetBlockRemoving();
+            //mc.playerController.resetBlockRemoving();
         }
         catch (Exception ex)
         {

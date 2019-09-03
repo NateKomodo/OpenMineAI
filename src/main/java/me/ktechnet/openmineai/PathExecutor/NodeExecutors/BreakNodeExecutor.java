@@ -20,10 +20,11 @@ public class BreakNodeExecutor implements INodeTypeExecutor {
 
     @Override
     public ExecutionResult Execute(INode next, INode current, boolean verbose, boolean RTP, boolean shouldTurn, MoveDirection direction) throws InterruptedException {
+        shouldTurn = true;
         int xOffset = Integer.compare(next.pos().x - current.pos().x, 0);
         int zOffset = Integer.compare(next.pos().z - current.pos().z, 0);
         ExecutionHelper ex = new ExecutionHelper();
-        String cardinal = shouldTurn ? ex.GetCardinal(xOffset, zOffset) : ex.GetCardinalFromFacing();
+        String cardinal = ex.GetCardinal(xOffset, zOffset);
         int rotation = ex.GetRotation(cardinal);
         if (verbose) {
             if (shouldTurn) {

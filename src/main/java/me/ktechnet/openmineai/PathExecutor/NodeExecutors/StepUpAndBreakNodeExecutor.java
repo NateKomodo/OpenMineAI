@@ -20,6 +20,7 @@ public class StepUpAndBreakNodeExecutor implements INodeTypeExecutor {
 
     @Override
     public ExecutionResult Execute(INode next, INode current, boolean verbose, boolean RTP, boolean shouldTurn, MoveDirection direction) throws InterruptedException {
+        shouldTurn = true;
         int xOffset = Integer.compare(next.pos().x - current.pos().x, 0);
         int zOffset = Integer.compare(next.pos().z - current.pos().z, 0);
         ExecutionHelper ex = new ExecutionHelper();
@@ -55,23 +56,25 @@ public class StepUpAndBreakNodeExecutor implements INodeTypeExecutor {
             pc.BreakBlock(true);
             if (AdjacentBlocksHelper.GravityBlocksAbove(bPos) > 0) Thread.sleep(400); //Gives gravity blocks a chance to fall
         }
-        //Break block diagonal up
-        pc.HardSetFacing(rotation, -50);
-        Pos bPos3 = new Pos(pc.rayTrace(1).getBlockPos());
-        while (!(world.getBlockState(bPos3.ConvertToBlockPos()).getBlock() == Blocks.AIR)) {
-            new ToolHelper().SelectTool(world.getBlockState(bPos3.ConvertToBlockPos()).getBlock());
-            pc.HardSetFacing(rotation, -50);
-            pc.BreakBlock(true);
-            if (AdjacentBlocksHelper.GravityBlocksAbove(bPos3) > 0) Thread.sleep(400); //Gives gravity blocks a chance to fall
-        }
+        Thread.sleep(200);
         //Break block in front
         pc.HardSetFacing(rotation, 0);
-        Pos bPos2 = new Pos(pc.rayTrace(1).getBlockPos());
+        Pos bPos2 = new Pos(pc.rayTrace(2).getBlockPos());
         while (!(world.getBlockState(bPos2.ConvertToBlockPos()).getBlock() == Blocks.AIR)) {
             new ToolHelper().SelectTool(world.getBlockState(bPos2.ConvertToBlockPos()).getBlock());
             pc.HardSetFacing(rotation, 0);
             pc.BreakBlock(true);
             if (AdjacentBlocksHelper.GravityBlocksAbove(bPos2) > 0) Thread.sleep(400); //Gives gravity blocks a chance to fall
+        }
+        Thread.sleep(200);
+        //Break block diagonal up
+        pc.HardSetFacing(rotation, -50);
+        Pos bPos3 = new Pos(pc.rayTrace(2).getBlockPos());
+        while (!(world.getBlockState(bPos3.ConvertToBlockPos()).getBlock() == Blocks.AIR)) {
+            new ToolHelper().SelectTool(world.getBlockState(bPos3.ConvertToBlockPos()).getBlock());
+            pc.HardSetFacing(rotation, -50);
+            pc.BreakBlock(true);
+            if (AdjacentBlocksHelper.GravityBlocksAbove(bPos3) > 0) Thread.sleep(400); //Gives gravity blocks a chance to fall
         }
         //Enter new space
         PlayerControl.Sprint = false;
@@ -90,6 +93,7 @@ public class StepUpAndBreakNodeExecutor implements INodeTypeExecutor {
             }
         }
         ex.PushMovementState(false, direction, shouldTurn);
+        Thread.sleep(200);
         return ExecutionResult.OK;
     }
 }

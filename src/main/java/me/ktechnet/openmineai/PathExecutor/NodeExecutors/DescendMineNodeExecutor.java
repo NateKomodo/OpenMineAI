@@ -29,7 +29,7 @@ public class DescendMineNodeExecutor implements INodeTypeExecutor {
                         timedOut = true;
                     }
                 },
-                5000
+                2000
         );
         pc.HardSetFacing(-999, 90);
         Pos bPos = new Pos(pc.rayTrace(2).getBlockPos());
@@ -41,7 +41,23 @@ public class DescendMineNodeExecutor implements INodeTypeExecutor {
         while (!next.pos().IsEqual(new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ)) && !timedOut) {
             pc.HardSetFacing(-999, 90);
         }
+        if (!next.pos().IsEqual(new Pos((int)player.posX, (int)Math.ceil(player.posY), (int)player.posZ))) {
+            GenerateRandomMovement();
+        }
         Thread.sleep(100); //Stop playing swinging
         return ExecutionResult.OK;
+    }
+    private void GenerateRandomMovement() throws InterruptedException {
+        PlayerControl.MoveForward = true;
+        PlayerControl.StrafeRight = true;
+        Thread.sleep(5);
+        PlayerControl.MoveForward = false;
+        PlayerControl.StrafeRight = false;
+        PlayerControl.MoveBack = true;
+        PlayerControl.StrafeLeft = true;
+        Thread.sleep(10);
+        PlayerControl.MoveBack = false;
+        PlayerControl.StrafeLeft = false;
+        Thread.sleep(100);
     }
 }

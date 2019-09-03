@@ -44,7 +44,7 @@ class Commands extends CommandBase implements IClientCommand {
             } else if (args[0].equals("help")) {
                 ChatMessageHandler.SendMessage("Usage: ;o [module name] [args ...]");
                 for (Map.Entry<String, ICommandModule> m : modules.entrySet()) {
-                    ChatMessageHandler.SendMessage("Module: " + m.getKey() + ": ;o " + m.getKey() + " " + m.getValue().GetArgs());
+                    ChatMessageHandler.SendMessage("Module: " + m.getKey() + ": " + m.getValue().GetArgs());
                 }
             }  else {
                 ChatMessageHandler.SendMessage("Invalid command. Use: ;o help for help");

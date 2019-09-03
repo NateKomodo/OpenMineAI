@@ -15,7 +15,7 @@ public class ToolHelper {
     EntityPlayerSP player = Minecraft.getMinecraft().player;
 
     public void SelectTool(Block toBreak) {
-        int bestSlot = 28;
+        int bestSlot = -1;
         Item bestItem = Items.AIR;
         for (int i = 0; i < 10; i++) {
             Item item = player.inventory.getStackInSlot(i).getItem();
@@ -42,8 +42,7 @@ public class ToolHelper {
                 }
             }
         }
-        Main.logger.info("Set current item to " + bestSlot);
-        player.inventory.currentItem = bestSlot;
+        if (bestSlot != -1) player.inventory.currentItem = bestSlot;
     }
 
     public void SelectDisposable() {
@@ -66,6 +65,36 @@ public class ToolHelper {
                 break;
             }
         }
+    }
+
+    public boolean HasPickAxe() {
+        for (int i = 0; i < 10; i++) {
+            Item item = player.inventory.getStackInSlot(i).getItem();
+            if (pickaxes.contains(item)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    public boolean HasDisposable() {
+        for (int i = 0; i < 10; i++) {
+            Item item = player.inventory.getStackInSlot(i).getItem();
+            if (item instanceof ItemBlock) {
+                if (disposable.contains(((ItemBlock) item).getBlock())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    public boolean HasWaterbucket() {
+        for (int i = 0; i < 10; i++) {
+            Item item = player.inventory.getStackInSlot(i).getItem();
+            if (item == Items.WATER_BUCKET) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private ArrayList<Block> disposable = new ArrayList<Block>() {

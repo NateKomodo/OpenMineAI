@@ -4,13 +4,14 @@ OpenMineAI is a work-in-progress Minecraft pathfinder and automation tool, with 
 
 ## Current features
 
-As of 0.7.1, the following is done:
+As of 0.7.9, the following is done:
 
 - Full player control
 - Path-finding
 - Path-execution
 - Forge integration for 1.12.2
 - Modular chat commands
+- (Not yet finished) Auto mining
 
 ## Todo
 
@@ -18,13 +19,16 @@ Pathfinder:
 - Get to open areas or some high level selection system to route via (For highways or similar) or segment into sections for improved accuracy or some waypoint system
 - Make pathfinder handle not entirely diagonal parkour jumps
 - Ant path with bias
+- Descend mine falling into pit/lava
 
 Path executor:
 - Shortcuts
 - Diagonal centering?
+- Descend mine centering issues
+- Ascend mine triggering instead of ascend break tower / other confirm possible issues
+- RTP fall out issues (Move instead of descend mine, etc)
 
 Modules:
 - Combat
 - Recon
-- Mining
 - Other tasks that can be automated such as farming 
