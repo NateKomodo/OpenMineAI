@@ -4,12 +4,11 @@ OpenMineAI is a work-in-progress Minecraft pathfinder and automation tool, with 
 
 ## Current features
 
-As of 0.6.6, the following is done:
+As of 0.7.1, the following is done:
 
-- Movement
-- Breaking and placing
-- Pathfinding
-- Basic path execution
+- Full player control
+- Path-finding
+- Path-execution
 - Forge integration for 1.12.2
 - Modular chat commands
 
@@ -21,8 +20,6 @@ Pathfinder:
 - Ant path with bias
 
 Path executor:
-- Switch to alternate paths (May be do at a module level instead of executor level)
-- Following paths (Rest of nodes)
 - Shortcuts
 - Diagonal centering?
 
