@@ -156,6 +156,7 @@ public class PathExecutor implements IPathExecutor {
                     return ExecutionResult.OK;
                 case ASCEND:
                 case DESCEND:
+                    if (verbose) ChatMessageHandler.SendMessage("Encountered unimplemented node");
                     return ExecutionResult.FAILED; //Unless someone legitimately opens an issue because they legitimately encountered these nodes, i wont add them due to the rarity
 
             }
