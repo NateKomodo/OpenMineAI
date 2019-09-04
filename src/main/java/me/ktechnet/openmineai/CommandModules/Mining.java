@@ -39,11 +39,48 @@ public class Mining implements ICommandModule, IPathingCallback, IPathExecutionC
 
     private boolean isExecuting = false;
 
+    private Block target = Blocks.DIAMOND_ORE;
+
     @Override
     public void Run(String[] args) {
         if (args.length >= 1) {
             if (args[0].equals("start") && !doMine) {
                 ChatMessageHandler.SendMessage("Starting to mine");
+                if (args.length >= 2) {
+                    switch (args[1].toUpperCase()) {
+                        case "COAL":
+                            target = Blocks.COAL_ORE;
+                            break;
+                        case "IRON":
+                            target = Blocks.IRON_ORE;
+                            break;
+                        case "REDSTONE":
+                            target = Blocks.REDSTONE_ORE;
+                            break;
+                        case "GOLD":
+                            target = Blocks.GOLD_ORE;
+                            break;
+                        case "LAPIS":
+                            target = Blocks.LAPIS_ORE;
+                            break;
+                        case "DIAMOND":
+                            target = Blocks.DIAMOND_ORE;
+                            break;
+                        case "EMERALD":
+                            target = Blocks.EMERALD_ORE;
+                            break;
+                        case "QUARTZ":
+                            target = Blocks.QUARTZ_ORE;
+                            break;
+                        default:
+                            ChatMessageHandler.SendMessage("Could not determine what you meant, assuming diamond");
+                            target = Blocks.DIAMOND_ORE;
+                            break;
+                    }
+                } else {
+                    ChatMessageHandler.SendMessage("Could not determine what you meant, assuming diamond");
+                    target = Blocks.DIAMOND_ORE;
+                }
                 doMine = true;
                 StartMining();
             } else if (args[0].equals("stop") && doMine) {
@@ -100,7 +137,7 @@ public class Mining implements ICommandModule, IPathingCallback, IPathExecutionC
         pathingProvider = new PopulousBadStarSearch();
         EntityPlayerSP p = Minecraft.getMinecraft().player;
         Pos pos = new Pos((int)p.posX, (int)p.posY, (int)p.posZ);
-        Pos dest = Find(Blocks.DIAMOND_ORE);
+        Pos dest = Find(target);
         currentTarget = dest;
         Settings settings = new Settings();
         settings.verbose = verbose;
@@ -155,7 +192,7 @@ public class Mining implements ICommandModule, IPathingCallback, IPathExecutionC
                             ChatMessageHandler.SendMessage("Found diamonds but was in unreachable cluster!");
                             continue;
                         }
-                        if (!unreachable.contains(b)) {
+                        if (!unreachable.contains(pos)) {
                             double newDist = DistanceHelper.CalcDistance(new Pos((int)p.posX, (int)p.posY, (int)p.posZ), pos);
                             if (newDist < dist) {
                                 best = pos;
