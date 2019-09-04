@@ -4,7 +4,7 @@ OpenMineAI is a work-in-progress Minecraft pathfinder and automation tool, with 
 
 ## Current features
 
-As of 0.7.9, the following is done:
+As of 0.7.10, the following is done:
 
 - Full player control
 - Path-finding
@@ -28,6 +28,7 @@ Path executor:
 - Descend mine and strafing centering issues
 - Confirm still possible
 - RTP fall out issues (Move instead of descend mine, etc)
+- Thread safe block placing
 
 Mining:
 - Make available to all ores and wider search area
