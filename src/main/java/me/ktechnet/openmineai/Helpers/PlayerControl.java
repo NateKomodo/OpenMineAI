@@ -22,6 +22,7 @@ public class PlayerControl {
     public static boolean Jump;
     public static boolean Sprint;
     public static boolean Sneak;
+    public static boolean Mine;
 
     public void TakeControl()
     {
@@ -38,10 +39,11 @@ public class PlayerControl {
             int elapsed = 0;
             while (mc.world.getBlockState(result.getBlockPos()).getMaterial() != Material.AIR && elapsed < 15000) {
                 if (enforceRotation) HardSetFacing(rotation, pitch);
-                if (mc.playerController.onPlayerDamageBlock(result.getBlockPos(), result.sideHit)) mc.player.swingArm(EnumHand.MAIN_HAND);
+                PlayerControl.Mine = true;
                 Thread.sleep(40);
                 elapsed += 40;
             }
+            PlayerControl.Mine = false;
         }
         catch (Exception ex)
         {

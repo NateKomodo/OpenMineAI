@@ -92,6 +92,7 @@ public class Mining implements ICommandModule, IPathingCallback, IPathExecutionC
         favouring = null;
         ready = false;
         isExecuting = false;
+        canPathfind = true;
     }
 
     private void StartMining() {
@@ -124,6 +125,7 @@ public class Mining implements ICommandModule, IPathingCallback, IPathExecutionC
             ChatMessageHandler.SendMessage("Could not find any of the request block, abort");
             doMine = false;
             StopMining();
+            canPathfind = true;
             return;
         }
         if (canPathfind) {
@@ -138,9 +140,9 @@ public class Mining implements ICommandModule, IPathingCallback, IPathExecutionC
         EntityPlayerSP p = Minecraft.getMinecraft().player;
         Pos best = null;
         double dist = 999;
-        for (int x = (int)p.posX - 20; x < ((int)p.posX + 20); x++) {
-            for (int z = (int)p.posZ - 20; z < ((int)p.posZ + 20); z++) {
-                for (int y = 1; y < 16; y++) { //TODO raise for other ores, spiral to get closest
+        for (int x = (int)p.posX - 40; x < ((int)p.posX + 40); x++) {
+            for (int z = (int)p.posZ - 40; z < ((int)p.posZ + 40); z++) {
+                for (int y = 1; y < 64; y++) {
                     Pos pos = new Pos(x, y, z);
                     if (Minecraft.getMinecraft().world.getBlockState(pos.ConvertToBlockPos()).getBlock() == b) {
                         boolean flag = false;

@@ -1,9 +1,11 @@
 package me.ktechnet.openmineai;
 
+import ibxm.Player;
 import me.ktechnet.openmineai.CommandModules.AlphaTest;
 import me.ktechnet.openmineai.CommandModules.Go;
 import me.ktechnet.openmineai.CommandModules.Mining;
 import net.minecraftforge.client.ClientCommandHandler;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -29,6 +31,7 @@ public class Main
     @EventHandler
     public void init(FMLInitializationEvent event)
     {
+        MinecraftForge.EVENT_BUS.register(new TickHandler());
         Commands.modules.put("test", new AlphaTest());
         Commands.modules.put("go", new Go());
         Commands.modules.put("mine", new Mining());

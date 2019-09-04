@@ -26,7 +26,6 @@ Path executor:
 - Shortcuts
 - Diagonal centering?
 - Descend mine and strafing centering issues
-- Fix crash from multi-threading
 - Confirm still possible
 - RTP fall out issues (Move instead of descend mine, etc)
 
