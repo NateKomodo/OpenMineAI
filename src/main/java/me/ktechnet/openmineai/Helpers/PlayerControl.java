@@ -23,6 +23,7 @@ public class PlayerControl {
     public static boolean Sprint;
     public static boolean Sneak;
     public static boolean Mine;
+    public static boolean RequsetPlace;
 
     public void TakeControl()
     {
@@ -51,12 +52,12 @@ public class PlayerControl {
         }
     }
 
-    public void PlaceBlock()
+    public void PlaceBlock() throws InterruptedException
     {
-        Minecraft mc = Minecraft.getMinecraft();
-        RayTraceResult result = rayTrace(5);
-        BlockPos blockpos = result.getBlockPos().offset(result.sideHit);
-        if (mc.playerController.processRightClickBlock(mc.player, mc.world, blockpos, result.sideHit, result.hitVec, EnumHand.MAIN_HAND) == EnumActionResult.SUCCESS) mc.player.swingArm(EnumHand.MAIN_HAND);
+        PlayerControl.RequsetPlace = true;
+        while (PlayerControl.RequsetPlace) {
+            Thread.sleep(50);
+        }
     }
 
     public void Interact()
