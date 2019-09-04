@@ -17,6 +17,7 @@ public class TickHandler {
             if (PlayerControl.Mine) {
                 Minecraft mc = Minecraft.getMinecraft();
                 RayTraceResult result = rayTrace(5);
+                if (result == null) return;
                 if (mc.playerController.onPlayerDamageBlock(result.getBlockPos(), result.sideHit))
                     mc.player.swingArm(EnumHand.MAIN_HAND);
             }
@@ -25,6 +26,7 @@ public class TickHandler {
     private RayTraceResult rayTrace(int maxDist)
     {
         EntityPlayer player = Minecraft.getMinecraft().player;
+        if (player == null) return null;
         Vec3d vec3d = player.getPositionEyes(1f);
         Vec3d vec3d1 = player.getLook(1f);
         Vec3d vec3d2 = vec3d.addVector(vec3d1.x * maxDist, vec3d1.y * maxDist, vec3d1.z * maxDist);

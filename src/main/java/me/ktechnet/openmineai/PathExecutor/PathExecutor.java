@@ -69,6 +69,7 @@ public class PathExecutor implements IPathExecutor {
                 PlayerControl.MoveForward = false;
                 PlayerControl.Sprint = false;
                 PlayerControl.Sneak = false;
+                PlayerControl.Mine = false;
             });
             t.setDaemon(true);
             t.start();
